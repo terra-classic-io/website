@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="description" content="Comprehensive directory of the Terra Classic blockchain ecosystem - protocols, dApps, tools and resources." />
+  <meta name="keywords" content="Terra Classic, LUNC, USTC, blockchain, crypto, staking, DeFi, ecosystem" />
+  <meta name="author" content="Terra Classic Community" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Terra Classic Ecosystem" />
+  <meta property="og:description" content="Explore the Terra Classic blockchain ecosystem - protocols, dApps, tools and resources." />
+  <meta property="og:site_name" content="Terra Classic Ecosystem" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Terra Classic Ecosystem" />
+  <meta name="twitter:description" content="Explore the Terra Classic blockchain ecosystem - protocols, dApps, tools and resources." />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Preload critical resources -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+  </noscript>
+  <!-- Inline critical CSS -->
+  <style id="critical-css">
+    /* Critical CSS will be inlined here */
+    body { margin: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    #root { min-height: 100vh; display: flex; flex-direction: column; }
+  </style>
+  <!-- SSR: Head tags will be injected here by the server -->
+  <!-- SSR_HEAD -->
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+  <!-- SSR: App content will be injected here -->
+  <div id="root"><!-- SSR_APP --></div>
+  
+  <!-- Initial state will be injected here by the server -->
+  <script id="__INITIAL_STATE__" type="application/json"><!-- SSR_STATE --></script>
+  
+  <!-- Load the app -->
+  <script type="module" src="/src/main.tsx"></script>
+  
+  <!-- Load non-critical CSS asynchronously -->
+  <script>
+    // Load non-critical CSS
+    function loadCSS(href, before, media, attributes) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      if (media) link.media = media;
+      if (attributes) {
+        Object.keys(attributes).forEach(key => {
+          link.setAttribute(key, attributes[key]);
+        });
+      }
+      document.head.appendChild(link);
+    }
+    
+    // Load non-critical CSS after page load
+    window.addEventListener('load', function() {
+      // Load any additional stylesheets here
+    });
+  </script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(
+          function(registration) {
+            console.log('ServiceWorker registration successful');
+          },
+          function(err) {
+            console.log('ServiceWorker registration failed: ', err);
+          }
+        );
+      });
+    }
+  </script>
+</body>
+</html>

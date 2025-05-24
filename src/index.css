@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light theme colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f3f4f6;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+}
+
+.dark {
+  /* Dark theme colors */
+  --color-bg-primary: #111827;
+  --color-bg-secondary: #1f2937;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e5e7eb;
+}
+
+html { 
+  scroll-behavior: smooth; 
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Subtle dividers between categories */
+.lg\:grid-cols-3 > div:not(:nth-child(3n)) {
+  border-right: 1px solid rgba(229, 231, 235, 0.5);
+  padding-right: 20px;
+}
+
+@media (max-width: 1024px) and (min-width: 768px) {
+  .md\:grid-cols-2 > div:not(:nth-child(2n)) {
+    border-right: 1px solid rgba(229, 231, 235, 0.5);
+    padding-right: 20px;
+  }
+}
+
+/* Animation for link items */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+section {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(32, 67, 181, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(32, 67, 181, 0.5);
+}
+
+/* Focus styles for better accessibility */
+*:focus-visible {
+  outline: 2px solid #2043B5;
+  outline-offset: 2px;
+}
