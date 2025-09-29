@@ -52,7 +52,7 @@ function HeroSection({
         <div className="max-w-2xl space-y-4 lg:space-y-5">
           <div className="space-y-4">
             <h1 className="text-[2.4rem] font-semibold leading-[1.18] tracking-tight text-slate-900 dark:text-white sm:text-[2.9rem] lg:text-[3.1rem]">
-              Everything you need to explore, build and stake on the <strong>Terra Classic</strong> network.
+              <span className="hidden sm:inline">Everything you need to explore, build and stake on the</span><span className="inline sm:hidden">The</span> <strong>Terra Classic</strong> network.
             </h1>
             {shouldShowDetails ? (
               <p className="text-base leading-[1.7] text-slate-600 dark:text-slate-300 lg:text-[17px]">
@@ -65,7 +65,7 @@ function HeroSection({
               </p>
             )}
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 justify-center sm:justify-start">
             <button
               type="button"
               onClick={onExploreCategories}
