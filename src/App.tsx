@@ -41,8 +41,63 @@ export type AppState = {
   isMobile: boolean;
 };
 
+type ValidatorAprBreakdown = {
+  readonly denom: string;
+  readonly amount: number;
+};
+
+type ValidatorAprResponse = {
+  readonly apr: number;
+  readonly aprByDenoms: readonly ValidatorAprBreakdown[];
+};
+
+type VyntrexPriceResponse = {
+  readonly price: number;
+  readonly gain1h?: number;
+  readonly gain24h?: number;
+  readonly gain7d?: number;
+  readonly gain30d?: number;
+};
+
 const SCROLL_OFFSET_DESKTOP = 96;
 const SCROLL_OFFSET_MOBILE = 56;
+const STAKING_APR_ENDPOINT = "https://validator.info/api/terra-classic/blockchain/apr-info";
+const VYNTREX_API_BASE = "https://api.vyntrex.io/api/v1/prices";
+const VYNTREX_API_KEY = "a7eb94aa-ff81-4a82-89e2-ca3665f70739";
+const VYNTREX_REFERER = "https://terra-classic.io";
+
+const formatApr = (value: number): string => `${value.toFixed(2)}%`;
+const formatUsdPrice = (value: number): string =>
+  `$${value.toLocaleString("en-US", {
+    minimumFractionDigits: value >= 1 ? 2 : 5,
+    maximumFractionDigits: value >= 1 ? 4 : 6,
+  })}`;
+
+const formatChangePercentage = (value: number): { readonly label: string; readonly isPositive: boolean } => {
+  const percentage = value * 100;
+  const isPositive = percentage >= 0;
+  const labelPrefix = isPositive ? "+" : "";
+  return {
+    label: `${labelPrefix}${percentage.toFixed(2)}%`,
+    isPositive,
+  };
+};
+
+const fetchVyntrexPrice = async (denom: string): Promise<VyntrexPriceResponse> => {
+  const response = await fetch(`${VYNTREX_API_BASE}/${denom}`, {
+    headers: {
+      Accept: "application/json",
+      "X-Api-Key": VYNTREX_API_KEY,
+      Referer: VYNTREX_REFERER,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${denom} price: ${response.status}`);
+  }
+
+  return (await response.json()) as VyntrexPriceResponse;
+};
 
 const slugify = (value: string): string =>
   value
@@ -154,11 +209,104 @@ const App: React.FC<{
   }, [appState.isMobile]);
 
   useEffect(() => {
+    let isCancelled = false;
+
+    const fetchStakingApr = async () => {
+      try {
+        const response = await fetch(STAKING_APR_ENDPOINT, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`Failed to fetch staking APR: ${response.status}`);
+        }
+        const data: ValidatorAprResponse = await response.json();
+        if (typeof data.apr !== "number" || Number.isNaN(data.apr)) {
+          return;
+        }
+        if (isCancelled) {
+          return;
+        }
+        setAppState((previous) => ({
+          ...previous,
+          staking: {
+            apr: formatApr(data.apr),
+          },
+        }));
+      } catch (error) {
+        console.error("Unable to load staking APR", error);
+      }
+    };
+
+    fetchStakingApr();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    let isCancelled = false;
+    let intervalId: number | undefined;
+
+    const fetchTokenPrices = async () => {
+      try {
+        const [luncData, ustcData] = await Promise.all([
+          fetchVyntrexPrice("uluna"),
+          fetchVyntrexPrice("uusd"),
+        ]);
+
+        if (isCancelled) {
+          return;
+        }
+
+        setAppState((previous) => {
+          const luncChange = formatChangePercentage(luncData.gain24h ?? 0);
+          const ustcChange = formatChangePercentage(ustcData.gain24h ?? 0);
+
+          return {
+            ...previous,
+            tokens: {
+              LUNC: {
+                price: formatUsdPrice(luncData.price ?? 0),
+                change: luncChange.label,
+                isPositive: luncChange.isPositive,
+              },
+              USTC: {
+                price: formatUsdPrice(ustcData.price ?? 0),
+                change: ustcChange.label,
+                isPositive: ustcChange.isPositive,
+              },
+            },
+          };
+        });
+      } catch (error) {
+        console.error("Unable to load token prices", error);
+      }
+    };
+
+    fetchTokenPrices();
+    intervalId = window.setInterval(fetchTokenPrices, 30_000);
+
+    return () => {
+      isCancelled = true;
+      if (typeof intervalId === "number") {
+        window.clearInterval(intervalId);
+      }
+    };
+  }, []);
 
   const totalResourceCount = useMemo<number>(
     () =>
@@ -261,7 +409,7 @@ const App: React.FC<{
       {
         label: "Staking APR",
         value: appState.staking.apr,
-        description: "Fetched from xxxx",
+        description: "Source: validator.info",
       },
     ],
     [appState.staking.apr, totalResourceCount]
