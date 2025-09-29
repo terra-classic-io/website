@@ -70,7 +70,7 @@ export const categories: Category[] = [
     title: 'Bridges',
     description: 'Cross-chain bridges connecting Terra Classic to other blockchains',
     links: [
-      { name: 'skip:go', url: 'https://go.cosmos.network', description: 'IBC Bridge', indicator: 'hybrid', logo: '/public/logos/bridge/skipgo.jpg' },
+      { name: 'skip:go', url: 'https://go.cosmos.network', description: 'IBC Bridge', indicator: 'hybrid' },
       { name: 'Juris Bridge', url: 'https://dashboard.jurisprotocol.com/bridge', description: 'Cross-chain Bridge', indicator: 'support' },
       { name: 'Satellite', url: 'https://satellite.money/?destination_address=&asset_denom=uusdc&source=osmosis&destination=terra+classic', description: 'IBC Bridge', indicator: 'hybrid', logo: '/public/logos/bridge/satellite.jpg' },
       { name: 'Terraport Bridge', url: 'https://terraport.finance/bridge', description: 'Cross-chain Bridge', indicator: 'onchain' },

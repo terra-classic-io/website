@@ -38,92 +38,92 @@ const FAQAccordion: React.FC = () => {
 
   const faqs = [
     {
-      question: "What is Terra Classic (LUNC) and how has it evolved by 2025?",
+      question: "What is Terra Classic and how is it different from Terra?",
       answer: (
         <>
           <p>
-            Terra Classic (LUNC) is the original Terra blockchain that continued after the ecosystem split following the May 2022 collapse. By 2025, Terra Classic has established itself as a resilient community-driven blockchain with substantial governance improvements and utility restoration. The network has implemented several key protocol upgrades including the Gravity Bridge integration, enabling seamless cross-chain functionality with Ethereum and Cosmos ecosystems.
+            Terra Classic (LUNC) is the original Terra blockchain that stayed online after the 2022 collapse. The community kept maintaining the chain, validators, and governance. Terra 2.0 is a separate network launched by Terraform Labs without the algorithmic stablecoin. Both chains now evolve independently.
           </p>
           <p>
-            After the implementation of community-led burn mechanisms and validator reforms between 2022-2024, LUNC has successfully reduced its circulating supply by over 25%, addressing one of its primary challenges. The 2025 protocol enhancements focus on smart contract security, scalability improvements, and DeFi infrastructure revival, attracting developers back to the ecosystem.
+            Terra Classic relies on community proposals and open-source contributors, with no central ownership. If you hold LUNC or USTC, you are on Terra Classic. New apps, tooling, and community initiatives referenced on this site focus on Terra Classic.
           </p>
         </>
       ),
     },
     {
-      question: "How has the Terra Classic staking ecosystem improved since 2023?",
+      question: "How can I stake LUNC today and what rewards should I expect?",
       answer: (
         <>
           <p>
-            The Terra Classic staking ecosystem has undergone significant transformations since 2023. The validator governance structure was reformed in late 2023, introducing a more robust slashing mechanism and reputational system that has effectively eliminated validator misbehavior that previously plagued the network. By 2025, staking APR has stabilized around 8-12%, providing predictable returns for long-term holders.
+            To stake LUNC, connect a wallet such as `Keplr`, `Galaxy Station`, or `Cosmostation`, choose a validator, and delegate tokens. Staking APR moves with governance parameters and network usage. As of 2025 it typically ranges between 6% and 8% annualized.
           </p>
           <p>
-            The introduction of liquid staking derivatives in Q3 2024 has revolutionized the ecosystem, allowing LUNC holders to maintain staking rewards while utilizing their assets in DeFi protocols. This has increased staking participation to over 75% of circulating supply, significantly enhancing network security. The new delegation incentive program launched in early 2025 has further decentralized validator distribution, with no validator controlling more than 5% of staked tokens.
+            Rewards stay in the distribution module until you claim them. Remember that staking comes with a 21-day unbonding period; undelegated tokens cannot be moved until that period ends and do not gain rewards. Diversifying among trustworthy validators reduces risk of slashing events.
           </p>
         </>
       ),
     },
     {
-      question: "What are the key LUNC burning mechanisms in place in 2025?",
+      question: "Where can I track burn progress and supply changes for LUNC?",
       answer: (
         <>
           <p>
-            By 2025, Terra Classic has implemented multiple sustainable LUNC burning mechanisms that have collectively reduced the hyperinflated supply without compromising ecosystem development. The on-chain transaction tax, refined in 2024 to a dynamic model of 0.2-0.5% based on network activity, continues to be a primary deflationary force, burning approximately 50-75 billion LUNC annually.
+            Burn activity is tracked by several community dashboards including `LUNC Burner`, `LUNC Metrics`, and `LuncDash`. They aggregate on-chain tax burns, community burn wallets, and exchange burns that are publicly disclosed.
           </p>
           <p>
-            The Gas Fee Repurposing Protocol, implemented in late 2024, redirects 80% of all gas fees to the burn address while allocating 20% to community development funds. Additionally, the Ecosystem Activity Program introduced in 2025 incentivizes dApp developers with rebates for implementing application-specific burn mechanisms. Major exchanges have also integrated automatic burning of trading fees for LUNC pairs, contributing approximately 20-30 billion LUNC burned quarterly across participating platforms.
+            You can also verify supply changes directly on-chain using explorers such as `Galaxy Finder` or `AtomScan`. Look for the `Distribution` or `Supply` tabs to see current totals and burn transactions.
           </p>
         </>
       ),
     },
     {
-      question: "How has the Terra Classic governance system been reformed for 2025?",
+      question: "What should I know before buying or trading USTC?",
       answer: (
         <>
           <p>
-            The Terra Classic governance system underwent a complete overhaul between 2023-2025, now featuring a bicameral structure with a Technical Committee and Community Assembly. This new governance framework has successfully addressed previous issues of proposal quality and implementation delays. The Technical Committee, comprised of elected developers, focuses on protocol upgrades and technical implementations, while the Community Assembly handles ecosystem funding and policy decisions.
+            USTC is no longer a collateral-backed stablecoin. Price fluctuates with speculation on repeg plans and treasury strategies. Always check the current market price and liquidity depth before trading.
           </p>
           <p>
-            A significant innovation introduced in early 2025 is the Governance Participation Protocol (GPP), which rewards consistent voters with governance tokens that enhance voting power without diluting LUNC. This has increased proposal participation from under 15% in 2023 to over 60% by mid-2025. The governance dashboard now features automated proposal impact assessments, helping stakeholders understand potential effects before voting, which has dramatically improved proposal quality and implementation success rates.
+            The community is exploring partial collateralization and treasury programs, but none guarantee a $1 peg. Treat USTC as a volatile asset and diversify risk. Use reputable exchanges listed in the `Markets` section and enable two-factor authentication for your accounts.
           </p>
         </>
       ),
     },
     {
-      question: "What DeFi applications have returned to Terra Classic in 2025?",
+      question: "How do I participate in Terra Classic governance proposals?",
       answer: (
         <>
           <p>
-            The Terra Classic DeFi ecosystem has experienced a remarkable revival by 2025, with several next-generation applications building on lessons learned from the past. The relaunch of Astroport on Terra Classic in late 2024 brought modern AMM capabilities back to the ecosystem, featuring optimized capital efficiency mechanisms and cross-chain liquidity access through IBC protocols and the Gravity Bridge.
+            Governance happens on-chain through text or parameter proposals. Visit `Validator.info`, `Common.xyz` or other blockchain information pages to read active proposals, discussion threads, and voting deadlines.
           </p>
           <p>
-            New lending platforms like NovaTerra and Eclipse Finance have implemented over-collateralized lending models with robust oracle solutions and circuit breakers to prevent historical vulnerabilities. The stablecoin landscape has also evolved, with algorithm-backed stablecoins being replaced by fully-collateralized alternatives like USDC-c and EURC-c through official Circle integration completed in Q1 2025. The Terra Classic DeFi ecosystem now hosts over $500 million in Total Value Locked (TVL) across various protocols, showing steady growth since rebuilding began in earnest in 2024.
+            Vote directly from your wallet interface. Delegators can override their validator’s vote anytime during the voting window. Review the proposal’s `Forum` discussion, check validator sentiment, and confirm you have a small amount of LUNC available to cover gas fees.
           </p>
         </>
       ),
     },
     {
-      question: "How does the Terra Classic ecosystem integrate with USTC in 2025?",
+      question: "What infrastructure should I use for running a node or building apps?",
       answer: (
         <>
           <p>
-            By 2025, TerraClassicUSD (USTC) has been reimagined as a community-governed stablecoin with fundamentally different mechanics than its predecessor. Following the partial repeg initiative completed in 2024, USTC now maintains value through a hybrid model combining partial collateralization with controlled supply management. The USTC Reserve Fund, established in 2024 and grown to over $150 million by 2025, provides backing for a portion of the circulating supply.
+            The community recommends public endpoints from `PublicNode`, `Hexxagon`, and `BiNodes` for quick access. For production workloads, run your own full node using the latest `classic-core` release, keep snapshots updated, and monitor the `Terra Classic Validators` Discord for alerts.
           </p>
           <p>
-            The integration between LUNC and USTC has been redesigned with a decoupled relationship that protects both assets from cascading failures. The new Terra Classic monetary policy committee, formed of elected economic experts, manages USTC supply adjustments on a quarterly basis. USTC has found a sustainable niche as an intra-ecosystem stablecoin, primarily used within Terra Classic dApps, while maintaining IBC connectivity to the broader Cosmos ecosystem for liquidity and utility. By mid-2025, USTC price stability has been maintained within a 5% band of its dollar peg for over six consecutive months.
+            Builders can rely on the `@goblinhunt/cosmes` SDK, public APIs, and the `Community Discussions` linked in the docs. Testnet access is available on `rebel-2` with endpoints hosted by `luncblaze.com`.
           </p>
         </>
       ),
     },
     {
-      question: "What new development initiatives are driving Terra Classic adoption in 2025?",
+      question: "What are the safest wallets for holding LUNC right now?",
       answer: (
         <>
           <p>
-            Terra Classic's renaissance in 2025 is largely driven by the Developer Incentive Program launched in late 2024, which allocates funding to promising projects building on the network. This initiative has attracted over 50 new development teams and resulted in more than 20 production-ready applications by mid-2025. The Terra Classic Labs incubator, funded by community pool allocations, provides technical resources, security auditing, and marketing support for ecosystem projects.
+            Hardware wallets such as `Ledger` paired with wallet sites like `Galaxy Station` interface provide strong security. For software wallets, the community frequently uses `Keplr`, `Galaxy Station` or legacy `Terra Station`.
           </p>
           <p>
-            The focus on real-world asset (RWA) tokenization has emerged as a unique strength for Terra Classic in 2025, with specialized infrastructure for compliant tokenized securities, real estate, and carbon credits. The Enterprise Adoption Working Group formed in early 2025 has successfully established partnerships with several traditional finance institutions exploring blockchain integration. Educational initiatives like the Terra Classic Developer Academy have trained over 1,000 developers in ecosystem-specific tools and best practices, ensuring a sustainable pipeline of technical talent committed to the ecosystem's long-term success.
+            Always download wallets from official links, store recovery phrases offline, and beware of phishing sites. For large balances consider multi-signature solutions or smart-contract multisig wallets.
           </p>
         </>
       ),
