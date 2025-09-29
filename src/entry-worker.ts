@@ -49,6 +49,18 @@ const handleRequest = async (
 ): Promise<CfResponse> => {
   const url = new URL(request.url);
   const userAgent = request.headers.get("user-agent") ?? "";
+  const pathname = url.pathname;
+
+  if (env.ASSETS && (pathname.startsWith("/assets/") || pathname.startsWith("/favicon") || pathname.startsWith("/robots") || pathname.startsWith("/manifest"))) {
+    const directAssetResponse = await env.ASSETS.fetch(request);
+    if (!directAssetResponse.ok) {
+      return directAssetResponse as unknown as CfResponse;
+    }
+    const directContentType = directAssetResponse.headers.get("content-type") || "";
+    if (!directContentType.includes("text/html")) {
+      return directAssetResponse as unknown as CfResponse;
+    }
+  }
 
   // Try to serve static assets first
   if (env.ASSETS) {
