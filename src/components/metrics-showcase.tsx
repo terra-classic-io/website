@@ -27,7 +27,7 @@ const changeClassnameMap: Record<'positive' | 'negative', string> = {
  */
 function MetricsShowcase({ tokens, stakingApr }: MetricsShowcaseProps): JSX.Element {
   const stakingCardLabel: string = 'Network staking APR';
-  const stakingDescription: string = 'Annual rewards for active delegators';
+  const stakingDescription: string = 'Annual rewards for active delegators, sourced from validator.info';
 
   return (
     <section className="mt-0">
@@ -77,7 +77,7 @@ function MetricsShowcase({ tokens, stakingApr }: MetricsShowcaseProps): JSX.Elem
               </div>
               <p className="mt-6 text-3xl font-semibold text-slate-900 dark:text-white">{tokenMetric.price}</p>
               <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                Sourced from latest price data feeds.
+                Sourced from vyntrex.io.
               </p>
               <div className="pointer-events-none absolute -right-10 bottom-0 h-24 w-24 rounded-full bg-sky-500/10 transition duration-300 group-hover:scale-125 dark:bg-sky-500/5" />
             </article>
