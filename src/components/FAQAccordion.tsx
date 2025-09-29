@@ -10,16 +10,18 @@ interface FAQItemProps {
 
 const FAQItem: React.FC<FAQItemProps> = ({ question, answer, isOpen, onClick }) => {
   return (
-    <div className="border-b border-gray-200 last:border-0">
+    <div className="border-b border-gray-200 dark:border-gray-700 last:border-0">
       <button
         onClick={onClick}
-        className="flex justify-between items-center w-full py-4 text-left font-medium text-gray-900 hover:text-terra-blue focus:outline-none"
+        className="flex justify-between items-center w-full py-4 text-left font-medium text-gray-900 dark:text-white hover:text-terra-blue dark:hover:text-terra-green focus:outline-none transition-colors duration-200"
       >
         <span className="text-lg">{question}</span>
-        {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        {isOpen ? 
+          <ChevronUp size={20} className="text-gray-600 dark:text-gray-300" /> : 
+          <ChevronDown size={20} className="text-gray-600 dark:text-gray-300" />}
       </button>
       <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-[1000px] pb-4' : 'max-h-0'}`}>
-        <div className="text-gray-600 prose max-w-none">
+        <div className="text-gray-600 dark:text-gray-300 prose max-w-none dark:prose-invert">
           {answer}
         </div>
       </div>
@@ -129,11 +131,11 @@ const FAQAccordion: React.FC = () => {
   ];
 
   return (
-    <section className="py-12 mt-8 border-t border-gray-200">
-      <h2 className="text-3xl font-bold text-gray-900 mb-2">Frequently Asked Questions</h2>
-      <p className="text-gray-600 mb-8">Get answers to the most common questions about Terra Classic in 2025</p>
+    <section className="py-12 mt-8 border-t border-gray-200 dark:border-gray-700">
+      <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Frequently Asked Questions</h2>
+      <p className="text-gray-600 dark:text-gray-300 mb-8">Get answers to the most common questions about Terra Classic in 2025</p>
       
-      <div className="divide-y divide-gray-200 border-t border-b border-gray-200">
+      <div className="divide-y divide-gray-200 dark:divide-gray-700 border-t border-b border-gray-200 dark:border-gray-700">
         {faqs.map((faq, index) => (
           <FAQItem
             key={index}

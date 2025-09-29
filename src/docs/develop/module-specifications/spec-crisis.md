@@ -1,0 +1,1 @@
+> Terra Classic adopts the Cosmos SDK `x/crisis` module to guard against invariant violations. Please see the upstream specification for [x/crisis](https://docs.cosmos.network/main/modules/crisis/) for more details.

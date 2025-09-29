@@ -1,0 +1,1 @@
+> Terra Classic enables ICS-29 fee middleware to incentivise relayers. Please refer to the [ICS-29 fee middleware documentation](https://ibc.cosmos.network/v7/middleware/ics29-fee/overview/) for a complete overview.

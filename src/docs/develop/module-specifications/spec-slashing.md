@@ -1,0 +1,1 @@
+> Terra Classic inherits the Cosmos SDK slashing module to manage validator punishments. Please refer to the [upstream documentation](https://docs.cosmos.network/main/modules/slashing/) for a complete overview.

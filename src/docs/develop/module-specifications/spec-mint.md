@@ -1,0 +1,1 @@
+> Terra Classic retains the Cosmos SDK mint module for compatibility, but inflation is disabled on mainnet. Please refer to the [upstream documentation](https://docs.cosmos.network/main/modules/mint/) for a complete overview.
