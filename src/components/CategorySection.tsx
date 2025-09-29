@@ -15,6 +15,7 @@ const gradientEdgeClassname: string = 'absolute inset-y-6 left-6 hidden w-px rou
 const highlightOrbClassname: string = 'pointer-events-none absolute -right-14 top-16 hidden h-44 w-44 rounded-full bg-sky-500/10 blur-3xl dark:bg-sky-500/25 md:block';
 
 const MAX_VISIBLE_LINKS = 1;
+const SERVER_SEED: string = 'server-seed';
 
 const CategorySection: React.FC<SectionProps> = ({ category, sortMode, prioritizeOnchain }) => {
   const sectionId: string = category.title.toLowerCase().replace(/\s+/g, '-');
@@ -27,7 +28,14 @@ const CategorySection: React.FC<SectionProps> = ({ category, sortMode, prioritiz
   const listRef = useRef<HTMLUListElement | null>(null);
   const [isAtBottom, setIsAtBottom] = useState<boolean>(!hasOverflow);
   const [isAtTop, setIsAtTop] = useState<boolean>(true);
-  const [dailySeed] = useState<string>(() => (typeof window === 'undefined' ? 'server-seed' : getOrCreateDailySeed('terra-category-order')));
+  const [dailySeed, setDailySeed] = useState<string>(SERVER_SEED);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    setDailySeed(getOrCreateDailySeed('terra-category-order'));
+  }, []);
 
   useEffect(() => {
     setIsAtBottom(!hasOverflow);
@@ -110,7 +118,7 @@ const CategorySection: React.FC<SectionProps> = ({ category, sortMode, prioritiz
             }`}
           >
             {sortedLinks.map(link => (
-              <li key={link.url}>
+              <li key={link.url + link.name}>
                 <LinkItem
                   name={link.name}
                   url={link.url}

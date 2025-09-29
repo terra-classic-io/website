@@ -98,7 +98,7 @@ async function createServer() {
       if (!isProduction) {
         // In development: Apply Vite HTML transforms and load module
         template = await vite.transformIndexHtml(url, template);
-        ({ render } = await vite.ssrLoadModule('/src/ssr.jsx'));
+        ({ render } = await vite.ssrLoadModule('/src/ssr.tsx'));
       } else {
         // In production: Load the built SSR module
         ({ render } = await import('./dist/server/ssr.js'));

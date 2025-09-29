@@ -84,7 +84,7 @@ function HeroSection({
             <button
               type="button"
               onClick={onOpenMap}
-              className="inline-flex items-center gap-2 rounded-full border border-slate-300/80 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500"
+              className="hidden sm:inline-flex items-center gap-2 rounded-full border border-slate-300/80 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500"
             >
               Ecosystem Map
             </button>
@@ -129,7 +129,7 @@ function HeroSection({
               type="button"
               onClick={onToggleExpand}
               aria-expanded={isExpanded}
-              className="mt-4 inline-flex items-center gap-2 rounded-full border border-slate-300/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.28em] text-slate-600 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500"
+              className="flex items-center gap-2 rounded-full border border-slate-300/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.28em] text-slate-600 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500 mx-auto mt-4 -mb-4"
             >
               {isExpanded ? 'Hide insights' : 'Show insights'}
               <ChevronDown

@@ -1,0 +1,6 @@
+name = "terra-classic-io"
+compatibility_date = "2025-09-29"
+
+# For Cloudflare Pages, _worker.js is emitted to dist/_worker.js by the Pages SSR build.
+# No [build] or main entry is required for Pages. Wrangler will use the ASSETS binding
+# to serve static files from the provided directory when running `wrangler pages dev`.

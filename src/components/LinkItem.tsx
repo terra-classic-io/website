@@ -162,7 +162,7 @@ function LinkItem({ name, url, description, indicator, logo }: LinkItemProps): J
           {indicatorStyle.label}
         </span>
         <span className="inline-flex items-center gap-1 rounded-full bg-white/50 px-2.5 py-0.5 text-[9px] font-semibold tracking-[0.26em] text-sky-600 transition group-hover:translate-x-0.5 group-hover:bg-white/70 dark:bg-white/10 dark:text-sky-400 sm:px-3 sm:text-[10px] sm:tracking-[0.3em]">
-          Launch
+          Visit
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M5 12h14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />

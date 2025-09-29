@@ -3,6 +3,7 @@ import type { AppState } from "./App";
 import App, { DEFAULT_STATE } from "./App";
 import { HelmetProvider } from "react-helmet-async";
 import { StaticRouter } from "react-router-dom/server";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 declare const __SSR_TARGET__: "node" | "webworker";
 
@@ -28,29 +29,7 @@ const createInitialState = (userAgent: string): AppState => ({
 });
 
 const renderToMarkup = async (component: React.ReactElement): Promise<string> => {
-  if (__SSR_TARGET__ === "webworker") {
-    const { renderToReadableStream } = await import("react-dom/server.edge");
-    const stream = await renderToReadableStream(component);
-    const { allReady } = stream as ReadableStream<Uint8Array> & { allReady?: Promise<void> };
-    if (allReady) {
-      await allReady;
-    }
-    const reader = stream.getReader();
-    const decoder = new TextDecoder();
-    let markup = "";
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) {
-        break;
-      }
-      if (value) {
-        markup += decoder.decode(value, { stream: true });
-      }
-    }
-    markup += decoder.decode();
-    return markup;
-  }
-
+  // Use universal renderToString for both Node and Workers for compatibility.
   const { renderToString } = await import("react-dom/server");
   return renderToString(component);
 };
@@ -62,9 +41,11 @@ export const render = async (url: string, { userAgent = "" }: RenderOptions = {}
 
   const element = (
     <HelmetProvider context={helmetContext}>
-      <StaticRouter location={pathname}>
-        <App initialState={initialState} initialHostname={hostname} />
-      </StaticRouter>
+      <ThemeProvider>
+        <StaticRouter location={pathname}>
+          <App initialState={initialState} initialHostname={hostname} />
+        </StaticRouter>
+      </ThemeProvider>
     </HelmetProvider>
   );
 

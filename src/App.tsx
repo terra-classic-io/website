@@ -4,6 +4,7 @@ import React, {
   useMemo,
   useRef,
   useState,
+  Suspense,
 } from "react";
 import { Helmet } from "react-helmet-async";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
@@ -13,8 +14,9 @@ import FAQAccordion from "./components/FAQAccordion";
 import HeroSection from "./components/hero-section";
 import MetricsShowcase, { TokenMetric } from "./components/metrics-showcase";
 import ThemeToggle from "./components/ThemeToggle";
-import ProjectMapPage from "./components/project-map/project-map-page";
-import DocsShell from "./components/docs/docs-shell";
+const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
+const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
+const NotFoundPage = React.lazy(() => import("./components/not-found/not-found-page"));
 import { categories, Category } from "./data/projects";
 import { useTheme } from "./contexts/ThemeContext";
 import SortControls, { SortMode } from "./components/sort-controls";
@@ -222,17 +224,7 @@ const App: React.FC<{
     },
     [isDocsSubdomain, navigate]
   );
-
-  if (isDocsMode) {
-    return (
-      <DocsShell
-        docSegments={docSegments}
-        onNavigate={handleDocsNavigate}
-        isDocsSubdomain={isDocsSubdomain}
-      />
-    );
-  }
-
+  
   const visibleCategories = useMemo<readonly Category[]>(() => {
     if (activeCategory === "All") {
       return categories;
@@ -324,6 +316,18 @@ const App: React.FC<{
   const handleOpenMap = useCallback(() => {
     navigate("/bubbles");
   }, [navigate]);
+
+  if (isDocsMode) {
+    return (
+      <Suspense fallback={<div style={{ minHeight: 200 }} />}> 
+        <DocsShell
+          docSegments={docSegments}
+          onNavigate={handleDocsNavigate}
+          isDocsSubdomain={isDocsSubdomain}
+        />
+      </Suspense>
+    );
+  }
 
   const showExtendedHeroContent: boolean = !appState.isMobile || heroDetailsExpanded;
   const heroStackSpacingClass: string = !appState.isMobile
@@ -421,7 +425,24 @@ const App: React.FC<{
 
       <Routes>
         <Route path="/" element={homeContent} />
-        <Route path="/bubbles" element={<ProjectMapPage />} />
+        <Route
+          path="/bubbles"
+          element={
+            <Suspense fallback={<div style={{ minHeight: 200 }} />}>
+              <ProjectMapPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <Suspense
+              fallback={<div style={{ minHeight: 200 }} />}
+            >
+              <NotFoundPage />
+            </Suspense>
+          }
+        />
       </Routes>
 
       <footer className="relative z-20 border-t border-slate-200/60 bg-white/80 py-10 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">

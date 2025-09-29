@@ -29,7 +29,7 @@ import { renderProjectMap, RenderTransform } from "./renderer";
 import { ProjectMapSimulation } from "./simulator";
 import { clampNodeToCategory, clampNodeToViewport, pointInPolygon } from "./geometry";
 import styles from "./project-map.module.css";
-import { determineProjectIconKey } from "../../utils/project-icons";
+import { RefreshCcw } from "lucide-react";
 
 interface TooltipState {
   readonly nodeId: string;
@@ -799,8 +799,10 @@ const ProjectMap: React.FC = () => {
             placeholder="Search projects"
             value={searchQuery}
             onChange={(event) => handleSearchChange(event.target.value)}
+            className="rounded-full border border-slate-200/70 bg-white/70 p-2 backdrop-blur-md transition-colors duration-300 dark:border-slate-700/60 dark:bg-slate-900/60"
           />
-          <button type="button" onClick={resetView} className={styles.resetButton}>
+          <button type="button" onClick={resetView} className={`${styles.resetButton} bg-slate-200/70 dark:bg-slate-700/70 mt-10 ml-auto flex items-center`}>
+            <RefreshCcw className="mr-2 h-4 w-4" />
             Reset view
           </button>
         </div>
@@ -866,13 +868,13 @@ const ProjectMap: React.FC = () => {
           aria-live="polite"
         />
       </div>
-      <section className={styles.legendSection}>
+      <section className="bg-white/80 p-3 dark:bg-slate-900/70">
         <header>
-          <h3>Indicator legend</h3>
+          <h3 className="text-slate-900 dark:text-white font-semibold uppercase">Indicator legend</h3>
         </header>
-        <div className={styles.legendGrid}>
+        <div className={`${styles.legendGrid}`}>
           {legendEntries.map(([indicator, visual]) => (
-            <div key={indicator} className={styles.legendItem}>
+            <div key={indicator} className={`${styles.legendItem} bg-white/80 dark:bg-slate-900/70 text-slate-900 dark:text-white`}>
               <span
                 className={styles.legendBadge}
                 style={{
@@ -881,12 +883,12 @@ const ProjectMap: React.FC = () => {
                 }}
               />
               <div>
-                <p className={styles.legendTitle}>
+                <p className={`${styles.legendTitle} text-slate-900 dark:text-white`}>
                   {indicator === "onchain" && "On-chain"}
                   {indicator === "hybrid" && "Hybrid"}
                   {indicator === "support" && "Support"}
                 </p>
-                <p className={styles.legendDescription}>
+                <p className={`${styles.legendDescription} text-slate-900 dark:text-white`}>
                   {visual.ringStyle === "solid" && "Thick solid ring with green dot"}
                   {visual.ringStyle === "segmented" && "Segmented amber ring"}
                   {visual.ringStyle === "dashed" && "Thin grey dashed ring"}
@@ -896,11 +898,6 @@ const ProjectMap: React.FC = () => {
           ))}
         </div>
       </section>
-      {!isPanning && searchMatches.size === 0 && (
-        <div className={styles.emptyState}>
-          <p>No matches. Adjust filters.</p>
-        </div>
-      )}
     </div>
   );
 };

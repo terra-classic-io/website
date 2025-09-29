@@ -12,25 +12,31 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>('system');
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
-  const [mounted, setMounted] = useState(false);
 
   // Set the theme in localStorage and update the DOM
-  const setTheme = (newTheme: Theme) => {
+  const setTheme = (newTheme: Theme): void => {
     setThemeState(newTheme);
-    localStorage.setItem('theme', newTheme);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('theme', newTheme);
+    }
   };
 
   // Initialize theme from localStorage or system preferences
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
     const savedTheme = localStorage.getItem('theme') as Theme | null;
     if (savedTheme) {
       setThemeState(savedTheme);
     }
-    setMounted(true);
   }, []);
 
   // Update resolved theme when theme changes or system preference changes
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
     const root = window.document.documentElement;
     root.classList.remove('light', 'dark');
 
@@ -56,11 +62,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, [theme]);
-
-  // Don't render the app until we've determined the theme to avoid flash of unstyled content
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme }}>

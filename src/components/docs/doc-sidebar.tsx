@@ -18,6 +18,8 @@ const PAGE_LINK_ACTIVE_CLASSES =
 
 const PAGE_LINK_ANCESTOR_CLASSES = "text-slate-700 dark:text-slate-200";
 
+type DocSidebarVariant = "default" | "drawer";
+
 type DocSidebarProps = {
   readonly sections: readonly DocSection[];
   readonly activeSection: DocSection;
@@ -25,13 +27,27 @@ type DocSidebarProps = {
   readonly activeTrail: readonly DocPage[];
   readonly activePath: readonly string[];
   readonly onNavigate: (sectionSlug: string, pagePath: readonly string[]) => void;
+  readonly variant?: DocSidebarVariant;
 };
 
 const BASE_INDENT_PX = 16;
 const NESTED_INDENT_STEP_PX = 18;
 
-function DocSidebar({ sections, activeSection, activePage, activeTrail, activePath, onNavigate }: DocSidebarProps): JSX.Element {
+function DocSidebar(props: DocSidebarProps): JSX.Element {
+  const {
+    sections,
+    activeSection,
+    activePage,
+    activeTrail,
+    activePath,
+    onNavigate,
+    variant = "default",
+  } = props;
   const trailSlugSet = useMemo<Set<string>>(() => new Set(activeTrail.map((page) => page.slug)), [activeTrail]);
+  const containerClassName: string =
+    variant === "drawer"
+      ? "flex h-full flex-col gap-10 overflow-y-auto pr-4"
+      : "sticky top-24 flex h-[calc(100vh-6rem)] flex-col gap-10 overflow-y-auto pr-6";
 
   const renderPageTree = (page: DocPage, section: DocSection, depth: number, ancestors: readonly string[]): JSX.Element => {
     const isActiveSectionEntry = section.slug === activeSection.slug;
@@ -87,7 +103,7 @@ function DocSidebar({ sections, activeSection, activePage, activeTrail, activePa
   };
 
   return (
-    <nav className="sticky top-24 flex h-[calc(100vh-6rem)] flex-col gap-10 overflow-y-auto pr-6">
+    <nav className={containerClassName}>
       {sections.map((section) => {
         const isActiveSection = section.slug === activeSection.slug;
         return (

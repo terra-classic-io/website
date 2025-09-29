@@ -1,11 +1,19 @@
-import type { Fetcher, PagesFunction, Response as CfResponse } from "@cloudflare/workers-types";
+import type {
+  ExportedHandler,
+  Fetcher,
+  Request as CfRequest,
+  Response as CfResponse,
+} from "@cloudflare/workers-types";
 import { render } from "./ssr";
 
+// On Pages client build (CF_PAGES_BUILD), we emit to dist/ root.
 const TEMPLATE_PATH = "/index.html";
 
-const readTemplate = async (context: Parameters<PagesFunction>[0]): Promise<string> => {
-  const assetUrl = new URL(TEMPLATE_PATH, context.request.url);
-  const assetsFetcher = (context.env as { ASSETS?: Fetcher }).ASSETS;
+/**
+ * Read the base HTML template from Cloudflare Pages static assets.
+ */
+const readTemplate = async (request: CfRequest, assetsFetcher?: Fetcher): Promise<string> => {
+  const assetUrl = new URL(TEMPLATE_PATH, request.url);
 
   if (assetsFetcher) {
     const response = await assetsFetcher.fetch(assetUrl.toString());
@@ -22,27 +30,65 @@ const readTemplate = async (context: Parameters<PagesFunction>[0]): Promise<stri
   return await fallbackResponse.text();
 };
 
-export const onRequest: PagesFunction = async (context) => {
-  const { request } = context;
+const resolveAssetUrl = (request: CfRequest): string | null => {
+  const assetUrl = new URL(request.url);
+  if (!assetUrl.pathname.startsWith("/public/")) {
+    return null;
+  }
+
+  assetUrl.pathname = assetUrl.pathname.replace("/public/", "/");
+  return assetUrl.toString();
+};
+
+/**
+ * Handle SSR for a request.
+ */
+const handleRequest = async (
+  request: CfRequest,
+  env: { ASSETS?: Fetcher }
+): Promise<CfResponse> => {
   const url = new URL(request.url);
   const userAgent = request.headers.get("user-agent") ?? "";
 
-  try {
-    const baseTemplate = await readTemplate(context);
-    const { html, head, initialState } = await render(url.toString(), { userAgent });
-    const responseHtml = baseTemplate
-      .replace("<!-- SSR_HEAD -->", head ?? "")
-      .replace("<!-- SSR_APP -->", html ?? "")
-      .replace("<!-- SSR_STATE -->", initialState ?? "{}");
-
-    return new Response(responseHtml, {
-      status: 200,
-      headers: {
-        "Content-Type": "text/html; charset=utf-8",
-      },
-    }) as unknown as CfResponse;
-  } catch (error) {
-    console.error("Failed to render", error);
-    return new Response("Internal Server Error", { status: 500 }) as unknown as CfResponse;
+  // Try to serve static assets first
+  if (env.ASSETS) {
+    const rewrittenAssetUrl = resolveAssetUrl(request);
+    const assetResp = rewrittenAssetUrl
+      ? await env.ASSETS.fetch(rewrittenAssetUrl)
+      : await env.ASSETS.fetch(request);
+    const contentType = assetResp.headers.get("content-type") || "";
+    // Return non-HTML assets directly (css, js, images, etc.)
+    if (assetResp.ok && !contentType.includes("text/html")) {
+      return assetResp as unknown as CfResponse;
+    }
   }
+
+  const baseTemplate = await readTemplate(request, env.ASSETS);
+  const { html, head, initialState } = await render(url.toString(), { userAgent });
+
+  const responseHtml = baseTemplate
+    .replace("<!-- SSR_HEAD -->", head ?? "")
+    .replace("<!-- SSR_APP -->", html ?? "")
+    .replace("<!-- SSR_STATE -->", initialState ?? "{}");
+
+  return new Response(responseHtml, {
+    status: 200,
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  }) as unknown as CfResponse;
 };
+
+const worker: ExportedHandler<{ ASSETS: Fetcher }> = {
+  /**
+   * Cloudflare Pages single worker entry.
+   */
+  fetch: async (request, env, ctx) => {
+    try {
+      return await handleRequest(request, env);
+    } catch (error) {
+      console.error("Failed to render", error);
+      return new Response("Internal Server Error", { status: 500 }) as unknown as CfResponse;
+    }
+  },
+};
+
+export default worker;
