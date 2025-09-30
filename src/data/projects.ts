@@ -53,8 +53,8 @@ export const categories: Category[] = [
       { name: 'DAO DAO', url: 'https://daodao.zone', description: 'DAO tooling', indicator: 'onchain', logo: '/public/logos/applications/daodao.svg' },
       { name: 'Galaxy Finder', url: 'https://finder.terraclassic.community', description: 'Finder', indicator: 'support', logo: '/public/logos/wallets/galaxystation.svg' },
       { name: 'LUNC Burner', url: 'https://lunc.tech', description: 'Analytics', indicator: 'support', logo: '/public/logos/tools/lunctech.png' },
-      { name: 'LUNCdash', url: 'https://luncdash.com', description: 'Analytics', indicator: 'support', logo: '/public/logos/wallets/luncdash.png' },
-      { name: 'LUNCdash Finder', url: 'https://finder.luncdash.com', description: 'Finder', indicator: 'support', logo: '/public/logos/wallets/luncdash.png' },
+      { name: 'LUNCdash', url: 'https://luncdash.com', description: 'Analytics', indicator: 'support', logo: '/public/logos/tools/luncdash.png' },
+      { name: 'LUNCdash Finder', url: 'https://finder.luncdash.com', description: 'Finder', indicator: 'support', logo: '/public/logos/tools/luncdash.png' },
       { name: 'LUNC Metrics', url: 'https://luncmetrics.com', description: 'Analytics', indicator: 'support', logo: '/public/logos/tools/luncmetrics.png' },
       { name: 'LuncScan', url: 'https://luncscan.com', description: 'Analytics', indicator: 'support', logo: '/public/logos/tools/luncscan.png' },
       { name: 'Lunc.Tools', url: 'https://lunc.tools', description: 'Analytics', indicator: 'support', logo: '/public/logos/tools/lunctools.png' },
@@ -82,7 +82,7 @@ export const categories: Category[] = [
     title: 'Validators',
     description: 'Validator communities and resources',
     links: [
-      { name: 'Validator.Info', url: 'https://validator.info/terra-classic', description: 'Validator Info', indicator: 'support', logo: '/public/logos/validators/validatorinfo.jpg' },
+      { name: 'Validator.Info', url: 'https://validator.info/terra-classic', description: 'Validator Info', indicator: 'support', logo: '/public/logos/validators/validatorinfo.svg' },
       { name: 'Validators Discord group', url: 'https://discord.com/invite/ARW627EU4P', description: 'Community Chat', indicator: 'support', logo: '/public/logos/validators/discord.svg' },
       { name: 'Validators Telegram group', url: 'https://t.me/transparentvalidatorchat', description: 'Community Chat', indicator: 'support', logo: '/public/logos/validators/telegram.svg' }
     ]
@@ -107,8 +107,8 @@ export const categories: Category[] = [
     title: 'Blockchain information',
     description: 'News and information sources about Terra Classic',
     links: [
-      { name: 'Discourse', url: 'https://discourse.luncgoblins.com', description: 'Community forum', indicator: 'support', logo: '/public/logos/validator/discourse.svg' },
-      { name: 'Common.xyz', url: 'https://common.xyz/terra-luna-classic-lunc/discussions', description: 'Official forum', indicator: 'support', logo: '/public/logos/validator/common.svg' },
+      { name: 'Discourse', url: 'https://discourse.luncgoblins.com', description: 'Community forum', indicator: 'support', logo: '/public/logos/validators/discourse.svg' },
+      { name: 'Common.xyz', url: 'https://common.xyz/terra-luna-classic-lunc/discussions', description: 'Official forum', indicator: 'support', logo: '/public/logos/validators/common.svg' },
       { name: 'CertiK Audit', url: 'https://skynet.certik.com/projects/terra', description: 'Security Audits', indicator: 'support', logo: '/public/logos/media/certik.svg' },
       { name: 'LuncDaily', url: 'https://luncdaily.com', description: 'News website', indicator: 'support', logo: '/public/logos/media/luncdaily.png' },
       { name: 'LUNC Burner', url: 'https://lunc.tech', description: 'News website', indicator: 'support', logo: '/public/logos/tools/lunctech.png' },
