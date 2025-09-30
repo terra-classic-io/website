@@ -29,7 +29,7 @@ Validators run full nodes, propose blocks, and vote during Tendermint consensus.
 2. Validators vote in two rounds. If ≥2/3 of voting power signs both rounds, the block is committed.
 3. Fees from the block enter the distribution module and are later shared with delegators.
 
-Learn more in the validator guides under `Run a full node` and the [staking doc](./staking-and-governance.md).
+Learn more in the validator guides under `Run a full node` and the [staking doc](./staking-and-governance).
 
 ## Staking lifecycle
 
@@ -45,7 +45,7 @@ Misbehaving validators are penalised by the slashing module:
 - **Downtime**: Failing to participate in consensus.
 - **Oracle faults**: Missing required oracle votes (`x/oracle`).
 
-Every slash reduces both validator self-bond and delegator stake, and the validator is jailed until conditions are resolved. Review the [slashing spec](../develop/module-specifications/spec-slashing.md) for parameters.
+Every slash reduces both validator self-bond and delegator stake, and the validator is jailed until conditions are resolved. Review the [slashing spec](/docs/develop/module-specifications/slashing) for parameters.
 
 ## Governance
 
@@ -55,7 +55,7 @@ Terra Classic governance lets stakers steer protocol policy.
 2. **Voting period** (1 week): Validators vote `Yes`, `No`, `NoWithVeto`, or `Abstain`. Delegators can override their validator’s vote.
 3. **Execution**: Passed proposals trigger automatic handlers or human follow-up (for text proposals). Deposits are refunded if quorum (40% participation) and veto thresholds are satisfied.
 
-Common proposal types include parameter changes, community pool spends, and text proposals. See the [governance module spec](../develop/module-specifications/spec-governance) for details.
+Common proposal types include parameter changes, community pool spends, and text proposals. See the [governance module spec](/docs/develop/module-specifications/governance) for details.
 
 ## Fees and rewards
 

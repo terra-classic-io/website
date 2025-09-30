@@ -46,10 +46,10 @@ The Tobin tax historically applied to swaps between Terra stablecoins. Governanc
 
 Discussed rationale: [“On swap fees: the greedy and the wise”](https://medium.com/terra-money/on-swap-fees-the-greedy-and-the-wise-b967f0c8914e).
 
-When active, Tobin tax revenue flowed into the oracle reward pool and was redistributed to validators who reported accurate exchange rates. See the [oracle module spec](../develop/module-specifications/spec-oracle.md) for reward mechanics.
+When active, Tobin tax revenue flowed into the oracle reward pool and was redistributed to validators who reported accurate exchange rates. See the [oracle module spec](/docs/develop/module-specifications/oracle) for reward mechanics.
 
 ## Spread fee
 
-Spread fees applied to swaps between Terra stablecoins and LUNC. While disabled on Classic, the [market module](../develop/module-specifications/spec-market.md) retains the logic to adjust spread based on pool balances. Historically the minimum spread was 0.5%, increasing during volatility to maintain the [`x*y=k`](../develop/module-specifications/spec-market.md#market-making-algorithm) invariant.
+Spread fees applied to swaps between Terra stablecoins and LUNC. While disabled on Classic, the [market module](/docs/develop/module-specifications/market) retains the logic to adjust spread based on pool balances. Historically the minimum spread was 0.5%, increasing during volatility to maintain the [`x*y=k`](/docs/develop/module-specifications/market#market-making-algorithm) invariant.
 
 Like Tobin tax, spread revenue previously funded the oracle reward pool.
