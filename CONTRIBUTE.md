@@ -85,6 +85,21 @@
         galaxy-station.webp   # 180x180 optimized WebP (22 KB)
   ```
 
+## Projects
+
+Projects are managed in /src/data/projects.ts.
+
+Each project has the following properties:
+
+- `name`: The name of the project.
+- `url`: The URL of the project.
+- `description`: A short description of the project (only 1-3 words).
+- `indicator`: The indicator of the project. Can be `onchain`, `hybrid`, or `support`.
+- `logo`: The logo of the project. Optional.
+- `categories`: The categories of the project. At least one (valid categories are listed below).
+
+Projects have to be added in alphabetical order.
+
 ## Project Categories
 
 The following categories are used to group projects:
