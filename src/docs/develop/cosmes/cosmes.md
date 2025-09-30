@@ -15,7 +15,7 @@ CosmES is a modern, tree-shakeable, pure-ESM SDK for Cosmos SDK chains. Use the 
 > **Tip**
 > PublicNode endpoints are suitable for development. For production workloads, operate your own infrastructure or purchase private access. Binodes provides backup endpoints at `https://api-lunc-rpc.binodes.com` (RPC).
 
-## Recommended wallets
+## Wallets
 
 - Galaxy Station (Hexxagon)
 - Keplr
