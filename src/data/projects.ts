@@ -115,7 +115,7 @@ export const projects: ProjectLink[] = [
     name: 'Coinhall',
     url: 'https://coinhall.org/terraclassic',
     description: 'Aggregator',
-    indicator: 'onchain',
+    indicator: 'support',
     logo: '/public/logos/applications/coinhall.svg',
     categories: ['applications']
   },
@@ -164,7 +164,7 @@ export const projects: ProjectLink[] = [
     name: 'DAO DAO',
     url: 'https://daodao.zone',
     description: 'DAO tooling',
-    indicator: 'onchain',
+    indicator: 'hybrid',
     logo: '/public/logos/applications/daodao.svg',
     darkLogo: '/public/logos/applications/daodao-dark.svg',
     categories: ['applications', 'tools']
@@ -181,7 +181,7 @@ export const projects: ProjectLink[] = [
     name: 'Documentation',
     url: '/docs',
     description: 'Documentation for end-users and developers',
-    indicator: 'support',
+    indicator: 'onchain',
     categories: ['for-developers', 'validators', 'information']
   },
   { 
@@ -286,7 +286,7 @@ export const projects: ProjectLink[] = [
     name: 'Galaxy Finder',
     url: 'https://finder.terraclassic.community',
     description: 'Finder',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/wallets/galaxystation.svg',
     categories: ['tools']
   },
@@ -294,7 +294,7 @@ export const projects: ProjectLink[] = [
     name: 'Galaxy Station',
     url: 'https://station.hexxagon.io',
     description: 'Web Wallet',
-    indicator: 'onchain',
+    indicator: 'support',
     logo: '/public/logos/wallets/galaxystation.svg',
     categories: ['wallets', 'validator', 'tools']
   },
@@ -351,7 +351,7 @@ export const projects: ProjectLink[] = [
     name: 'Juris Bridge',
     url: 'https://dashboard.jurisprotocol.com/bridge',
     description: 'Cross-chain Bridge',
-    indicator: 'support',
+    indicator: 'hybrid',
     logo: '/public/logos/applications/jurisprotocol.svg',
     categories: ['bridges']
   },
@@ -368,7 +368,7 @@ export const projects: ProjectLink[] = [
     name: 'Keplr',
     url: 'https://www.keplr.app',
     description: 'Extension Wallet',
-    indicator: 'hybrid',
+    indicator: 'support',
     logo: '/public/logos/wallets/keplr.svg',
     categories: ['wallets']
   },
@@ -419,7 +419,7 @@ export const projects: ProjectLink[] = [
     name: 'LUNC Burner',
     url: 'https://lunc.tech',
     description: 'Analytics',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/tools/lunctech.png',
     categories: ['tools', 'information']
   },
@@ -427,7 +427,7 @@ export const projects: ProjectLink[] = [
     name: 'LuncDaily',
     url: 'https://luncdaily.com',
     description: 'News website',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/media/luncdaily.png',
     categories: ['information']
   },
@@ -443,7 +443,7 @@ export const projects: ProjectLink[] = [
     name: 'LUNCdash Finder',
     url: 'https://finder.luncdash.com',
     description: 'Finder',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/tools/luncdash.png',
     categories: ['tools']
   },
@@ -451,7 +451,7 @@ export const projects: ProjectLink[] = [
     name: 'LUNC Metrics',
     url: 'https://luncmetrics.com',
     description: 'Analytics',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/tools/luncmetrics.png',
     categories: ['tools']
   },
@@ -459,7 +459,7 @@ export const projects: ProjectLink[] = [
     name: 'LuncScan',
     url: 'https://luncscan.com',
     description: 'Analytics',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/tools/luncscan.png',
     categories: ['tools']
   },
@@ -467,7 +467,7 @@ export const projects: ProjectLink[] = [
     name: 'LuncToken.org',
     url: 'https://lunctoken.org',
     description: 'News website',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/media/lunctoken.webp',
     categories: ['information']
   },
@@ -475,7 +475,7 @@ export const projects: ProjectLink[] = [
     name: 'Lunc.Tools',
     url: 'https://lunc.tools',
     description: 'Analytics',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/tools/lunctools.png',
     categories: ['tools']
   },
@@ -522,7 +522,7 @@ export const projects: ProjectLink[] = [
     name: 'MIOFF',
     url: 'https://mioff-token.com',
     description: 'Festival',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/entertainment/mioff.png',
     categories: ['entertainment']
   },
@@ -530,7 +530,7 @@ export const projects: ProjectLink[] = [
     name: 'MoonRunners',
     url: 'https://moon-runners.net',
     description: 'Analytics',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/tools/moon-runners.svg',
     categories: ['tools']
   },
@@ -554,7 +554,7 @@ export const projects: ProjectLink[] = [
     name: 'Orbitar',
     url: 'https://orbitar.app',
     description: 'Mobile wallet',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/wallets/orbitar.png',
     categories: ['wallets']
   },
@@ -644,7 +644,7 @@ export const projects: ProjectLink[] = [
     name: 'Sonic',
     url: 'https://sonikchain.com',
     description: 'Social / Messenger',
-    indicator: 'onchain',
+    indicator: 'hybrid',
     logo: '/public/logos/applications/son.png',
     categories: ['applications']
   },
@@ -668,7 +668,7 @@ export const projects: ProjectLink[] = [
     name: 'Terra Casino',
     url: 'https://terracasino.io',
     description: 'Casino',
-    indicator: 'support',
+    indicator: 'hybrid',
     logo: '/public/logos/entertainment/terracasino.png',
     categories: ['entertainment']
   },
@@ -676,7 +676,7 @@ export const projects: ProjectLink[] = [
     name: 'Terraclassic.network',
     url: 'https://terraclassic.network',
     description: 'News website',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/media/classicnetwork.png',
     categories: ['information']
   },
@@ -692,7 +692,7 @@ export const projects: ProjectLink[] = [
     name: 'Terraport Bridge',
     url: 'https://terraport.finance/bridge',
     description: 'Cross-chain Bridge',
-    indicator: 'onchain',
+    indicator: 'hybrid',
     logo: '/public/logos/dex/terraport.svg',
     categories: ['bridges']
   },
@@ -739,7 +739,7 @@ export const projects: ProjectLink[] = [
     name: 'TrackTerra',
     url: 'https://trackterra.org',
     description: 'Explorer',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/tools/trackterra.png',
     categories: ['tools']
   },
@@ -756,7 +756,7 @@ export const projects: ProjectLink[] = [
     name: 'Tritium Bridge',
     url: 'https://bridge.terratritium.com',
     description: 'Cross-chain Bridge',
-    indicator: 'support',
+    indicator: 'hybrid',
     logo: '/public/logos/entertainment/terratritium.svg',
     categories: ['bridges']
   },
@@ -805,7 +805,7 @@ export const projects: ProjectLink[] = [
     name: 'Vultisig',
     url: 'https://vultisig.com',
     description: 'Multisig Wallet',
-    indicator: 'hybrid',
+    indicator: 'support',
     logo: '/public/logos/wallets/vultisig.svg',
     categories: ['wallets']
   },
@@ -813,7 +813,7 @@ export const projects: ProjectLink[] = [
     name: 'Vyntrex',
     url: 'https://vyntrex.io',
     description: 'Aggregator',
-    indicator: 'support',
+    indicator: 'onchain',
     logo: '/public/logos/applications/vyntrex.svg',
     categories: ['applications']
   },

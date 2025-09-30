@@ -100,6 +100,10 @@ Each project has the following properties:
 
 Projects have to be added in alphabetical order. The page will display projects in random order.
 
+## Project Indicators
+
+The indicator specifies the focus of the project. Please set `onchain` for projects that focus solely or mainly on Terra Classic, use `hybrid` when there is still a strong focus on Terra Classic (like custom contracts deployed, IBC routes etc.) and `support` if Terra Classic is supported, but does not play an elevated role.
+
 ## Project Categories
 
 The following categories are used to group projects:
