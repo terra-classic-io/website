@@ -36,4 +36,4 @@ Many Terra Classic modules are inherited from the Cosmos SDK with Classic-specif
 - LUNC is Terra Classic’s staking and governance asset (`uluna` microunit).
 - All denominations use microunits (`10^-6`) on-chain.
 
-Price discovery relies on the [oracle module](./oracle), while the [market module](./market) historically mediated swaps using those oracle rates.
+Price discovery relies on the [oracle module](./spec-oracle), while the [market module](./spec-market) historically mediated swaps using those oracle rates.
