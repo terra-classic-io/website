@@ -263,7 +263,7 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
             </div>
             <div className="flex flex-col items-end gap-3">
               <Link
-                to="/"
+                to={window.location.hostname === "docs.terra-classic.io" ? "https://terra-classic.io" : "/"}
                 className="inline-flex items-center gap-2 rounded-full border border-slate-300/80 px-5 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-slate-600 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500"
               >
                 <ArrowLeft size={16} />
