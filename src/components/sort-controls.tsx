@@ -15,7 +15,7 @@ type SortControlsProps = {
 };
 
 const baseButtonClassname: string = 'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500';
-const activeButtonClassname: string = 'border-sky-300 bg-sky-200 text-slate-600 shadow-lg shadow-sky-500/30 dark:border-sky-500 dark:bg-sky-500/80';
+const activeButtonClassname: string = 'border-sky-300 bg-sky-200 text-slate-600 shadow-lg shadow-sky-500/30 dark:border-sky-500 dark:bg-sky-500/80 dark:text-slate-200';
 const inactiveButtonClassname: string = 'border-slate-200/70 bg-white/60 text-slate-600 hover:border-slate-300 hover:bg-white/90 dark:border-slate-800/70 dark:bg-slate-900/60 dark:text-slate-200 dark:hover:bg-slate-900';
 
 const SortControls: React.FC<SortControlsProps> = ({ sortMode, onChangeSortMode, prioritizeOnchain, onTogglePrioritizeOnchain }) => {
