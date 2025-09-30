@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="27.756399"
+   height="24"
+   viewBox="0 0 27.756399 24"
+   fill="none"
+   version="1.1"
+   id="svg142"
+   sodipodi:docname="jurisprotocol.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs146" />
+  <sodipodi:namedview
+     id="namedview144"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="6.9346734"
+     inkscape:cx="119.68841"
+     inkscape:cy="16.006522"
+     inkscape:window-width="2560"
+     inkscape:window-height="1371"
+     inkscape:window-x="0"
+     inkscape:window-y="1112"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg142" />
+  <path
+     fill-rule="evenodd"
+     clip-rule="evenodd"
+     d="M 25.7716,8.56925 C 24.0006,11.6493 20.6417,17.4435 18.8249,20.5693 H 8.91624 L 3.96956,12 8.93151,3.43075 c 0,0 7.22149,0 7.92389,0 L 18.8401,0 C 16.2905,0 9.57274,0 6.94673,0 L 0,12 c 1.67943,2.9123 5.23676,9.0572 6.93146,12 3.35884,0 10.47354,0 13.87814,0 l 6.9468,-12 z"
+     fill="#ffffff"
+     id="path138" />
+  <path
+     fill-rule="evenodd"
+     clip-rule="evenodd"
+     d="M 12.8858,13.7078 C 12.6415,13.2808 12.1377,12.4269 11.8934,12 12.6262,10.7192 14.1225,8.14231 14.8706,6.8615 H 10.901 L 7.92385,12 10.901,17.1385 h 5.9391 c 2.1527,-3.7357 4.7787,-8.26429 6.9467,-12 L 21.802,1.70775 c -2.1832,3.78145 -4.7634,8.2338 -6.9467,12.00005 -0.4886,0 -1.4809,0 -1.9848,0 z"
+     fill="#cc051c"
+     id="path140" />
+</svg>
