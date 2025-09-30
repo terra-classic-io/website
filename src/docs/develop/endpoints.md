@@ -40,7 +40,7 @@ https://terra-classic-fcd.publicnode.com/v1/txs/gas_prices
 
 | Endpoint | Network |
 | --- | --- |
-| `grpc+https://public-node-api.terra-classic.io` | columbus-5 |
+| `grpc+https://terra-classic-grpc.publicnode.com` | columbus-5 |
 | `grpc+https://grpc.terra-classic.hexxagon.io` | columbus-5 |
 
 Use the rebel-2 testnet for pre-production validation alongside local instances.
