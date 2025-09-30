@@ -44,20 +44,20 @@
 
   Example:
 
-  ```markdown
+  ````markdown
   Connect to the rebased PublicNode RPC before running local scripts:
 
   1. Install `@goblinhunt/cosmes` with `yarn add @goblinhunt/cosmes`.
   2. Configure the client:
 
-     \`\`\`ts
+     ```ts
      const client = await createCosmesClient({
        rpcUrl: "https://terra-classic-rpc.publicnode.com",
      });
-     \`\`\`
+     ```
 
   3. Broadcast against `columbus-5`.
-  ```
+  ````
 
 - **Ecosystem listings (`src/data/projects.ts`)**: Update links, names, descriptions, indicators, and logos here. Each entry in the category `links` array should provide `name`, `url`, `description`, an `indicator` (`onchain`, `hybrid`, `support`), and optionally a `logo` path. Keep indicators accurate and reuse existing logos when possible.
 
