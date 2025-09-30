@@ -1,6 +1,6 @@
 > **Under development**
 >
-> This section of the documentation is still under development. If you experience issues with the mentioned steps, please open an issue on the [GitHub repository](https://github.com/StrathCole/terra-classic.io/issues) or submit a Pull Request with a fix.
+> This section of the documentation is still under development. If you experience issues with the mentioned steps, please open an issue on the [GitHub repository](https://github.com/terra-classic-io/website/issues) or submit a Pull Request with a fix.
 
 CosmES is a modern, tree-shakeable, pure-ESM SDK for Cosmos SDK chains. Use the `@goblinhunt/cosmes` fork for Terra Classic projects.
 
