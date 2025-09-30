@@ -2,14 +2,13 @@
  * @fileoverview CategoryNavigation surfaces ecosystem categories as interactive filters.
  */
 
-import React from 'react';
-import { Category } from '../data/projects';
+import { Category, projects } from '../data/projects';
 
 type CategoryNavigationProps = {
-  readonly categories: readonly Category[];
+  readonly categories: Record<string, Category>;
   readonly activeCategory: string;
   readonly summaryCount: number;
-  readonly onSelect: (categoryTitle: string) => void;
+  readonly onSelect: (category: string) => void;
 };
 
 const buttonBaseClassname: string = 'whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 sm:px-4 sm:py-2 sm:text-sm';
@@ -23,10 +22,10 @@ function CategoryNavigation({ categories, activeCategory, summaryCount, onSelect
   const totalResourcesLabel: string = `${summaryCount}+`;
   const filters: { readonly label: string; readonly key: string; readonly countLabel?: string }[] = [
     { label: 'All resources', key: 'All', countLabel: totalResourcesLabel },
-    ...categories.map((category) => ({
-      label: category.title,
-      key: category.title,
-      countLabel: `${category.links.length}`,
+    ...Object.keys(categories).map((category) => ({
+      label: categories[category].title,
+      key: category,
+      countLabel: `${projects.filter((project) => project.categories?.includes(category)).length}`,
     })),
   ];
 

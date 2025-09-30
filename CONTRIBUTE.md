@@ -85,6 +85,36 @@
         galaxy-station.webp   # 180x180 optimized WebP (22 KB)
   ```
 
+## Project Categories
+
+The following categories are used to group projects:
+
+- `for-developers`
+  This category is for projects that are related to Terra Classic development. Example: documentation, tooling, etc.
+- `infrastructure`
+  This category is for projects that are related to Terra Classic infrastructure. Example: nodes, etc.
+- `tools`
+  This category is for projects that are related to Terra Classic tools. Example: launchpads, analytics, etc.
+- `bridges`
+  This category is for projects that are related to Terra Classic bridges. Example: IBC bridges, etc.
+- `validators`
+  This category is for projects that are related to Terra Classic validators. Example: discussion groups, monitoring, node hosting, etc.
+- `entertainment`
+  This category is for projects that are related to Terra Classic entertainment. Example: games, etc.
+- `information`
+  This category is for projects that are related to Terra Classic information. Example: news, media, etc.
+- `wallets`
+  This category is for projects that are related to wallets supporting Terra Classic.
+- `cex`
+  This category is for projects that are related to centralized exchanges supporting Terra Classic.
+- `dex`
+  This category is for projects that are related to decentralized exchanges supporting Terra Classic.
+- `applications`
+  This category is for projects that are related to applications built on or for Terra Classic.
+
+**Important**: The first listed category for a project is considered the main category.  
+One project can be listed in multiple categories. Projects with unrelated categories added, won't be approved by the reviewers.
+
 ## Deployment
 
 - **Create a pull request**: Open a pull request against the `main` branch.

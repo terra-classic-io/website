@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Category } from '../data/projects';
+import { categories, Category, ProjectLink, projects } from '../data/projects';
 import LinkItem from './LinkItem';
 import { ChevronDown } from 'lucide-react';
 import { getOrCreateDailySeed, shuffleWithSeed } from '../utils/random';
 
 interface SectionProps {
-  readonly category: Category;
+  readonly category: keyof typeof categories;
   readonly sortMode: 'alpha' | 'random';
   readonly prioritizeOnchain: boolean;
 }
@@ -18,13 +18,17 @@ const MAX_VISIBLE_LINKS = 1;
 const SERVER_SEED: string = 'server-seed';
 
 const CategorySection: React.FC<SectionProps> = ({ category, sortMode, prioritizeOnchain }) => {
-  const sectionId: string = category.title.toLowerCase().replace(/\s+/g, '-');
-  const resourceCountLabel: string = `${category.links.length} resources`;
-  const hasOverflow: boolean = useMemo(
-    () => category.links.length > MAX_VISIBLE_LINKS,
-    [category.links.length]
+  const sectionId: string = categories[category].title.toLowerCase().replace(/\s+/g, '-');
+  const links: ProjectLink[] = useMemo(
+    () => projects.filter((project) => project.categories?.includes(category)),
+    [category]
   );
-  const [hiddenCount, setHiddenCount] = useState<number>(Math.max(category.links.length - MAX_VISIBLE_LINKS, 0));
+  const resourceCountLabel: string = `${links.length} resources`;
+  const hasOverflow: boolean = useMemo(
+    () => links.length > MAX_VISIBLE_LINKS,
+    [links.length]
+  );
+  const [hiddenCount, setHiddenCount] = useState<number>(Math.max(links.length - MAX_VISIBLE_LINKS, 0));
   const listRef = useRef<HTMLUListElement | null>(null);
   const [isAtBottom, setIsAtBottom] = useState<boolean>(!hasOverflow);
   const [isAtTop, setIsAtTop] = useState<boolean>(true);
@@ -40,8 +44,8 @@ const CategorySection: React.FC<SectionProps> = ({ category, sortMode, prioritiz
   useEffect(() => {
     setIsAtBottom(!hasOverflow);
     setIsAtTop(true);
-    setHiddenCount(Math.max(category.links.length - MAX_VISIBLE_LINKS, 0));
-  }, [category.links.length, hasOverflow]);
+    setHiddenCount(Math.max(links.length - MAX_VISIBLE_LINKS, 0));
+  }, [links.length, hasOverflow]);
 
   const handleScroll = useCallback(() => {
     if (!listRef.current) {
@@ -52,14 +56,14 @@ const CategorySection: React.FC<SectionProps> = ({ category, sortMode, prioritiz
     setIsAtBottom(atBottom);
     setIsAtTop(scrollTop <= 6);
     if (hasOverflow) {
-      const approxPerCard = scrollHeight / category.links.length;
+      const approxPerCard = scrollHeight / links.length;
       const visibleGuess = Math.min(
         Math.round((scrollTop + clientHeight) / approxPerCard),
-        category.links.length
+        links.length
       );
-      setHiddenCount(Math.max(category.links.length - visibleGuess, 0));
+      setHiddenCount(Math.max(links.length - visibleGuess, 0));
     }
-  }, [category.links.length, hasOverflow]);
+  }, [links.length, hasOverflow]);
 
   const handleNudge = useCallback(() => {
     if (!listRef.current) {
@@ -76,15 +80,15 @@ const CategorySection: React.FC<SectionProps> = ({ category, sortMode, prioritiz
   }, []);
 
   const sortedLinks = useMemo(() => {
-    const baseList = category.links;
-    const randomized = dailySeed && sortMode === 'random' ? shuffleWithSeed(baseList, `${dailySeed}-${category.title}`) : baseList.slice().sort((a, b) => a.name.localeCompare(b.name));
+    const baseList = links;
+    const randomized = dailySeed && sortMode === 'random' ? shuffleWithSeed(baseList, `${dailySeed}-${category}`) : baseList.slice().sort((a, b) => a.name.localeCompare(b.name));
     if (!prioritizeOnchain) {
       return randomized;
     }
     const onchain = randomized.filter(link => link.indicator === 'onchain');
     const others = randomized.filter(link => link.indicator !== 'onchain');
     return [...onchain, ...others];
-  }, [category.links, category.title, dailySeed, prioritizeOnchain, sortMode]);
+  }, [links, category, dailySeed, prioritizeOnchain, sortMode]);
 
   return (
     <section id={sectionId} className="scroll-mt-40 h-full">
@@ -94,11 +98,11 @@ const CategorySection: React.FC<SectionProps> = ({ category, sortMode, prioritiz
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="pl-0 md:pl-10">
             <h2 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
-              {category.title}
+              {categories[category].title}
             </h2>
-            {category.description && (
+            {categories[category].description && (
               <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-                {category.description}
+                {categories[category].description}
               </p>
             )}
           </div>

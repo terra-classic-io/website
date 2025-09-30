@@ -17,7 +17,7 @@ import ThemeToggle from "./components/ThemeToggle";
 const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
 const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
 const NotFoundPage = React.lazy(() => import("./components/not-found/not-found-page"));
-import { categories, Category } from "./data/projects";
+import { categories, Category, projects } from "./data/projects";
 import { useTheme } from "./contexts/ThemeContext";
 import SortControls, { SortMode } from "./components/sort-controls";
 import type { DocNavigationOptions } from "./types/doc-navigation";
@@ -309,13 +309,8 @@ const App: React.FC<{
   }, []);
 
   const totalResourceCount = useMemo<number>(
-    () =>
-      categories.reduce(
-        (accumulator: number, category: Category) =>
-          accumulator + category.links.length,
-        0
-      ),
-    []
+    () => projects.length,
+    [projects]
   );
 
   const pathSegments = useMemo<readonly string[]>(
@@ -373,11 +368,11 @@ const App: React.FC<{
     [isDocsSubdomain, navigate]
   );
   
-  const visibleCategories = useMemo<readonly Category[]>(() => {
+  const visibleCategories = useMemo<(keyof typeof categories)[]>(() => {
     if (activeCategory === "All") {
-      return categories;
+      return Object.keys(categories);
     }
-    return categories.filter((category) => category.title === activeCategory);
+    return Object.keys(categories).filter((category) => category === activeCategory);
   }, [activeCategory]);
 
   const tokenMetrics = useMemo<TokenMetric[]>(() => {
@@ -416,11 +411,11 @@ const App: React.FC<{
   );
 
   const assignCategoryRef = useCallback(
-    (title: string, element: HTMLElement | null) => {
+    (category: string, element: HTMLElement | null) => {
       if (element) {
-        categoryRefs.current[title] = element;
+        categoryRefs.current[category] = element;
       } else {
-        delete categoryRefs.current[title];
+        delete categoryRefs.current[category];
       }
     },
     []
@@ -446,13 +441,13 @@ const App: React.FC<{
   }, [scrollToElement]);
 
   const handleCategorySelect = useCallback(
-    (categoryTitle: string) => {
-      setActiveCategory(categoryTitle);
-      if (categoryTitle === "All") {
+    (category: string) => {
+      setActiveCategory(category);
+      if (category === "All") {
         scrollToElement(categoriesContainerRef.current);
         return;
       }
-      scrollToElement(categoryRefs.current[categoryTitle] ?? null);
+      scrollToElement(categoryRefs.current[category] ?? null);
     },
     [scrollToElement]
   );
@@ -535,10 +530,10 @@ const App: React.FC<{
         >
           {visibleCategories.map((category) => (
             <div
-              key={category.title}
-              id={`category-${slugify(category.title)}`}
-              data-title={category.title}
-              ref={(element) => assignCategoryRef(category.title, element)}
+              key={category}
+              id={`category-${category}`}
+              data-title={categories[category].title}
+              ref={(element) => assignCategoryRef(category, element)}
               className="w-full md:flex-1"
             >
               <CategorySection

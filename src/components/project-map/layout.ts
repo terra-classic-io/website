@@ -1,5 +1,5 @@
 import { Delaunay } from "d3-delaunay";
-import { categories as sourceCategories, Category, ProjectLink } from "../../data/projects";
+import { categories as sourceCategories, Category, ProjectLink, categories, projects } from "../../data/projects";
 import { clampNodeToViewport } from "./geometry";
 import { createMulberry32, stringToSeed } from "../../utils/random";
 import terraClassicLogoUrl from "../../assets/terra-classic.svg";
@@ -24,7 +24,7 @@ import { determineProjectIconKey } from "../../utils/project-icons";
 interface LayoutOptions {
   readonly viewportWidth: number;
   readonly viewportHeight: number;
-  readonly categories?: readonly Category[];
+  readonly categories?: (keyof typeof categories)[];
 }
 
 interface HubNodeConfig {
@@ -176,7 +176,7 @@ const normalizeLink = (
 };
 
 const computeCategoryCentroids = (
-  categoryList: readonly Category[],
+  categoryList: (keyof typeof categories)[],
   viewportWidth: number,
   viewportHeight: number,
 ): PointTuple[] => {
@@ -343,19 +343,19 @@ export const createProjectMapLayout = (
   options: LayoutOptions,
 ): ProjectMapLayout => {
   const { viewportWidth, viewportHeight } = options;
-  const categorySource: readonly Category[] = options.categories ?? sourceCategories;
+  const categorySource: (keyof typeof categories)[] = options.categories ?? Object.keys(sourceCategories);
 
   const centroids: PointTuple[] = computeCategoryCentroids(categorySource, viewportWidth, viewportHeight);
   const polygons: Polygon[] = computeCategoryPolygons(centroids, viewportWidth, viewportHeight);
 
-  const categories: ProjectMapCategory[] = categorySource.map((category, index) => {
-    const palette = buildCategoryPalette(category.title);
+  const categoryList: ProjectMapCategory[] = categorySource.map((category, index) => {
+    const palette = buildCategoryPalette(categories[category].title);
     const polygon: Polygon = polygons[index] ?? ([] as Polygon);
     const centroid: PointTuple = centroids[index] ?? ([viewportWidth / 2, viewportHeight / 2] as PointTuple);
     return {
       id: palette.id,
-      title: category.title,
-      description: category.description,
+      title: categories[category].title,
+      description: categories[category].description,
       color: palette.color,
       hoverColor: palette.hoverColor,
       voronoiFillLight: palette.voronoiFillLight,
@@ -363,30 +363,35 @@ export const createProjectMapLayout = (
       textColor: palette.textColor,
       centroid,
       polygon,
-      projectCount: category.links.length,
-      isEmpty: category.links.length === 0,
+      projectCount: projects.filter((project) => project.categories?.includes(category)).length,
+      isEmpty: projects.filter((project) => project.categories?.includes(category)).length === 0,
     };
   });
 
+  const seenProjects: Set<string> = new Set();
   const baseNodes: ProjectMapNode[] = categorySource.flatMap((category, index) => {
-    const centroid: PointTuple = categories[index]?.centroid ?? ([viewportWidth / 2, viewportHeight / 2] as PointTuple);
-    const polygon: Polygon = categories[index]?.polygon ?? [[centroid[0] - 40, centroid[1] - 40], [centroid[0] + 40, centroid[1] + 40]] as Polygon;
-    const categorySeed: number = stringToSeed(`${category.title}-${category.links.length}`);
+    const centroid: PointTuple = categoryList[index]?.centroid ?? ([viewportWidth / 2, viewportHeight / 2] as PointTuple);
+    const polygon: Polygon = categoryList[index]?.polygon ?? [[centroid[0] - 40, centroid[1] - 40], [centroid[0] + 40, centroid[1] + 40]] as Polygon;
+    const categorySeed: number = stringToSeed(`${category}-${projects.filter((project) => project.categories?.includes(category)).length}`);
     const categoryRng = createMulberry32(categorySeed);
-    return category.links.map((link) => {
-      const seed = stringToSeed(`${category.title}-${link.name}`) ^ Math.floor(categoryRng() * 1_000_000);
-      const node = normalizeLink(link, category.title, centroid, polygon, seed);
+    return projects.filter((project) => project.categories?.includes(category)).map((project) => {
+      if (seenProjects.has(project.name)) {
+        return null;
+      }
+      seenProjects.add(project.name);
+      const seed = stringToSeed(`${category}-${project.name}`) ^ Math.floor(categoryRng() * 1_000_000);
+      const node = normalizeLink(project, categories[category].title, centroid, polygon, seed);
       node.fx = undefined;
       node.fy = undefined;
       clampNodeToViewport(node, viewportWidth, viewportHeight);
       return node;
-    });
+    }).filter((node) => node !== null) as ProjectMapNode[];
   });
 
   const layoutCenter: PointTuple = [viewportWidth / 2, viewportHeight / 2];
   const hubNode: ProjectMapNode = createHubNode(layoutCenter, [[layoutCenter[0] - 20, layoutCenter[1] - 20], [layoutCenter[0] + 20, layoutCenter[1] + 20]] as Polygon);
 
-  const bridgesCategory = categories.find((category) => category.title === EXTERNAL_NODE.categoryTitle);
+  const bridgesCategory = categoryList.find((category) => category.title === EXTERNAL_NODE.categoryTitle);
   const bridgeCentroid: PointTuple = bridgesCategory?.centroid ?? ([layoutCenter[0] + 260, layoutCenter[1]] as PointTuple);
   const directionX: number = bridgeCentroid[0] - layoutCenter[0];
   const directionY: number = bridgeCentroid[1] - layoutCenter[1];
@@ -405,13 +410,13 @@ export const createProjectMapLayout = (
   const nodes: ProjectMapNode[] = [...baseNodes, hubNode, externalNode];
 
   const edges: ProjectMapEdge[] = [
-    ...buildHubCategoryEdges(categories),
+    ...buildHubCategoryEdges(categoryList),
     ...buildHubNodeEdges(nodes),
     ...buildBridgeEdges(baseNodes),
   ];
 
   return {
-    categories,
+    categories: categoryList,
     nodes,
     edges,
     width: viewportWidth,

@@ -2,12 +2,11 @@ import React, { useMemo } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import ProjectMap from "./project-map";
-import { categories } from "../../data/projects";
-import { INDICATOR_VISUALS } from "./constants";
+import { projects } from "../../data/projects";
 
 const ProjectMapPage: React.FC = () => {
   const totalProjects: number = useMemo(() => {
-    return categories.reduce((accumulator, category) => accumulator + category.links.length, 0);
+    return projects.length;
   }, []);
 
   return (
@@ -43,28 +42,12 @@ const ProjectMapPage: React.FC = () => {
             </div>
           </div>
           <div className="grid gap-3 rounded-3xl border border-slate-200/60 bg-white/80 p-6 text-sm shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
-            <div className="flex items-baseline gap-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">
-              {totalProjects}
+            <div className="flex items-center gap-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">
+              {totalProjects}+
               <span className="text-xs uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
                 Projects
               </span>
             </div>
-            <ul className="flex flex-wrap gap-3 text-xs font-medium text-slate-500 dark:text-slate-400">
-              {Object.entries(INDICATOR_VISUALS).map(([indicator, visual]) => (
-                <li
-                  key={indicator}
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/70 px-3 py-1 dark:border-slate-800/70 dark:bg-slate-900/60"
-                >
-                  <span
-                    className="inline-flex h-2.5 w-2.5 shrink-0 rounded-full"
-                    style={{ backgroundColor: visual.ringColor }}
-                  />
-                  {indicator === "onchain" && "On-chain"}
-                  {indicator === "hybrid" && "Hybrid"}
-                  {indicator === "support" && "Support"}
-                </li>
-              ))}
-            </ul>
           </div>
         </header>
 

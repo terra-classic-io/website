@@ -263,7 +263,7 @@ const ProjectMap: React.FC = () => {
     const layoutResult: ProjectMapLayout = createProjectMapLayout({
       viewportWidth: viewport.width,
       viewportHeight: viewport.height,
-      categories: sourceCategories,
+      categories: Object.keys(sourceCategories),
     });
     setLayout(layoutResult);
     categoriesRef.current = layoutResult.categories.map((category) => ({ ...category }));
