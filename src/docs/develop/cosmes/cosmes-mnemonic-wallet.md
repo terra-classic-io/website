@@ -1,5 +1,3 @@
-# Programmatic wallet with CosmES
-
 Use `MnemonicWallet` when you need to sign and broadcast transactions from scripts, backends, or test suites without a browser wallet.
 
 ## Create the wallet

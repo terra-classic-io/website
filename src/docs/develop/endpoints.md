@@ -12,7 +12,6 @@
 | [https://lcd.luncblaze.com](https://lcd.luncblaze.com) | rebel-2 |
 
 - Terra Classic chain ID: `columbus-5`.
-- PublicNode and Binodes mirror the official `terra-money/assets` registry.
 
 ### FCD
 

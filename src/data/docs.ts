@@ -35,6 +35,7 @@ import cosmesGettingStartedGuide from "../docs/develop/cosmes/cosmes-getting-sta
 import cosmesQueryDataGuide from "../docs/develop/cosmes/cosmes-query-data.md?raw";
 import cosmesMnemonicWalletGuide from "../docs/develop/cosmes/cosmes-mnemonic-wallet.md?raw";
 import cosmesTransactionsGuide from "../docs/develop/cosmes/cosmes-transactions.md?raw";
+import terraPyGuide from "../docs/develop/terra-py/terra-py.md?raw";
 import learnOverviewGuide from "../docs/learn/overview.md?raw";
 import learnWalletsGuide from "../docs/learn/wallets.md?raw";
 import learnStakingGuide from "../docs/learn/staking-and-governance.md?raw";
@@ -307,7 +308,7 @@ const learnStaking: DocPage = {
   markdown: learnStakingGuide,
 };
 
-const learnBuilderTooling: DocPage = {
+const developBuilderTooling: DocPage = {
   slug: "builder-tooling",
   title: "Builder tooling",
   summary: "Essential SDKs and references for building Terra Classic dApps with modern tooling.",
@@ -344,6 +345,12 @@ const learnBuilderTooling: DocPage = {
           markdown: cosmesTransactionsGuide,
         },
       ],
+    },
+    {
+      slug: "terra-py",
+      title: "Terra.py on Terra Classic",
+      summary: "Install terra_sdk, connect to trusted endpoints, and broadcast Python transactions.",
+      markdown: terraPyGuide,
     },
   ],
 };
@@ -589,7 +596,7 @@ export const docSections: readonly DocSection[] = [
     slug: "develop",
     title: "Develop",
     description: "Build Terra Classic dApps, run localnets, and reference Terra Core modules.",
-    pages: [developLocalnet, developSmartContracts, developModuleSpecifications],
+    pages: [developLocalnet, developBuilderTooling, developSmartContracts, developModuleSpecifications],
   },
   {
     slug: "learn",
@@ -601,7 +608,6 @@ export const docSections: readonly DocSection[] = [
       learnWallets,
       learnStaking,
       learnFees,
-      learnBuilderTooling,
       learnGlossary,
       learnAssets,
     ],

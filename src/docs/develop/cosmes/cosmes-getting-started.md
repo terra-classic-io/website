@@ -1,7 +1,3 @@
-# Get started with CosmES
-
-Install the `@goblinhunt/cosmes` SDK and connect Terra Classic wallets to build TypeScript dApps.
-
 ## Prerequisites
 
 - Node.js 18+

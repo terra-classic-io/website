@@ -1,7 +1,3 @@
-# Transactions with CosmES
-
-Compose, simulate, sign, and broadcast transactions on Terra Classic using `@goblinhunt/cosmes`.
-
 ## Bank send (`MsgSend`)
 
 ```ts

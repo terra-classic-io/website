@@ -9,6 +9,7 @@ import DocSidebar from "./doc-sidebar";
 import { docSections } from "../../data/docs";
 import ThemeToggle from "../ThemeToggle";
 import type { DocNavigationOptions } from "../../types/doc-navigation";
+import type { DocPageWithPath } from "../../types/doc-page-with-path";
 
 type DocsShellProps = {
   readonly docSegments: readonly string[];
@@ -23,9 +24,29 @@ type ActiveDocTarget = {
   readonly path: readonly string[];
 };
 
+const DRAWER_TITLE_ID: string = "docs-navigation-drawer-title";
+
+const buildDocPageKey = (sectionSlug: string, path: readonly string[]): string => `${sectionSlug}/${path.join("/")}`;
+
+const collectSectionPages = (section: DocSection, pages: readonly DocPage[], parentPath: readonly string[] = []): DocPageWithPath[] => {
+  const collected: DocPageWithPath[] = [];
+
+  pages.forEach((page) => {
+    const path: readonly string[] = [...parentPath, page.slug] as readonly string[];
+    collected.push({ sectionSlug: section.slug, path, title: page.title });
+    if (page.children && page.children.length > 0) {
+      const childPages: DocPageWithPath[] = collectSectionPages(section, page.children, path);
+      collected.push(...childPages);
+    }
+  });
+
+  return collected;
+};
+
+const orderedDocPages: readonly DocPageWithPath[] = docSections.flatMap((section) => collectSectionPages(section, section.pages));
+
 const FALLBACK_SECTION = docSections[0];
 const FALLBACK_PAGE = FALLBACK_SECTION.pages[0];
-const DRAWER_TITLE_ID: string = "docs-navigation-drawer-title";
 
 function resolvePageByPath(pages: readonly DocPage[], pathSegments: readonly string[]): { page: DocPage; trail: readonly DocPage[] } {
   if (pathSegments.length === 0) {
@@ -58,6 +79,30 @@ function resolveActiveTarget(segments: readonly string[]): ActiveDocTarget {
 function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps): JSX.Element {
   const { section, page, trail, path } = useMemo(() => resolveActiveTarget(docSegments), [docSegments]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+
+  const { previousPage, nextPage } = useMemo<{ previousPage?: DocPageWithPath; nextPage?: DocPageWithPath }>(() => {
+    if (orderedDocPages.length === 0) {
+      return { previousPage: undefined, nextPage: undefined };
+    }
+
+    const currentKey: string = buildDocPageKey(section.slug, path);
+    const currentIndex: number = orderedDocPages.findIndex(
+      (entry) => buildDocPageKey(entry.sectionSlug, entry.path) === currentKey,
+    );
+
+    if (currentIndex === -1) {
+      const firstPage: DocPageWithPath | undefined = orderedDocPages[0];
+      return {
+        previousPage: undefined,
+        nextPage: firstPage,
+      };
+    }
+
+    const previous: DocPageWithPath | undefined = currentIndex > 0 ? orderedDocPages[currentIndex - 1] : undefined;
+    const next: DocPageWithPath | undefined = currentIndex < orderedDocPages.length - 1 ? orderedDocPages[currentIndex + 1] : undefined;
+
+    return { previousPage: previous, nextPage: next };
+  }, [section.slug, path]);
 
   const closeSidebar = useCallback(() => {
     setIsSidebarOpen(false);
@@ -228,13 +273,15 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
           </header>
           <div className="lg:hidden">
             <p className="mt-4 text-base text-slate-600 dark:text-slate-300">{page.summary}</p>
-            {!isDocsSubdomain ? (
-              <p className="mt-3 text-xs uppercase tracking-[0.32em] text-slate-400 dark:text-slate-500">
-                Viewing docs on main domain · switch to `docs.terra-classic.io` for dedicated experience
-              </p>
-            ) : null}
           </div>
-          <DocContent page={page} section={section} currentPath={path} onNavigate={handleNavigate} />
+          <DocContent
+            page={page}
+            section={section}
+            currentPath={path}
+            onNavigate={handleNavigate}
+            previousPage={previousPage}
+            nextPage={nextPage}
+          />
         </main>
       </div>
     </div>

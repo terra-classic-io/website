@@ -1,7 +1,3 @@
-# Smart contracts with CosmES
-
-Upload code, instantiate contracts, execute messages, and query state on Terra Classic using `@goblinhunt/cosmes`.
-
 ## Prerequisites
 
 - Wallet connection (Keplr, Galaxy Station, or `MnemonicWallet`)

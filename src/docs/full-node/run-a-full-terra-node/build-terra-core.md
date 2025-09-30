@@ -37,11 +37,10 @@ Terra Classic core is the official implementation of the Terra Classic node soft
    # ...And a list of dependencies
    ```
 
-::: {tip}
-If the `terrad: command not found` error message is returned, confirm that the Go binary path is correctly configured by running the following command:
+> **Tip**
+>
+> If the `terrad: command not found` error message returns, confirm that the Go binary path is correctly configured by running the following command:
 
 ```bash
 export PATH=$PATH:$(go env GOPATH)/bin
 ```
-
-:::

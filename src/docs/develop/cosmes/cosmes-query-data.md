@@ -1,6 +1,6 @@
-# Query data with CosmES
-
-CosmES client helpers take the RPC endpoint string directly—no manual `RpcClient` is required.
+> **Tip**
+>
+> CosmES client helpers take the RPC endpoint string directly—no manual `RpcClient` instance is required.
 
 ## Native balances
 

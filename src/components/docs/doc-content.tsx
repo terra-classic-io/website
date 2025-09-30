@@ -18,6 +18,8 @@ import type {
 import type { DocPage } from "../../types/doc-page";
 import type { DocSection } from "../../types/doc-section";
 import type { DocNavigationHandler } from "../../types/doc-navigation";
+import type { DocPageWithPath } from "../../types/doc-page-with-path";
+import DocNavigationFooter from "./doc-navigation-footer";
 
 const CALLOUT_STYLE: Record<DocCalloutBlock["variant"], string> = {
   info: "border-sky-200/60 bg-sky-50/60 text-slate-700 dark:border-sky-900/60 dark:bg-sky-900/30 dark:text-slate-200",
@@ -39,6 +41,8 @@ type DocContentProps = {
   readonly section: DocSection;
   readonly currentPath: readonly string[];
   readonly onNavigate: DocNavigationHandler;
+  readonly previousPage?: DocPageWithPath;
+  readonly nextPage?: DocPageWithPath;
 };
 
 const CODE_COPY_FEEDBACK_DURATION_MS = 1600 as const;
@@ -703,7 +707,7 @@ function renderMarkdown(content: string, components: Components): JSX.Element {
   );
 }
 
-function DocContent({ page, section, currentPath, onNavigate }: DocContentProps): JSX.Element {
+function DocContent({ page, section, currentPath, onNavigate, previousPage, nextPage }: DocContentProps): JSX.Element {
   const childPages = useMemo<readonly DocPage[]>(() => page.children ?? [], [page.children]);
   const hasStructuredSections = Boolean(page.sections && page.sections.length > 0);
   const markdownContent = useMemo<string>(() => (page.markdown ?? "").trim(), [page.markdown]);
@@ -744,6 +748,7 @@ function DocContent({ page, section, currentPath, onNavigate }: DocContentProps)
           </ul>
         </div>
       ) : null}
+      <DocNavigationFooter previous={previousPage} next={nextPage} onNavigate={onNavigate} />
     </div>
   );
 }
