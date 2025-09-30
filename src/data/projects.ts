@@ -9,6 +9,10 @@ export interface ProjectLink {
   indicator: ProjectIndicator;
   logo?: string;
   /**
+   * The logo to be used when the website is visited in dark mode. If not specified, the light logo will be used.
+   */
+  darkLogo?: string;
+  /**
    * Marks the project as Work-In-Progress. When true, a small "WIP" pill will be shown next to the description.
    */
   wip?: boolean;
@@ -45,6 +49,7 @@ export const projects: ProjectLink[] = [
     description: 'NFT marketplace',
     indicator: 'onchain',
     logo: '/public/logos/applications/bigbangx.png',
+    darkLogo: '/public/logos/applications/bigbangx-dark.png',
     categories: ['applications']
   },
   { 
@@ -85,6 +90,7 @@ export const projects: ProjectLink[] = [
     description: 'Exchange',
     indicator: 'support',
     logo: '/public/logos/cex/bybit.svg',
+    darkLogo: '/public/logos/cex/bybit-dark.svg',
     categories: ['cex']
   },
   { 
@@ -93,6 +99,7 @@ export const projects: ProjectLink[] = [
     description: 'Security Audits',
     indicator: 'support',
     logo: '/public/logos/media/certik.svg',
+    darkLogo: '/public/logos/media/certik-dark.svg',
     categories: ['information']
   },
   { 
@@ -101,6 +108,7 @@ export const projects: ProjectLink[] = [
     description: 'Instant swap exchange',
     indicator: 'support',
     logo: '/public/logos/cex/changenow.svg',
+    darkLogo: '/public/logos/cex/changenow-dark.svg',
     categories: ['cex']
   },
   { 
@@ -149,6 +157,7 @@ export const projects: ProjectLink[] = [
     description: 'Exchange',
     indicator: 'support',
     logo: '/public/logos/cex/cryptocom.svg',
+    darkLogo: '/public/logos/cex/cryptocom-dark.svg',
     categories: ['cex']
   },
   { 
@@ -157,6 +166,7 @@ export const projects: ProjectLink[] = [
     description: 'DAO tooling',
     indicator: 'onchain',
     logo: '/public/logos/applications/daodao.svg',
+    darkLogo: '/public/logos/applications/daodao-dark.svg',
     categories: ['applications', 'tools']
   },
   { 
@@ -268,6 +278,7 @@ export const projects: ProjectLink[] = [
     description: 'Game',
     indicator: 'onchain',
     logo: '/public/logos/entertainment/galacticshift.png',
+    darkLogo: '/public/logos/entertainment/galacticshift-dark.png',
     wip: true,
     categories: ['entertainment']
   },
@@ -316,6 +327,7 @@ export const projects: ProjectLink[] = [
     description: 'Code Repository',
     indicator: 'support',
     logo: '/public/logos/for-developers/github.svg',
+    darkLogo: '/public/logos/for-developers/github-dark.svg',
     categories: ['for-developers']
   },
   { 
@@ -332,6 +344,7 @@ export const projects: ProjectLink[] = [
     description: 'Exchange',
     indicator: 'support',
     logo: '/public/logos/cex/htx.svg',
+    darkLogo: '/public/logos/cex/htx-dark.svg',
     categories: ['cex']
   },
   { 
@@ -348,6 +361,7 @@ export const projects: ProjectLink[] = [
     description: 'Lending & borrowing',
     indicator: 'onchain',
     logo: '/public/logos/applications/jurisprotocol.svg',
+    darkLogo: '/public/logos/applications/jurisprotocol-dark.svg',
     categories: ['applications']
   },
   { 
@@ -364,6 +378,7 @@ export const projects: ProjectLink[] = [
     description: 'Exchange',
     indicator: 'support',
     logo: '/public/logos/cex/kraken.svg',
+    darkLogo: '/public/logos/cex/kraken-dark.svg',
     categories: ['cex']
   },
   { 
@@ -380,6 +395,7 @@ export const projects: ProjectLink[] = [
     description: 'Exchange',
     indicator: 'support',
     logo: '/public/logos/cex/lbank.svg',
+    darkLogo: '/public/logos/cex/lbank-dark.svg',
     categories: ['cex']
   },
   { 
@@ -573,6 +589,7 @@ export const projects: ProjectLink[] = [
     description: 'Exchange',
     indicator: 'support',
     logo: '/public/logos/cex/phemex.svg',
+    darkLogo: '/public/logos/cex/phemex-dark.svg',
     categories: ['cex']
   },
   { 
@@ -732,6 +749,7 @@ export const projects: ProjectLink[] = [
     description: 'Game',
     indicator: 'onchain',
     logo: '/public/logos/entertainment/terratritium.svg',
+    darkLogo: '/public/logos/entertainment/terratritium-dark.svg',
     categories: ['entertainment']
   },
   { 
@@ -772,6 +790,7 @@ export const projects: ProjectLink[] = [
     description: 'Community Chat',
     indicator: 'support',
     logo: '/public/logos/validators/discord.svg',
+    darkLogo: '/public/logos/validators/discord-dark.svg',
     categories: ['validators', 'information']
   },
   { 

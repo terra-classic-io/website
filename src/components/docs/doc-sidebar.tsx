@@ -47,7 +47,7 @@ function DocSidebar(props: DocSidebarProps): JSX.Element {
   const containerClassName: string =
     variant === "drawer"
       ? "flex h-full flex-col gap-10 overflow-y-auto pr-4"
-      : "fixed top-24 -mt-3 flex h-[calc(100vh-6rem)] flex-col gap-10 overflow-y-auto pr-6";
+      : "fixed top-24 w-72 -mt-3 flex h-[calc(100vh-6rem)] flex-col gap-10 overflow-y-auto pr-6";
 
   const renderPageTree = (page: DocPage, section: DocSection, depth: number, ancestors: readonly string[]): JSX.Element => {
     const isActiveSectionEntry = section.slug === activeSection.slug;
