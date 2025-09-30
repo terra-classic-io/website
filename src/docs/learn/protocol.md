@@ -2,14 +2,14 @@ Terra Classic combines proof-of-stake security and on-chain governance. This ove
 
 > **Important**
 >
-> Since May 2022, Terra Classic has no pegged stablecoins. TerraUSD (UST) have depegged and are currently considered a speculative asset.
+> Since May 2022, Terra Classic has no pegged stablecoins. TerraUSD (UST) has depegged and is currently considered a speculative asset.
 >
 > References to **stablecoins** in this document refer to the historical algorithmic operation of Terra.
 
 ## Terra and LUNC
 
 - **LUNC** is the staking and governance asset. Validators and delegators stake LUNC to secure the chain, earn rewards, and participate in governance.
-- **TerraUSD et al** historically tracked fiat currencies (for example TerraUSD `uusd`, TerraKRW `ukrw`, TerraSDR `usdr`). Users historically minted Terra by burning LUNC; on Classic, the mint/burn swap paths are disabled, but legacy supply mechanics still inform the protocol design.
+- **TerraUSD et al.** historically tracked fiat currencies (for example, TerraUSD `uusd`, TerraKRW `ukrw`, TerraSDR `usdr`). Users historically minted Terra by burning LUNC; on Classic, the mint/burn swap paths are disabled, but legacy supply mechanics still inform the protocol design.
 
 ## Stablecoin mechanics (historical)
 
