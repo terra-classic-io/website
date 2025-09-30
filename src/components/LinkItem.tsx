@@ -13,6 +13,7 @@ type LinkItemProps = {
   readonly description?: string;
   readonly indicator: ProjectIndicator;
   readonly logo?: string;
+  readonly wip?: boolean;
 };
 
 const iconSize: number = 18;
@@ -124,7 +125,7 @@ function normalizeLogoPath(rawLogo?: string): string | undefined {
   return rawLogo.startsWith('/') ? rawLogo : `/${rawLogo}`;
 }
 
-function LinkItem({ name, url, description, indicator, logo }: LinkItemProps): JSX.Element {
+function LinkItem({ name, url, description, indicator, logo, wip }: LinkItemProps): JSX.Element {
   const iconKey: string = determineIconKey(description, name);
   const iconBackgroundClassname: string = iconBackgroundClassnameMap[iconKey] ?? iconBackgroundClassnameMap.default;
   const indicatorStyle = indicatorMeta[indicator];
@@ -149,9 +150,14 @@ function LinkItem({ name, url, description, indicator, logo }: LinkItemProps): J
           <span className="text-sm font-semibold tracking-tight text-slate-900 transition group-hover:text-slate-700 dark:text-white dark:group-hover:text-slate-100 sm:text-base">
             {name}
           </span>
-          {description && (
-            <span className="text-[9px] uppercase tracking-[0.32em] text-slate-400 dark:text-slate-500 sm:text-[10px] sm:tracking-[0.38em]">
+          {(description || wip) && (
+            <span className="flex items-center gap-2 text-[9px] uppercase tracking-[0.32em] text-slate-400 dark:text-slate-500 sm:text-[10px] sm:tracking-[0.38em]">
               {description}
+              {wip && (
+                <span className="inline-flex items-center rounded-full bg-amber-500/10 px-1 py-0.25 text-[9px] font-semibold tracking-[0.2em] text-amber-600 ring-1 ring-sky-400/30 dark:bg-sky-500/20 dark:text-sky-300" title="Work In Progress">
+                  WIP
+                </span>
+              )}
             </span>
           )}
         </div>

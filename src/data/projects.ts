@@ -8,6 +8,10 @@ export interface ProjectLink {
   description?: string;
   indicator: ProjectIndicator;
   logo?: string;
+  /**
+   * Marks the project as Work-In-Progress. When true, a small "WIP" pill will be shown next to the description.
+   */
+  wip?: boolean;
   categories?: (keyof typeof categories)[];
 }
 
@@ -261,9 +265,10 @@ export const projects: ProjectLink[] = [
   { 
     name: 'Galactic Shift',
     url: 'https://galacticshift.io',
-    description: 'Game WIP',
+    description: 'Game',
     indicator: 'onchain',
     logo: '/public/logos/entertainment/galacticshift.png',
+    wip: true,
     categories: ['entertainment']
   },
   { 
@@ -388,9 +393,10 @@ export const projects: ProjectLink[] = [
   { 
     name: 'Legends of Terratria',
     url: 'https://aetherverge.io/games/lot',
-    description: 'Game WIP',
+    description: 'Game',
     indicator: 'onchain',
     logo: '/public/logos/entertainment/aetherverge.svg',
+    wip: true,
     categories: ['entertainment']
   },
   { 
@@ -555,9 +561,10 @@ export const projects: ProjectLink[] = [
   { 
     name: 'PENGS',
     url: 'https://x.com/pixel_pengs',
-    description: 'Game WIP',
+    description: 'Game',
     indicator: 'onchain',
     logo: '/public/logos/entertainment/pengs.jpg',
+    wip: true,
     categories: ['entertainment']
   },
   { 

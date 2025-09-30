@@ -98,7 +98,7 @@ Each project has the following properties:
 - `logo`: The logo of the project. Optional.
 - `categories`: The categories of the project. At least one (valid categories are listed below).
 
-Projects have to be added in alphabetical order.
+Projects have to be added in alphabetical order. The page will display projects in random order.
 
 ## Project Categories
 

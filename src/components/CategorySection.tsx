@@ -130,6 +130,7 @@ const CategorySection: React.FC<SectionProps> = ({ category, sortMode, prioritiz
                   description={link.description}
                   indicator={link.indicator}
                   logo={link.logo}
+                  wip={link.wip}
                 />
               </li>
             ))}
