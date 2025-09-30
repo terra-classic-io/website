@@ -548,6 +548,7 @@ export const projects: ProjectLink[] = [
     description: 'Blockchain RPC API',
     indicator: 'support',
     logo: '/public/logos/infrastructure/nownodes.svg',
+    darkLogo: '/public/logos/infrastructure/nownodes-dark.svg',
     categories: ['infrastructure', 'validators']
   },
   { 
