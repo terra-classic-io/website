@@ -9,7 +9,8 @@ import React, {
 import { select } from "d3-selection";
 import { zoom as d3Zoom, ZoomBehavior, ZoomTransform, zoomIdentity } from "d3-zoom";
 import { useSearchParams } from "react-router-dom";
-import { categories as sourceCategories, ProjectIndicator } from "../../data/projects";
+import { ProjectIndicator } from "../../data/projects";
+import { categories as sourceCategories } from "../../data/categories";
 import { useTheme } from "../../contexts/ThemeContext";
 import {
   INDICATOR_VISUALS,

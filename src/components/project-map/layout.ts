@@ -1,5 +1,6 @@
 import { Delaunay } from "d3-delaunay";
-import { categories as sourceCategories, Category, ProjectLink, categories, projects } from "../../data/projects";
+import { ProjectLink, projects } from "../../data/projects";
+import { categories as sourceCategories } from "../../data/categories";
 import { clampNodeToViewport } from "./geometry";
 import { createMulberry32, stringToSeed } from "../../utils/random";
 import terraClassicLogoUrl from "../../assets/terra-classic.svg";
@@ -24,7 +25,7 @@ import { determineProjectIconKey } from "../../utils/project-icons";
 interface LayoutOptions {
   readonly viewportWidth: number;
   readonly viewportHeight: number;
-  readonly categories?: (keyof typeof categories)[];
+  readonly categories?: (keyof typeof sourceCategories)[];
 }
 
 interface HubNodeConfig {
@@ -176,7 +177,7 @@ const normalizeLink = (
 };
 
 const computeCategoryCentroids = (
-  categoryList: (keyof typeof categories)[],
+  categories: (keyof typeof sourceCategories)[],
   viewportWidth: number,
   viewportHeight: number,
 ): PointTuple[] => {
@@ -185,13 +186,13 @@ const computeCategoryCentroids = (
   const verticalMargin: number = Math.max(cellSize * 0.35, 64);
   const usableWidth: number = Math.max(viewportWidth - horizontalMargin * 2, cellSize * 2);
   const columns: number = Math.min(GRID_COLUMNS, Math.max(2, Math.floor(usableWidth / cellSize)));
-  const rows: number = Math.ceil(categoryList.length / columns);
+  const rows: number = Math.ceil(categories.length / columns);
   const gridWidth: number = columns * cellSize;
   const gridHeight: number = rows * cellSize;
   const horizontalOffset: number = Math.max((viewportWidth - gridWidth) / 2, horizontalMargin);
   const verticalOffset: number = Math.max((viewportHeight - gridHeight) / 2, verticalMargin);
 
-  return categoryList.map((_, index) => {
+  return categories.map((_, index) => {
     const columnIndex: number = index % columns;
     const rowIndex: number = Math.floor(index / columns);
     const x: number = horizontalOffset + columnIndex * cellSize + cellSize / 2;
@@ -343,19 +344,19 @@ export const createProjectMapLayout = (
   options: LayoutOptions,
 ): ProjectMapLayout => {
   const { viewportWidth, viewportHeight } = options;
-  const categorySource: (keyof typeof categories)[] = options.categories ?? Object.keys(sourceCategories);
+  const categorySource: (keyof typeof sourceCategories)[] = options.categories ?? Object.keys(sourceCategories);
 
   const centroids: PointTuple[] = computeCategoryCentroids(categorySource, viewportWidth, viewportHeight);
   const polygons: Polygon[] = computeCategoryPolygons(centroids, viewportWidth, viewportHeight);
 
-  const categoryList: ProjectMapCategory[] = categorySource.map((category, index) => {
-    const palette = buildCategoryPalette(categories[category].title);
+  const categories: ProjectMapCategory[] = categorySource.map((category, index) => {
+    const palette = buildCategoryPalette(sourceCategories[category].title);
     const polygon: Polygon = polygons[index] ?? ([] as Polygon);
     const centroid: PointTuple = centroids[index] ?? ([viewportWidth / 2, viewportHeight / 2] as PointTuple);
     return {
       id: palette.id,
-      title: categories[category].title,
-      description: categories[category].description,
+      title: sourceCategories[category].title,
+      description: sourceCategories[category].description,
       color: palette.color,
       hoverColor: palette.hoverColor,
       voronoiFillLight: palette.voronoiFillLight,
@@ -370,8 +371,8 @@ export const createProjectMapLayout = (
 
   const seenProjects: Set<string> = new Set();
   const baseNodes: ProjectMapNode[] = categorySource.flatMap((category, index) => {
-    const centroid: PointTuple = categoryList[index]?.centroid ?? ([viewportWidth / 2, viewportHeight / 2] as PointTuple);
-    const polygon: Polygon = categoryList[index]?.polygon ?? [[centroid[0] - 40, centroid[1] - 40], [centroid[0] + 40, centroid[1] + 40]] as Polygon;
+    const centroid: PointTuple = categories[index]?.centroid ?? ([viewportWidth / 2, viewportHeight / 2] as PointTuple);
+    const polygon: Polygon = categories[index]?.polygon ?? [[centroid[0] - 40, centroid[1] - 40], [centroid[0] + 40, centroid[1] + 40]] as Polygon;
     const categorySeed: number = stringToSeed(`${category}-${projects.filter((project) => project.categories?.includes(category)).length}`);
     const categoryRng = createMulberry32(categorySeed);
     return projects.filter((project) => project.categories?.includes(category)).map((project) => {
@@ -380,7 +381,7 @@ export const createProjectMapLayout = (
       }
       seenProjects.add(project.name);
       const seed = stringToSeed(`${category}-${project.name}`) ^ Math.floor(categoryRng() * 1_000_000);
-      const node = normalizeLink(project, categories[category].title, centroid, polygon, seed);
+      const node = normalizeLink(project, sourceCategories[category].title, centroid, polygon, seed);
       node.fx = undefined;
       node.fy = undefined;
       clampNodeToViewport(node, viewportWidth, viewportHeight);
@@ -391,7 +392,7 @@ export const createProjectMapLayout = (
   const layoutCenter: PointTuple = [viewportWidth / 2, viewportHeight / 2];
   const hubNode: ProjectMapNode = createHubNode(layoutCenter, [[layoutCenter[0] - 20, layoutCenter[1] - 20], [layoutCenter[0] + 20, layoutCenter[1] + 20]] as Polygon);
 
-  const bridgesCategory = categoryList.find((category) => category.title === EXTERNAL_NODE.categoryTitle);
+  const bridgesCategory = categories.find((category) => category.title === EXTERNAL_NODE.categoryTitle);
   const bridgeCentroid: PointTuple = bridgesCategory?.centroid ?? ([layoutCenter[0] + 260, layoutCenter[1]] as PointTuple);
   const directionX: number = bridgeCentroid[0] - layoutCenter[0];
   const directionY: number = bridgeCentroid[1] - layoutCenter[1];
@@ -410,13 +411,13 @@ export const createProjectMapLayout = (
   const nodes: ProjectMapNode[] = [...baseNodes, hubNode, externalNode];
 
   const edges: ProjectMapEdge[] = [
-    ...buildHubCategoryEdges(categoryList),
+    ...buildHubCategoryEdges(categories),
     ...buildHubNodeEdges(nodes),
     ...buildBridgeEdges(baseNodes),
   ];
 
   return {
-    categories: categoryList,
+    categories: categories,
     nodes,
     edges,
     width: viewportWidth,

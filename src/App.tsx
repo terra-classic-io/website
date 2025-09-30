@@ -14,13 +14,14 @@ import FAQAccordion from "./components/FAQAccordion";
 import HeroSection from "./components/hero-section";
 import MetricsShowcase, { TokenMetric } from "./components/metrics-showcase";
 import ThemeToggle from "./components/ThemeToggle";
-const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
-const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
-const NotFoundPage = React.lazy(() => import("./components/not-found/not-found-page"));
-import { categories, Category, projects } from "./data/projects";
+import { projects } from "./data/projects";
+import { categories } from "./data/categories";
 import { useTheme } from "./contexts/ThemeContext";
 import SortControls, { SortMode } from "./components/sort-controls";
 import type { DocNavigationOptions } from "./types/doc-navigation";
+const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
+const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
+const NotFoundPage = React.lazy(() => import("./components/not-found/not-found-page"));
 
 export type TokenInfo = {
   readonly price: string;

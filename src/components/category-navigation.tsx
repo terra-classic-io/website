@@ -2,7 +2,8 @@
  * @fileoverview CategoryNavigation surfaces ecosystem categories as interactive filters.
  */
 
-import { Category, projects } from '../data/projects';
+import { Category } from '../data/categories';
+import { projects } from '../data/projects';
 
 type CategoryNavigationProps = {
   readonly categories: Record<string, Category>;

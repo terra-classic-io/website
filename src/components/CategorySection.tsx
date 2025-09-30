@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { categories, Category, ProjectLink, projects } from '../data/projects';
+import { ProjectLink, projects } from '../data/projects';
+import { categories } from '../data/categories';
 import LinkItem from './LinkItem';
 import { ChevronDown } from 'lucide-react';
 import { getOrCreateDailySeed, shuffleWithSeed } from '../utils/random';
