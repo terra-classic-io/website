@@ -120,7 +120,7 @@ function HeroSection({
                 <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-slate-500 dark:text-slate-400">
                   Wallet ready
                 </p>
-                <p className="font-medium text-slate-900 dark:text-slate-100">Keplr, Galaxy Station, mobile, and scripts</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">Supported by major wallets and scripts</p>
               </div>
             </div>
           </div>
