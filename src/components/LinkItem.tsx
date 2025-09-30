@@ -154,7 +154,7 @@ function LinkItem({ name, url, description, indicator, logo, wip }: LinkItemProp
             <span className="flex items-center gap-2 text-[9px] uppercase tracking-[0.32em] text-slate-400 dark:text-slate-500 sm:text-[10px] sm:tracking-[0.38em]">
               {description}
               {wip && (
-                <span className="inline-flex items-center rounded-full bg-amber-500/10 px-1 py-0.25 text-[9px] font-semibold tracking-[0.2em] text-amber-600 ring-1 ring-sky-400/30 dark:bg-sky-500/20 dark:text-sky-300" title="Work In Progress">
+                <span className="inline-flex items-center rounded-full bg-amber-500/10 px-1 py-0.25 text-[9px] font-semibold tracking-[0.2em] text-sky-600 ring-1 ring-sky-400/30 dark:bg-sky-500/20 dark:text-sky-300" title="Work In Progress">
                   WIP
                 </span>
               )}

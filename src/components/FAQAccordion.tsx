@@ -13,7 +13,7 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer, isOpen, onClick }) 
     <div className="border-b border-gray-200 dark:border-gray-700 last:border-0">
       <button
         onClick={onClick}
-        className="flex justify-between items-center w-full py-4 text-left font-medium text-gray-900 dark:text-white hover:text-terra-blue dark:hover:text-terra-green focus:outline-none transition-colors duration-200"
+        className="flex justify-between items-center w-full py-4 text-left font-medium text-gray-900 dark:text-white hover:text-sky-600 dark:hover:text-terra-green focus:outline-none transition-colors duration-200"
       >
         <span className="text-lg">{question}</span>
         {isOpen ? 

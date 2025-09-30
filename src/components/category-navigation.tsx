@@ -13,7 +13,7 @@ type CategoryNavigationProps = {
 };
 
 const buttonBaseClassname: string = 'whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 sm:px-4 sm:py-2 sm:text-sm';
-const activeClassname: string = 'border-sky-400 bg-sky-500 text-white shadow-lg shadow-sky-500/30 dark:border-sky-500 dark:bg-sky-500/80';
+const activeClassname: string = 'border-sky-300 bg-sky-200 text-slate-600 shadow-lg shadow-sky-500/30 dark:border-sky-500 dark:bg-sky-500/80';
 const inactiveClassname: string = 'border-slate-300/70 bg-white/20 text-slate-600 hover:border-slate-400 hover:bg-white/60 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:bg-slate-900/70 dark:hover:text-white';
 
 /**
