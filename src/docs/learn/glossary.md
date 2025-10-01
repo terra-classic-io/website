@@ -1,3 +1,7 @@
+# Glossary
+
+Use this glossary to learn about terms specific to the Terra Classic Protocol.
+
 ## Active set
 
 Top validators that participate in consensus and earn rewards. If more than the configured maximum of validators want to join the active set, the validator with the lowest self-bond is removed from the active set.
