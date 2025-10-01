@@ -13,7 +13,7 @@
 | gRPC | `grpc://terra-classic-grpc.publicnode.com:443` |
 
 > **Tip**
-> 
+>
 > Keep Binodes (`https://api-lunc-rpc.binodes.com`, `https://api-lunc-lcd.binodes.com`) configured as secondaries. Mirror your own sentry relay to avoid depending entirely on public endpoints.
 
 ## Hardware prerequisites

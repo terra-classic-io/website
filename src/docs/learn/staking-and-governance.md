@@ -1,5 +1,3 @@
-# Staking and governance
-
 Delegating LUNC grants validators voting power proportional to their stake. Validators collect commission on rewards while delegators earn the remainder. Typical commission settings range between 2.5% and 20%.
 
 Governance proposals enter a seven-day voting phase once deposits reach the minimum threshold. Delegators can override validator votes through supported wallets.

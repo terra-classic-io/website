@@ -87,5 +87,6 @@ console.log(response);
 ```
 
 > **Notes**
+>
 > - Gas price references: [terra-classic-lcd.publicnode.com/terra/tax/v1beta1/params](https://terra-classic-lcd.publicnode.com/terra/tax/v1beta1/params) and [terra-classic-fcd.publicnode.com/v1/txs/gas_prices](https://terra-classic-fcd.publicnode.com/v1/txs/gas_prices).
 > - Market swaps are disabled on Classic; use DEX contracts for trading.

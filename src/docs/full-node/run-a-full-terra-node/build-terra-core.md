@@ -1,10 +1,8 @@
-# Build Terra Classic core
-
 Terra Classic core is the official implementation of the Terra Classic node software. Use this guide to install `terrad`, the command-line interface and daemon that connects to Terra Classic and enables you to interact with the Terra Classic blockchain.
 
 ## Get the Terra Classic core source code
 
-1. Use `git` to retrieve [Terra Classic core](https://github.com/classic-terra/core/) and check out the latest stable release, e.g. `v3.5.1`. See [here](https://github.com/classic-terra/core/releases) for a list of available releases.
+1. Use `git` to retrieve [Terra Classic core](https://github.com/classic-terra/core/) and check out the latest stable release, e.g. `v3.5.1`. See [GitHub releases](https://github.com/classic-terra/core/releases) for a list of available releases.
 
    ```bash
    git clone https://github.com/classic-terra/core

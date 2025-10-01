@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Menu, X } from "lucide-react";
@@ -76,7 +76,7 @@ function resolveActiveTarget(segments: readonly string[]): ActiveDocTarget {
   };
 }
 
-function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps): JSX.Element {
+function DocsShell({ docSegments, onNavigate }: DocsShellProps): JSX.Element {
   const { section, page, trail, path } = useMemo(() => resolveActiveTarget(docSegments), [docSegments]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 

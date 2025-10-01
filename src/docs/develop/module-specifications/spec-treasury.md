@@ -84,23 +84,23 @@ The logic for constraining a policy lever update is done by `pc.Clamp()`.
 ```go
 // Clamp constrains a policy variable update within the policy constraints
 func (pc PolicyConstraints) Clamp(prevRate sdk.Dec, newRate sdk.Dec) (clampedRate sdk.Dec) {
-	if newRate.LT(pc.RateMin) {
-		newRate = pc.RateMin
-	} else if newRate.GT(pc.RateMax) {
-		newRate = pc.RateMax
-	}
+    if newRate.LT(pc.RateMin) {
+        newRate = pc.RateMin
+    } else if newRate.GT(pc.RateMax) {
+        newRate = pc.RateMax
+    }
 
-	delta := newRate.Sub(prevRate)
-	if newRate.GT(prevRate) {
-		if delta.GT(pc.ChangeRateMax) {
-			newRate = prevRate.Add(pc.ChangeRateMax)
-		}
-	} else {
-		if delta.Abs().GT(pc.ChangeRateMax) {
-			newRate = prevRate.Sub(pc.ChangeRateMax)
-		}
-	}
-	return newRate
+    delta := newRate.Sub(prevRate)
+    if newRate.GT(prevRate) {
+        if delta.GT(pc.ChangeRateMax) {
+            newRate = prevRate.Add(pc.ChangeRateMax)
+        }
+    } else {
+        if delta.Abs().GT(pc.ChangeRateMax) {
+            newRate = prevRate.Sub(pc.ChangeRateMax)
+        }
+    }
+    return newRate
 }
 ```
 
@@ -116,9 +116,9 @@ The Treasury module defines special proposals which allow the [Tax Rate](#tax-ra
 
 ```go
 type TaxRateUpdateProposal struct {
-	Title       string  `json:"title" yaml:"title"`             // Title of the Proposal
-	Description string  `json:"description" yaml:"description"` // Description of the Proposal
-	TaxRate     sdk.Dec `json:"tax_rate" yaml:"tax_rate"`       // target TaxRate
+    Title       string  `json:"title" yaml:"title"`             // Title of the Proposal
+    Description string  `json:"description" yaml:"description"` // Description of the Proposal
+    TaxRate     sdk.Dec `json:"tax_rate" yaml:"tax_rate"`       // target TaxRate
 }
 ```
 
@@ -339,13 +339,13 @@ The subspace for the Treasury module is `treasury`.
 
 ```go
 type Params struct {
-	TaxPolicy               PolicyConstraints `json:"tax_policy" yaml:"tax_policy"`
-	RewardPolicy            PolicyConstraints `json:"reward_policy" yaml:"reward_policy"`
-	SeigniorageBurdenTarget sdk.Dec           `json:"seigniorage_burden_target" yaml:"seigniorage_burden_target"`
-	MiningIncrement         sdk.Dec           `json:"mining_increment" yaml:"mining_increment"`
-	WindowShort             int64             `json:"window_short" yaml:"window_short"`
-	WindowLong              int64             `json:"window_long" yaml:"window_long"`
-	WindowProbation         int64             `json:"window_probation" yaml:"window_probation"`
+    TaxPolicy               PolicyConstraints `json:"tax_policy" yaml:"tax_policy"`
+    RewardPolicy            PolicyConstraints `json:"reward_policy" yaml:"reward_policy"`
+    SeigniorageBurdenTarget sdk.Dec           `json:"seigniorage_burden_target" yaml:"seigniorage_burden_target"`
+    MiningIncrement         sdk.Dec           `json:"mining_increment" yaml:"mining_increment"`
+    WindowShort             int64             `json:"window_short" yaml:"window_short"`
+    WindowLong              int64             `json:"window_long" yaml:"window_long"`
+    WindowProbation         int64             `json:"window_probation" yaml:"window_probation"`
 }
 ```
 

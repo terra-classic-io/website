@@ -166,7 +166,7 @@ const ProjectMap: React.FC = () => {
   const [focusedNodeId, setFocusedNodeId] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [isPanning, setIsPanning] = useState<boolean>(false);
+  const [_, setIsPanning] = useState<boolean>(false);
   const [viewport, setViewport] = useState<{ width: number; height: number } | null>(null);
 
   const simulationRef = useRef<ProjectMapSimulation | null>(null);
@@ -659,7 +659,7 @@ const ProjectMap: React.FC = () => {
     setIsDragging(true);
     scheduleTooltip(null, 0, 0);
     event.preventDefault();
-  }, [findNodeById, updateNodePositionForPointer]);
+  }, [findNodeById, scheduleTooltip, updateNodePositionForPointer]);
 
   const handlePointerMove = useCallback((event: React.PointerEvent<HTMLButtonElement>) => {
     const dragState = dragStateRef.current;
@@ -758,10 +758,9 @@ const ProjectMap: React.FC = () => {
       return;
     }
     doubleTapRef.current = now;
-  }, [isDragging, layout.height, layout.width, transform.translateX, transform.translateY, transform.zoom]);
+  }, [isDragging, layout.height, layout.width, transform.translateX, transform.translateY, transform.zoom, calculateLocalPoint]);
 
   const nodesForRendering = nodesRef.current;
-  const categoryLegend = categoriesRef.current;
 
   return (
     <div

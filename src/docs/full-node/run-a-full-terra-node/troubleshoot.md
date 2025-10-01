@@ -1,5 +1,3 @@
-# Reset and troubleshooting
-
 Occasionally you may need to reset your node to resolve configuration drift or data corruption. The steps below describe common recovery tasks.
 
 ## Complete reset

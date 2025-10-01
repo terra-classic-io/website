@@ -151,5 +151,6 @@ async function send(): Promise<void> {
 ```
 
 > **Notes**
+>
 > - Use `simulateTx` to estimate gas before broadcasting.
 > - Confirm current burn/tax policy via LCD (`/terra/tax/v1beta1/params`) or governance notices.

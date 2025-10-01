@@ -1,5 +1,3 @@
-# Capability module (`x/capability`)
-
 > **Note**
 >
 > Terra Classic uses the Cosmos SDK capability keeper to isolate IBC, wasm, and tax sub-modules. The Classic application seals the keeper during boot to prevent capability leakage and preserve deterministic middleware ordering.

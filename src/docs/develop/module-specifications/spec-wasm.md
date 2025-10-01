@@ -79,9 +79,9 @@ WASM data and event spend gas up to `1 * bytes`. Passing the event and data to a
 
 ```go
 type CodeInfo struct {
-	CodeID   uint64           `json:"code_id"`
-	CodeHash core.Base64Bytes `json:"code_hash"`
-	Creator  sdk.AccAddress   `json:"creator"`
+    CodeID   uint64           `json:"code_id"`
+    CodeHash core.Base64Bytes `json:"code_hash"`
+    Creator  sdk.AccAddress   `json:"creator"`
 }
 ```
 
@@ -89,11 +89,11 @@ type CodeInfo struct {
 
 ```go
 type ContractInfo struct {
-	Address    sdk.AccAddress   `json:"address"`
-	Owner      sdk.AccAddress   `json:"owner"`
-	CodeID     uint64           `json:"code_id"`
-	InitMsg    core.Base64Bytes `json:"init_msg"`
-	Migratable bool             `json:"migratable"`
+    Address    sdk.AccAddress   `json:"address"`
+    Owner      sdk.AccAddress   `json:"owner"`
+    CodeID     uint64           `json:"code_id"`
+    InitMsg    core.Base64Bytes `json:"init_msg"`
+    Migratable bool             `json:"migratable"`
 }
 ```
 
@@ -137,9 +137,9 @@ Uploads new code to the blockchain and results in a new code ID, if successful. 
 
 ```go
 type MsgStoreCode struct {
-	Sender sdk.AccAddress `json:"sender" yaml:"sender"`
-	// WASMByteCode can be raw or gzip compressed
-	WASMByteCode core.Base64Bytes `json:"wasm_byte_code" yaml:"wasm_byte_code"`
+    Sender sdk.AccAddress `json:"sender" yaml:"sender"`
+    // WASMByteCode can be raw or gzip compressed
+    WASMByteCode core.Base64Bytes `json:"wasm_byte_code" yaml:"wasm_byte_code"`
 }
 ```
 
@@ -149,16 +149,16 @@ Creates a new instance of a smart contract. Initial configuration is provided in
 
 ```go
 type MsgInstantiateContract struct {
-	// Sender is an sender address
-	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty" yaml:"sender"`
-	// Admin is an optional admin address who can migrate the contract
-	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty" yaml:"admin"`
-	// CodeID is the reference to the stored WASM code
-	CodeID uint64 `protobuf:"varint,3,opt,name=code_id,json=codeId,proto3" json:"code_id,omitempty" yaml:"code_id"`
-	// InitMsg json encoded message to be passed to the contract on instantiation
-	InitMsg encoding_json.RawMessage `protobuf:"bytes,4,opt,name=init_msg,json=initMsg,proto3,casttype=encoding/json.RawMessage" json:"init_msg,omitempty" yaml:"init_msg"`
-	// InitCoins that are transferred to the contract on execution
-	InitCoins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,5,rep,name=init_coins,json=initCoins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"init_coins" yaml:"init_coins"`
+    // Sender is an sender address
+    Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty" yaml:"sender"`
+    // Admin is an optional admin address who can migrate the contract
+    Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty" yaml:"admin"`
+    // CodeID is the reference to the stored WASM code
+    CodeID uint64 `protobuf:"varint,3,opt,name=code_id,json=codeId,proto3" json:"code_id,omitempty" yaml:"code_id"`
+    // InitMsg json encoded message to be passed to the contract on instantiation
+    InitMsg encoding_json.RawMessage `protobuf:"bytes,4,opt,name=init_msg,json=initMsg,proto3,casttype=encoding/json.RawMessage" json:"init_msg,omitempty" yaml:"init_msg"`
+    // InitCoins that are transferred to the contract on execution
+    InitCoins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,5,rep,name=init_coins,json=initCoins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"init_coins" yaml:"init_coins"`
 }
 ```
 
@@ -168,10 +168,10 @@ Invokes a function defined within the smart contract. Function and parameters ar
 
 ```go
 type MsgExecuteContract struct {
-	Sender     sdk.AccAddress   `json:"sender" yaml:"sender"`
-	Contract   sdk.AccAddress   `json:"contract" yaml:"contract"`
-	ExecuteMsg core.Base64Bytes `json:"execute_msg" yaml:"execute_msg"`
-	Coins      sdk.Coins        `json:"coins" yaml:"coins"`
+    Sender     sdk.AccAddress   `json:"sender" yaml:"sender"`
+    Contract   sdk.AccAddress   `json:"contract" yaml:"contract"`
+    ExecuteMsg core.Base64Bytes `json:"execute_msg" yaml:"execute_msg"`
+    Coins      sdk.Coins        `json:"coins" yaml:"coins"`
 }
 ```
 
@@ -181,10 +181,10 @@ Can be issued by the owner of a migratable smart contract to reset its code ID t
 
 ```go
 type MsgMigrateContract struct {
-	Owner      sdk.AccAddress   `json:"owner" yaml:"owner"`
-	Contract   sdk.AccAddress   `json:"contract" yaml:"contract"`
-	NewCodeID  uint64           `json:"new_code_id" yaml:"new_code_id"`
-	MigrateMsg core.Base64Bytes `json:"migrate_msg" yaml:"migrate_msg"`
+    Owner      sdk.AccAddress   `json:"owner" yaml:"owner"`
+    Contract   sdk.AccAddress   `json:"contract" yaml:"contract"`
+    NewCodeID  uint64           `json:"new_code_id" yaml:"new_code_id"`
+    MigrateMsg core.Base64Bytes `json:"migrate_msg" yaml:"migrate_msg"`
 }
 ```
 
@@ -194,12 +194,11 @@ Can be issued by the smart contract's owner to transfer ownership.
 
 ```go
 type MsgUpdateContractOwner struct {
-	Owner    sdk.AccAddress `json:"owner" yaml:"owner"`
-	NewOwner sdk.AccAddress `json:"new_owner" yaml:"new_owner"`
-	Contract sdk.AccAddress `json:"contract" yaml:"contract"`
+    Owner    sdk.AccAddress `json:"owner" yaml:"owner"`
+    NewOwner sdk.AccAddress `json:"new_owner" yaml:"new_owner"`
+    Contract sdk.AccAddress `json:"contract" yaml:"contract"`
 }
 ```
-
 
 ## Parameters
 
@@ -207,9 +206,9 @@ The subspace for the WASM module is `wasm`.
 
 ```go
 type Params struct {
-	MaxContractSize    uint64 `json:"max_contract_size" yaml:"max_contract_size"`
-	MaxContractGas     uint64 `json:"max_contract_gas" yaml:"max_contract_gas"`
-	MaxContractMsgSize uint64 `json:"max_contract_msg_size" yaml:"max_contract_msg_size"`
+    MaxContractSize    uint64 `json:"max_contract_size" yaml:"max_contract_size"`
+    MaxContractGas     uint64 `json:"max_contract_gas" yaml:"max_contract_gas"`
+    MaxContractMsgSize uint64 `json:"max_contract_msg_size" yaml:"max_contract_msg_size"`
 }
 ```
 

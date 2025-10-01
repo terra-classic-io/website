@@ -73,7 +73,7 @@ The `InstantiateMsg` is provided when a user creates a contract on the blockchai
 
 On the Terra Classic blockchain, the uploading of a contract's code and the instantiation of a contract are regarded as separate events, unlike on Ethereum. This is to allow a small set of vetted contract archetypes to exist as multiple instances sharing the same base code but configured with different parameters (imagine one canonical ERC20, and multiple tokens that use its code).
 
-### Example
+### Example of InstantiateMsg
 
 For your contract, you will expect a contract creator to supply the initial state in a JSON message:
 

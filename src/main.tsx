@@ -110,6 +110,7 @@ declare global {
   }
 
   // For Vite environment variables
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     interface ProcessEnv {
       NODE_ENV: 'development' | 'production' | 'test';

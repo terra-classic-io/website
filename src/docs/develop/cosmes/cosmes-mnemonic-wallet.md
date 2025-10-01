@@ -36,5 +36,6 @@ console.log("txhash", txHash);
 ```
 
 > **Tips**
+>
 > - Fetch current gas prices from [terra-classic-fcd.publicnode.com/v1/txs/gas_prices](https://terra-classic-fcd.publicnode.com/v1/txs/gas_prices) or the LCD tax endpoint.
 > - For rebel-2 testnet, switch `rpc` to [https://rpc.luncblaze.com](https://rpc.luncblaze.com).

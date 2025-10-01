@@ -54,13 +54,13 @@ export const getOrCreateDailySeed = (key: string): string => {
         return parsed.seed;
       }
     }
-  } catch (error) {
+  } catch {
     // Ignore JSON or storage errors and generate a fresh seed.
   }
   const newSeed: string = Math.random().toString(36).slice(2, 12);
   try {
     window.localStorage.setItem(storageKey, JSON.stringify({ date: dateKey, seed: newSeed }));
-  } catch (error) {
+  } catch {
     // Swallow storage errors, still return the new seed.
   }
   return newSeed;

@@ -39,12 +39,6 @@ const lighten = (hex: string, factor: number): string => {
   return rgb(r, g, b).formatHex();
 };
 
-const darken = (hex: string, factor: number): string => {
-  const base = rgb(hex);
-  const { r, g, b } = base.darker(factor);
-  return rgb(r, g, b).formatHex();
-};
-
 const luminance = (hex: string): number => {
   const { r, g, b } = rgb(hex);
   const normalize = (value: number): number => {

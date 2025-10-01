@@ -2,8 +2,7 @@
  * @fileoverview HeroSection component renders the top-of-page hero experience with calls to action.
  */
 
-import React from 'react';
-import { ArrowDown, ArrowRight, ChevronDown, Globe, ShieldCheck, Wallet } from 'lucide-react';
+import { ArrowDown, ChevronDown, Globe, ShieldCheck, Wallet } from 'lucide-react';
 import terraClassicLogoUrl from '../assets/terra-classic.svg';
 
 type HeroStatistic = {

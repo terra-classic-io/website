@@ -138,7 +138,6 @@ const normalizeLink = (
   const palette = buildCategoryPalette(categoryTitle);
   const indicatorVisual = INDICATOR_VISUALS[link.indicator];
   const sanitizedDescription = sanitizeText(link.description);
-  const tooltipText = sanitizedDescription.length > 0 ? sanitizedDescription : "No description provided.";
   const iconKey = determineProjectIconKey({
     name: link.name,
     description: sanitizedDescription,

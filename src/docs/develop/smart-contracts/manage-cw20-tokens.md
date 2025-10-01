@@ -14,14 +14,14 @@ You can query balance via LCD or using CosmES in JavaScript.
     { "balance": { "address": "<walletAddress>" } }
     ```
   
-  2. Request:
+  1. Request:
 
     ```text
     GET /cosmwasm/wasm/v1/contract/<tokenContractAddress>/smart/<base64Query>
     Host: terra-classic-lcd.publicnode.com
     ```
-
-  3. Example (placeholder base64 shown):
+  
+  1. Example (placeholder base64 shown):
 
     ```text
     https://terra-classic-lcd.publicnode.com/cosmwasm/wasm/v1/contract/<tokenContractAddress>/smart/eyAiYmFsYW5jZSI6IHsgImFkZHJlc3MiOiAiPHdhbGxldEFkZHJlc3M+IiB9IH0=
