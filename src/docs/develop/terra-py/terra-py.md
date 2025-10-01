@@ -1,6 +1,4 @@
 
-# Terra Classic Python SDK Guide
-
 This guide explains how to install the `terra_classic_sdk` Python SDK, connect to the recommended endpoints, and submit common transactions with typed examples.
 
 ## Requirements
