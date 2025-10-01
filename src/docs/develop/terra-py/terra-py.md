@@ -244,4 +244,3 @@ For LUNC / USTC (Columbus-5) use the fork maintained by Geoff Munn:
 [PyPI:](https://pypi.org/project/terra-classic-sdk/)
 
 [PyPI author:](https://pypi.org/user/geoffmunn/)
-
