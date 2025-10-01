@@ -834,4 +834,12 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/dex/wesoworld.png',
     categories: ['dex']
   },
+   { 
+    name: 'community Telegram group',
+    url: 'https://t.me/classicluna',
+    description: 'Community Chat',
+    indicator: 'support',
+    logo: '/public/logos/validators/telegram.svg',
+    categories: ['information']
+  },
 ];
