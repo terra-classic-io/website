@@ -8,24 +8,24 @@ You can query balance via LCD or using CosmES in JavaScript.
 
 - LCD (CosmWasm v1 smart query):
 
-  1. Build the smart query and base64-encode it:  
+  - Build the smart query and base64-encode it:  
 
-    ```json
-    { "balance": { "address": "<walletAddress>" } }
-    ```
+     ```json
+     { "balance": { "address": "<walletAddress>" } }
+     ```
   
-  1. Request:
+  - Request:
 
-    ```text
-    GET /cosmwasm/wasm/v1/contract/<tokenContractAddress>/smart/<base64Query>
-    Host: terra-classic-lcd.publicnode.com
-    ```
+     ```text
+     GET /cosmwasm/wasm/v1/contract/<tokenContractAddress>/smart/<base64Query>
+     Host: terra-classic-lcd.publicnode.com
+     ```
   
-  1. Example (placeholder base64 shown):
+  - Example (placeholder base64 shown):
 
-    ```text
-    https://terra-classic-lcd.publicnode.com/cosmwasm/wasm/v1/contract/<tokenContractAddress>/smart/eyAiYmFsYW5jZSI6IHsgImFkZHJlc3MiOiAiPHdhbGxldEFkZHJlc3M+IiB9IH0=
-    ```
+     ```text
+     https://terra-classic-lcd.publicnode.com/cosmwasm/wasm/v1/contract/<tokenContractAddress>/smart/eyAiYmFsYW5jZSI6IHsgImFkZHJlc3MiOiAiPHdhbGxldEFkZHJlc3M+IiB9IH0=
+     ```
 
 - JavaScript (CosmES):
 
