@@ -231,7 +231,7 @@ Ensure the contract accepts the execute message and attached funds; otherwise, t
 Updated protobufs & SDK scripts are maintained by @geoffmunn on PyPI.
 
 Check here for proto & extra Classic tooling:
-👉 https://pypi.org/user/geoffmunn/
+👉[PyPI profile](https://pypi.org/user/geoffmunn/)
 
 ---
 ⚠️ Disclaimer: This SDK is maintained by an independent developer (Geoff Munn). While the project appears trustworthy, use at your own risk. Always review the source code before using in production, especially for signing transactions or managing funds.
@@ -239,9 +239,9 @@ Check here for proto & extra Classic tooling:
 The original terra.py / terra_sdk repo was aimed at Terra 2.0 and is no longer maintained for Terra Classic.
 For LUNC / USTC (Columbus-5) use the fork maintained by Geoff Munn:
 
-GitHub: https://github.com/geoffmunn/terra.py
+[GitHub:](https://github.com/geoffmunn/terra.py)
 
-PyPI: https://pypi.org/project/terra-classic-sdk/
+[PyPI:](https://pypi.org/project/terra-classic-sdk/)
 
-PyPI author: https://pypi.org/user/geoffmunn/
+[PyPI author:](https://pypi.org/user/geoffmunn/)
 
