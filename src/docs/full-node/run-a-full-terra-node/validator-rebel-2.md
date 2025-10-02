@@ -11,6 +11,7 @@
 | RPC | [https://rpc.luncblaze.com](https://rpc.luncblaze.com) |
 | LCD | [https://lcd.luncblaze.com](https://lcd.luncblaze.com) |
 | Snapshot | [https://luncblaze.com/rebel-2/rebel2-latest.tar.lz4](https://luncblaze.com/rebel-2/rebel2-latest.tar.lz4) |
+| Snapshot | [https://snapshots.hexxagon.io/cosmos/terra-classic/rebel-2/](https://snapshots.hexxagon.io/cosmos/terra-classic/rebel-2/) |
 
 > **Tip**
 > Rebel-2 might require more frequent upgrades than mainnet. Keep your own testnet node or snapshot source ready for rapid restores.
