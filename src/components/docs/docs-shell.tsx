@@ -232,7 +232,7 @@ function DocsShell({ docSegments, onNavigate }: DocsShellProps): JSX.Element {
               <Menu size={16} />
             </button>
             <Link
-              to="/"
+              to={window.location.hostname === "docs.terra-classic.io" ? "https://terra-classic.io" : "/"}
               className="inline-flex items-center gap-2 rounded-full border border-slate-300/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.32em] text-slate-600 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500"
             >
               <ArrowLeft size={16} />
