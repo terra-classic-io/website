@@ -527,14 +527,6 @@ export const projects: ProjectLink[] = [
     categories: ['entertainment']
   },
   { 
-    name: 'MoonRunners',
-    url: 'https://moon-runners.net',
-    description: 'Analytics',
-    indicator: 'onchain',
-    logo: '/public/logos/tools/moon-runners.svg',
-    categories: ['tools']
-  },
-  { 
     name: 'Node snapshots',
     url: 'https://snapshots.hexxagon.io/cosmos/terra-classic/columbus-5/',
     description: 'Sync Tool',
