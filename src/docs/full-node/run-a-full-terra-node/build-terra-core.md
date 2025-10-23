@@ -2,12 +2,12 @@ Terra Classic core is the official implementation of the Terra Classic node soft
 
 ## Get the Terra Classic core source code
 
-1. Use `git` to retrieve [Terra Classic core](https://github.com/classic-terra/core/) and check out the latest stable release, e.g. `v3.5.1`. See [GitHub releases](https://github.com/classic-terra/core/releases) for a list of available releases.
+1. Use `git` to retrieve [Terra Classic core](https://github.com/classic-terra/core/) and check out the latest stable release, e.g. `v3.6.0`. See [GitHub releases](https://github.com/classic-terra/core/releases) for a list of available releases.
 
    ```bash
    git clone https://github.com/classic-terra/core
    cd core
-   git checkout [latest version] # ex., git checkout v3.5.1
+   git checkout [latest version] # ex., git checkout v3.6.0
    ```
 
 2. Build Terra core. This installs the `terrad` executable to your [`GOPATH`](https://go.dev/doc/gopath_code) environment variable.
@@ -28,7 +28,7 @@ Terra Classic core is the official implementation of the Terra Classic node soft
    name: terra
    server_name: terrad
    client_name: terrad
-   version: v3.5.1
+   version: v3.6.0
    commit: 3684f77faadf6cf200d18e15763316d5d9c5a496
    build_tags: netgo,ledger
    go: go version go1.22.12 linux/amd64
