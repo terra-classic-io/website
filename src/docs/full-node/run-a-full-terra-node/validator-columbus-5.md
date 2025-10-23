@@ -2,7 +2,7 @@
 
 | Component | Version |
 | --- | --- |
-| Terra Core | `v3.5.1` |
+| Terra Core | `v3.6.0` |
 | Oracle Feeder | `v3.1.6` |
 | Go | `go1.22.12` |
 
