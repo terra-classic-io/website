@@ -29,7 +29,6 @@ Terra Classic core is the official implementation of the Terra Classic node soft
    server_name: terrad
    client_name: terrad
    version: v3.6.0
-   commit: 3684f77faadf6cf200d18e15763316d5d9c5a496
    build_tags: netgo,ledger
    go: go version go1.22.12 linux/amd64
    # ...And a list of dependencies
