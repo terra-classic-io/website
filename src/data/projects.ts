@@ -826,4 +826,12 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/dex/wesoworld.png',
     categories: ['dex']
   },
+   { 
+    name: 'Terra Classic Website',
+    url: 'https://www.terra-classic.money/',
+    description: 'Ecosytem website',
+    indicator: 'onchain',
+    logo: '/public/logos/media/TC_website.png',
+    categories: ['information']
+  },
 ];
