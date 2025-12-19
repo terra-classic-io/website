@@ -37,5 +37,6 @@ console.log(response);
 ```
 
 > **Notes**
+>
 > - Batch queries when building dApp front-ends to reduce RPC overhead.
 > - Use private infrastructure or a dedicated provider for production workloads.

@@ -1,10 +1,10 @@
-This guide explains how to install the `terra_sdk` python SDK, connect to the recommended endpoints, and submit common transactions with typed examples.
+This guide explains how to install the `terra_classic_sdk` Python SDK, connect to the recommended endpoints, and submit common transactions with typed examples.
 
 ## Requirements
 
-- Python 3.8 or later
-- `pip` 23+ (or `uv`)
-- Optional: `make` and Docker for running the local Terra Classic network
+* Python 3.8 or later
+* `pip` 23+ (or `uv`)
+* Optional: `make` and Docker for running the local Terra Classic network
 
 ## Set up a virtual environment
 
@@ -14,16 +14,16 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 ```
 
-Install Terra.py:
+Install Terra Classic SDK:
 
 ```bash
-pip install --upgrade terra_sdk
+pip install --upgrade terra-classic-sdk
 ```
 
 To work on the library itself, clone the repository and install extras with Poetry:
 
 ```bash
-git clone --depth 1 https://github.com/terra-money/terra.py.git
+git clone --depth 1 https://github.com/geoffmunn/terra.py.git
 cd terra.py
 pip install poetry
 poetry install
@@ -34,10 +34,10 @@ poetry install
 > **Warning**
 > Public endpoints are rate-limited. Run your own node or purchase dedicated access for production workloads.
 
-| Network | Chain ID | LCD | RPC | Gas prices |
-| --- | --- | --- | --- | --- |
-| LocalTerra | `localterra` | `http://localhost:1317` | `http://localhost:26657` | `http://localhost:1317/terra/tx/v1beta1/gas_prices` |
-| rebel-2 (testnet) | `rebel-2` | [https://lcd.luncblaze.com](https://lcd.luncblaze.com) | [https://rpc.luncblaze.com](https://rpc.luncblaze.com) | [https://fcd.luncblaze.com/v1/txs/gas_prices](https://fcd.luncblaze.com/v1/txs/gas_prices) |
+| Network              | Chain ID     | LCD                                                                                  | RPC                                                                                  | Gas prices                                                                                                               |
+| -------------------- | ------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| LocalTerra           | `localterra` | `http://localhost:1317`                                                              | `http://localhost:26657`                                                             | `http://localhost:1317/terra/tx/v1beta1/gas_prices`                                                                      |
+| rebel-2 (testnet)    | `rebel-2`    | [https://lcd.luncblaze.com](https://lcd.luncblaze.com)                               | [https://rpc.luncblaze.com](https://rpc.luncblaze.com)                               | [https://fcd.luncblaze.com/v1/txs/gas_prices](https://fcd.luncblaze.com/v1/txs/gas_prices)                               |
 | columbus-5 (mainnet) | `columbus-5` | [https://terra-classic-lcd.publicnode.com](https://terra-classic-lcd.publicnode.com) | [https://terra-classic-rpc.publicnode.com](https://terra-classic-rpc.publicnode.com) | [https://terra-classic-fcd.publicnode.com/v1/txs/gas_prices](https://terra-classic-fcd.publicnode.com/v1/txs/gas_prices) |
 
 Alternative mainnet LCD/RPC mirrors include [https://api-lunc-lcd.binodes.com](https://api-lunc-lcd.binodes.com) and [https://api-lunc-rpc.binodes.com](https://api-lunc-rpc.binodes.com).
@@ -49,8 +49,8 @@ The LCD client is the primary entry point for queries and transaction submission
 ### LocalTerra
 
 ```python
-from terra_sdk.client.localterra import LocalTerra
-from terra_sdk.client.lcd.wallet import Wallet
+from terra_classic_sdk.client.localterra import LocalTerra
+from terra_classic_sdk.client.lcd.wallet import Wallet
 
 terra: LocalTerra = LocalTerra()
 wallet: Wallet = terra.wallets["test1"]
@@ -60,9 +60,9 @@ print("test wallet", wallet.key.acc_address)
 ### rebel-2 testnet
 
 ```python
-from terra_sdk.client.lcd import LCDClient
-from terra_sdk.client.lcd.wallet import Wallet
-from terra_sdk.key.mnemonic import MnemonicKey
+from terra_classic_sdk.client.lcd import LCDClient
+from terra_classic_sdk.client.lcd.wallet import Wallet
+from terra_classic_sdk.key.mnemonic import MnemonicKey
 
 LCD_URL: str = "https://lcd.luncblaze.com"
 CHAIN_ID: str = "rebel-2"
@@ -79,9 +79,9 @@ Request rebel-2 test funds from the [LUNC Blaze faucet](https://faucet.luncblaze
 ### columbus-5 mainnet
 
 ```python
-from terra_sdk.client.lcd import LCDClient
-from terra_sdk.client.lcd.wallet import Wallet
-from terra_sdk.key.mnemonic import MnemonicKey
+from terra_classic_sdk.client.lcd import LCDClient
+from terra_classic_sdk.client.lcd.wallet import Wallet
+from terra_classic_sdk.key.mnemonic import MnemonicKey
 
 LCD_URL: str = "https://terra-classic-lcd.publicnode.com"
 CHAIN_ID: str = "columbus-5"
@@ -119,11 +119,12 @@ Gas prices are quoted in micro-denominations (`uluna`, `uusd`, etc.). Adjust fee
 
 ```python
 from typing import Dict
-from terra_sdk.client.lcd.wallet import Wallet
-from terra_sdk.client.lcd import LCDClient
-from terra_sdk.client.lcd.api.tx import CreateTxOptions
-from terra_sdk.core import Coins, Coin
-from terra_sdk.core.bank import MsgSend
+from terra_classic_sdk.client.lcd.wallet import Wallet
+from terra_classic_sdk.client.lcd import LCDClient
+from terra_classic_sdk.client.lcd.api.tx import CreateTxOptions
+from terra_classic_sdk.core import Coins, Coin
+from terra_classic_sdk.core.bank import MsgSend
+from terra_classic_sdk.key.mnemonic import MnemonicKey
 
 AMOUNT_ULUNA: int = 1_000_000
 GAS_ADJUSTMENT: float = 1.4
@@ -164,7 +165,7 @@ print("broadcasted", tx_hash)
 ## Swap assets
 
 ```python
-from terra_sdk.core.market import MsgSwap
+from terra_classic_sdk.core.market import MsgSwap
 
 AMOUNT_OFFER: int = 1_000_000
 ASK_DENOM: str = "uusd"
@@ -191,7 +192,7 @@ print("swap", swap_result.txhash)
 
 ```python
 from typing import Any, Mapping
-from terra_sdk.core.wasm import MsgExecuteContract
+from terra_classic_sdk.core.wasm import MsgExecuteContract
 
 CONTRACT_ADDRESS: str = "terra1..."
 EXECUTE_MSG: Mapping[str, Any] = {"ping": {}}
@@ -220,6 +221,26 @@ Ensure the contract accepts the execute message and attached funds; otherwise, t
 
 ## Next steps
 
-- Review the [Terra.py reference](https://terra-money.github.io/terra.py/) for detailed APIs.
-- Track validator gas recommendations via governance channels.
-- Combine Terra.py with notebook environments or backend frameworks to build analytics, bots, and scheduled jobs.
+* Review the [Terra Classic SDK reference](https://github.com/geoffmunn/terra.py) for detailed APIs.
+* Track validator gas recommendations via governance channels.
+* Combine Terra Classic SDK with notebook environments or backend frameworks to build analytics, bots, and scheduled jobs.
+
+---
+  🛠️ Useful Extras
+
+Updated protobufs & SDK scripts are maintained by @geoffmunn on PyPI.
+
+Check here for proto & extra Classic tooling:
+👉[PyPI profile](https://pypi.org/user/geoffmunn/)
+
+---
+⚠️ Disclaimer: This SDK is maintained by an independent developer (Geoff Munn). While the project appears trustworthy, use at your own risk. Always review the source code before using in production, especially for signing transactions or managing funds.
+
+The original terra.py / terra_sdk repo was aimed at Terra 2.0 and is no longer maintained for Terra Classic.
+For LUNC / USTC (Columbus-5) use the fork maintained by Geoff Munn:
+
+[GitHub:](https://github.com/geoffmunn/terra.py)
+
+[PyPI:](https://pypi.org/project/terra-classic-sdk/)
+
+[PyPI author:](https://pypi.org/user/geoffmunn/)

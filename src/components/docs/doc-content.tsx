@@ -430,7 +430,7 @@ const createMarkdownComponents = (
   sectionSlug: string,
   currentPath: readonly string[],
 ): Components => ({
-  h1: ({ node, className, ...props }) => (
+  h1: ({ node: _, className, ...props }) => (
     <h1
       {...props}
       className={mergeClassNames(
@@ -439,37 +439,37 @@ const createMarkdownComponents = (
       )}
     />
   ),
-  h2: ({ node, className, ...props }) => (
+  h2: ({ node: _, className, ...props }) => (
     <h2
       {...props}
       className={mergeClassNames("mt-10 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-50", className)}
     />
   ),
-  h3: ({ node, className, ...props }) => (
+  h3: ({ node: _, className, ...props }) => (
     <h3
       {...props}
       className={mergeClassNames("mt-8 text-2xl font-semibold text-slate-900 dark:text-slate-100", className)}
     />
   ),
-  h4: ({ node, className, ...props }) => (
+  h4: ({ node: _, className, ...props }) => (
     <h4
       {...props}
       className={mergeClassNames("mt-7 text-xl font-semibold text-slate-900 dark:text-slate-100", className)}
     />
   ),
-  h5: ({ node, className, ...props }) => (
+  h5: ({ node: _, className, ...props }) => (
     <h5
       {...props}
       className={mergeClassNames("mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100", className)}
     />
   ),
-  h6: ({ node, className, ...props }) => (
+  h6: ({ node: _, className, ...props }) => (
     <h6
       {...props}
       className={mergeClassNames("mt-6 text-base font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-200", className)}
     />
   ),
-  p: ({ node, className, children, ...props }) => (
+  p: ({ node: _, className, children, ...props }) => (
     <p
       {...props}
       className={mergeClassNames("mt-5 text-[17px] leading-6 text-slate-600 first:mt-0 dark:text-slate-200", className)}
@@ -477,7 +477,7 @@ const createMarkdownComponents = (
       {children}
     </p>
   ),
-  ul: ({ node, className, children, ...props }) => (
+  ul: ({ node: _, className, children, ...props }) => (
     <ul
       {...props}
       className={mergeClassNames(
@@ -488,7 +488,7 @@ const createMarkdownComponents = (
       {children}
     </ul>
   ),
-  ol: ({ node, className, children, ...props }) => (
+  ol: ({ node: _, className, children, ...props }) => (
     <ol
       {...props}
       className={mergeClassNames(
@@ -499,7 +499,7 @@ const createMarkdownComponents = (
       {children}
     </ol>
   ),
-  li: ({ node, className, children, ...props }) => (
+  li: ({ node: _, className, children, ...props }) => (
     <li
       {...props}
       className={mergeClassNames("marker:text-slate-400 dark:marker:text-slate-500 pl-1", className)}
@@ -509,16 +509,16 @@ const createMarkdownComponents = (
       </div>
     </li>
   ),
-  strong: ({ node, className, ...props }) => (
+  strong: ({ node: _, className, ...props }) => (
     <strong {...props} className={mergeClassNames("font-semibold text-slate-900 dark:text-slate-100", className)} />
   ),
-  em: ({ node, className, ...props }) => (
+  em: ({ node: _, className, ...props }) => (
     <em {...props} className={mergeClassNames("text-slate-600 dark:text-slate-200", className)} />
   ),
-  hr: ({ node, className, ...props }) => (
+  hr: ({ node: _, className, ...props }) => (
     <hr {...props} className={mergeClassNames("my-10 border-slate-200 dark:border-slate-800", className)} />
   ),
-  blockquote: ({ node, className, children, ...props }) => (
+  blockquote: ({ node: _, className, children, ...props }) => (
     <blockquote
       {...props}
       className={mergeClassNames(
@@ -529,14 +529,14 @@ const createMarkdownComponents = (
       <div className="space-y-4">{children}</div>
     </blockquote>
   ),
-  table: ({ node, className, children, ...props }) => (
+  table: ({ node: _, className, children, ...props }) => (
     <div className="mt-7 overflow-hidden rounded-2xl border border-slate-200/70 first:mt-0 dark:border-slate-800/60">
       <table {...props} className={mergeClassNames("w-full text-left text-sm text-slate-600 dark:text-slate-200", className)}>
         {children}
       </table>
     </div>
   ),
-  thead: ({ node, className, children, ...props }) => (
+  thead: ({ node: _, className, children, ...props }) => (
     <thead
       {...props}
       className={mergeClassNames(
@@ -547,7 +547,7 @@ const createMarkdownComponents = (
       {children}
     </thead>
   ),
-  tbody: ({ node, className, children, ...props }) => (
+  tbody: ({ node: _, className, children, ...props }) => (
     <tbody
       {...props}
       className={mergeClassNames("divide-y divide-slate-200 text-[15px] leading-7 dark:divide-slate-800", className)}
@@ -555,16 +555,16 @@ const createMarkdownComponents = (
       {children}
     </tbody>
   ),
-  tr: ({ node, className, children, ...props }) => (
+  tr: ({ node: _, className, children, ...props }) => (
     <tr {...props} className={mergeClassNames("bg-white/80 last:border-b-0 dark:bg-slate-950/40", className)}>{children}</tr>
   ),
-  th: ({ node, className, children, ...props }) => (
+  th: ({ node: _, className, children, ...props }) => (
     <th {...props} className={mergeClassNames("px-4 py-3 font-semibold", className)}>{children}</th>
   ),
-  td: ({ node, className, children, ...props }) => (
+  td: ({ node: _, className, children, ...props }) => (
     <td {...props} className={mergeClassNames("px-4 py-3 align-top text-[15px] leading-7", className)}>{children}</td>
   ),
-  a: ({ node, className, children, href, ...props }) => {
+  a: ({ node: _, className, children, href, ...props }) => {
     if (!href || href.startsWith("#")) {
       return (
         <a
@@ -659,7 +659,7 @@ const createMarkdownComponents = (
       </a>
     );
   },
-  code: ({ inline, className, children, ...props }: MarkdownCodeComponentProps) => {
+  code: ({ inline, className, children, ..._props }: MarkdownCodeComponentProps) => {
     const codeContent = String(children).replace(/\n$/, "");
     const languageMatch = /language-([\w-]+)/.exec(className ?? "");
     const language = languageMatch?.[1] ?? "";

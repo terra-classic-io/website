@@ -137,6 +137,6 @@ One project can be listed in multiple categories. Projects with unrelated catego
 ## Deployment
 
 - **Create a pull request**: Open a pull request against the `main` branch.
-- **Approval**: Wait for approval from at least two maintainers.
+- **Approval**: Wait for approval from the required number of maintainers.
 - **Merge**: After approval, the pull request is merged into the `main` branch.
 - **Deploy**: The website update is deployed automatically.

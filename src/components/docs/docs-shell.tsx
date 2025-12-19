@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Menu, X } from "lucide-react";
@@ -76,7 +76,7 @@ function resolveActiveTarget(segments: readonly string[]): ActiveDocTarget {
   };
 }
 
-function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps): JSX.Element {
+function DocsShell({ docSegments, onNavigate }: DocsShellProps): JSX.Element {
   const { section, page, trail, path } = useMemo(() => resolveActiveTarget(docSegments), [docSegments]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
@@ -232,7 +232,7 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
               <Menu size={16} />
             </button>
             <Link
-              to="/"
+              to={window.location.hostname === "docs.terra-classic.io" ? "https://terra-classic.io" : "/"}
               className="inline-flex items-center gap-2 rounded-full border border-slate-300/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.32em] text-slate-600 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500"
             >
               <ArrowLeft size={16} />

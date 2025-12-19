@@ -744,7 +744,6 @@ const drawBubble = (
   theme: RenderTheme,
 ): void => {
   const diameter = node.radius * 2 * visibility.scale;
-  const radius = diameter / 2;
   const centerX = node.x;
   const centerY = node.y;
 
@@ -799,7 +798,7 @@ export const renderProjectMap = (config: RenderConfig): void => {
     filters,
     theme,
   } = config;
-  const { context, canvas, width, height, pixelRatio } = renderContext;
+  const { context, canvas, pixelRatio } = renderContext;
 
   context.save();
   context.setTransform(1, 0, 0, 1, 0, 0);

@@ -10,6 +10,7 @@
 | [https://api-lunc-lcd.binodes.com](https://api-lunc-lcd.binodes.com) | columbus-5 |
 | [https://lcd.terra-classic.hexxagon.io](https://lcd.terra-classic.hexxagon.io) | columbus-5 |
 | [https://lcd.luncblaze.com](https://lcd.luncblaze.com) | rebel-2 |
+| [https://lcd.terra-classic.hexxagon.dev](https://lcd.terra-classic.hexxagon.dev) | rebel-2 |
 
 - Terra Classic chain ID: `columbus-5`.
 
@@ -35,6 +36,7 @@ https://terra-classic-fcd.publicnode.com/v1/txs/gas_prices
 | [https://api-lunc-rpc.binodes.com](https://api-lunc-rpc.binodes.com) | columbus-5 |
 | [https://rpc.terra-classic.hexxagon.io](https://rpc.terra-classic.hexxagon.io) | columbus-5 |
 | [https://rpc.luncblaze.com](https://rpc.luncblaze.com) | rebel-2 |
+| [https://rpc.terra-classic.hexxagon.dev](https://rpc.terra-classic.hexxagon.dev) | rebel-2 |
 
 ### gRPC
 
@@ -42,5 +44,6 @@ https://terra-classic-fcd.publicnode.com/v1/txs/gas_prices
 | --- | --- |
 | `grpc+https://terra-classic-grpc.publicnode.com` | columbus-5 |
 | `grpc+https://grpc.terra-classic.hexxagon.io` | columbus-5 |
+| `grpc+https://grpc.terra-classic.hexxagon.dev` | rebel-2 |
 
 Use the rebel-2 testnet for pre-production validation alongside local instances.

@@ -100,13 +100,6 @@ const fetchVyntrexPrice = async (denom: string): Promise<VyntrexPriceResponse> =
   return (await response.json()) as VyntrexPriceResponse;
 };
 
-const slugify = (value: string): string =>
-  value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "");
-
 const getInitialState = (): AppState => ({
   tokens: {
     LUNC: {
@@ -311,7 +304,7 @@ const App: React.FC<{
 
   const totalResourceCount = useMemo<number>(
     () => projects.length,
-    [projects]
+    []
   );
 
   const pathSegments = useMemo<readonly string[]>(

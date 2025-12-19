@@ -98,7 +98,7 @@ const worker: ExportedHandler<{ ASSETS: Fetcher }> = {
   /**
    * Cloudflare Pages single worker entry.
    */
-  fetch: async (request, env, ctx) => {
+  fetch: async (request, env, _) => {
     try {
       return await handleRequest(request, env);
     } catch (error) {

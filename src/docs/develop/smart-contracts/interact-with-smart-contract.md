@@ -157,7 +157,7 @@ Let's do the following:
 
 If done properly, you should get a count of 7.
 
-#### Reset
+### Reset
 
 First, to reset:
 
@@ -173,7 +173,7 @@ First, to reset:
 terrad tx wasm execute terra18vd8fpwxzck93qlwghaj6arh4p7c5n896xzem5 '{"reset":{"count":5}}' --from test1 --chain-id=localterra --fees=28.325uluna --gas=auto --broadcast-mode=sync
 ```
 
-#### Incrementing
+### Incrementing
 
 ```json
 {
@@ -185,7 +185,7 @@ terrad tx wasm execute terra18vd8fpwxzck93qlwghaj6arh4p7c5n896xzem5 '{"reset":{"
 terrad tx wasm execute terra18vd8fpwxzck93qlwghaj6arh4p7c5n896xzem5 '{"increment":{}}' --from test1 --chain-id=localterra --gas=auto --fees=28.325uluna --broadcast-mode=sync
 ```
 
-#### Querying count
+### Querying count
 
 Check the result of your executions!
 

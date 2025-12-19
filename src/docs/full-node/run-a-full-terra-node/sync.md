@@ -6,7 +6,7 @@
 - Ensure a recent address book exists at `~/.terra/config/addrbook.json`. If not, download one from a trusted community source.
 
 > **Warning**
-> 
+>
 > Make sure to back up your validator keys. Make sure the same key is **never** used by multiple nodes, as this will result in severe slashing.
 
 ## Monitor progress

@@ -1,5 +1,3 @@
-# Environment Setup
-
 As a smart contract developer, you will need to write, compile, upload, and test your contracts before deploying them on the Columbus-5 mainnet. The first step is to set up a specialized environment to streamline development.
 
 ## Install Terra Classic Core locally
@@ -22,7 +20,7 @@ You should now have a local testnet running on your machine, with the following 
 
 ## Install Rust
 
-While WASM smart contracts can theoretically be written in any programming language, it is currently only recommended to use Rust as it is the only language for which mature libraries and tooling exist for CosmWasm. For this tutorial, you'll need to also install version 1.82 of Rust by following the instructions [here](https://www.rust-lang.org/tools/install).
+While WASM smart contracts can theoretically be written in any programming language, it is currently only recommended to use Rust as it is the only language for which mature libraries and tooling exist for CosmWasm. For this tutorial, you'll need to also install version 1.82 of Rust by following the instructions in the [official Rust documentation](https://www.rust-lang.org/tools/install).
 
 Once you have installed Rust and its toolchain (cargo et al.), you'll need to add the `wasm32-unknown-unknown` compilation target.
 

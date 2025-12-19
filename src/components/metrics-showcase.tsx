@@ -2,8 +2,7 @@
  * @fileoverview MetricsShowcase visualises live token performance and staking insights.
  */
 
-import React from 'react';
-import { ArrowUpRight, LineChart, TrendingUp } from 'lucide-react';
+import { LineChart, TrendingUp } from 'lucide-react';
 
 export type TokenMetric = {
   readonly symbol: string;

@@ -129,6 +129,7 @@ const msg = new MsgExecuteContract({
 ```
 
 > **Important**
+>
 > - Replace contract addresses and fields with the DEX’ published schemas.
 > - Always set `max_spread` or `minimum_receive` safeguards.
 > - Use `queryContract` to discover pair addresses via factory contracts.
