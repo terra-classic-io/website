@@ -834,4 +834,12 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/dex/wesoworld.png',
     categories: ['dex']
   },
+  { 
+    name: 'Orbit Wire',
+    url: 'https://orbitwire.io/',
+    description: 'Aggregator',
+    indicator: 'onchain',
+    logo: '/public/logos/applications/OrbitWire.svg',
+    categories: ['applications']
+  },
 ];
