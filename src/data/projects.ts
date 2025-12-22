@@ -85,6 +85,14 @@ export const projects: ProjectLink[] = [
     categories: ['cex']
   },
   { 
+    name: 'BTCC',
+    url: 'https://www.btcc.com/fr-FR/trade/perpetual/LUNCUSDT',
+    description: 'Exchange',
+    indicator: 'support',
+    logo: '/public/logos/cex/btcc.png',
+    categories: ['cex']
+  },
+  { 
     name: 'Bybit',
     url: 'https://www.bybit.com/trade/spot/LUNC/USDT',
     description: 'Exchange',
