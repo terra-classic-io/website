@@ -836,7 +836,7 @@ export const projects: ProjectLink[] = [
   },
   { 
     name: 'Orbit Wire',
-    url: 'https://orbitwire.io/',
+    url: 'https://orbitwire.io',
     description: 'Aggregator',
     indicator: 'onchain',
     logo: '/public/logos/applications/orbitwire.svg',
