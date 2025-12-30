@@ -428,7 +428,7 @@ export const projects: ProjectLink[] = [
     url: 'https://luncdaily.com',
     description: 'News website',
     indicator: 'onchain',
-    logo: '/public/logos/media/luncdaily.png',
+    logo: '/public/logos/media/luncdaily.svg',
     categories: ['information']
   },
   { 
