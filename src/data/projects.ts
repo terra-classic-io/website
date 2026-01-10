@@ -842,4 +842,12 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/applications/orbitwire.svg',
     categories: ['applications']
   },
+  {
+    name: 'BruteMove!',
+    url: 'https://brutemove.net',
+    description: 'On-Chain Chess Game',
+    indicator: 'onchain',
+    logo: '/public/logos/applications/brutemove.png',
+    categories: ['applications']
+  }
 ];
