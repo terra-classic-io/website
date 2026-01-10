@@ -848,6 +848,6 @@ export const projects: ProjectLink[] = [
     description: 'On-Chain Chess Game',
     indicator: 'onchain',
     logo: '/public/logos/applications/brutemove.png',
-    categories: ['applications']
+    categories: ['applications', 'entertainment']
   }
 ];
