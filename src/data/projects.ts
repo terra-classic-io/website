@@ -849,5 +849,21 @@ export const projects: ProjectLink[] = [
     indicator: 'onchain',
     logo: '/public/logos/applications/brutemove.png',
     categories: ['applications', 'entertainment']
+  },
+   { 
+    name: 'Truth Dashboard',
+    url: 'https://truth.terra-classic.money',
+    description: 'Analytics',
+    indicator: 'onchain',
+    logo: '/public/logos/applications/truth-dashboard.png',
+    categories: ['tools', 'information']
+  },
+  {
+    name: 'State of the Chain (2022-2026)',
+    url: 'https://terra-classic.money',
+    description: 'Independend Report',
+    indicator: 'onchain',
+    logo: '/public/logos/applications/terra-classic-money.png',
+    categories: ['information']
   }
 ];
