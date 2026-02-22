@@ -849,5 +849,13 @@ export const projects: ProjectLink[] = [
     indicator: 'onchain',
     logo: '/public/logos/applications/brutemove.png',
     categories: ['applications', 'entertainment']
+  },
+  {
+    name: "Genesis Raid",
+    url: 'https://genesisraid.com',
+    description: 'Play-to-Earn RPG game',
+    indicator: 'onchain',
+    logo: '/public/logos/entertainment/genesisraid.png',
+    categories: ['entertainment']
   }
 ];
