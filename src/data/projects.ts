@@ -850,7 +850,7 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/applications/brutemove.png',
     categories: ['applications', 'entertainment']
   },
-   { 
+  { 
     name: 'Truth Dashboard',
     url: 'https://truth.terra-classic.money',
     description: 'Analytics',
@@ -865,5 +865,14 @@ export const projects: ProjectLink[] = [
     indicator: 'onchain',
     logo: '/public/logos/applications/terra-classic-money.png',
     categories: ['information']
+  },
+  {
+    name: "Genesis Raid",
+    url: 'https://genesisraid.com',
+    description: 'Play-to-Earn RPG game',
+    indicator: 'onchain',
+    logo: '/public/logos/entertainment/genesisraid.png',
+    categories: ['entertainment']
+  }
   }
 ];
