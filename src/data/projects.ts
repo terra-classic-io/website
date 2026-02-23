@@ -874,5 +874,4 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/entertainment/genesisraid.png',
     categories: ['entertainment']
   }
-  }
 ];
