@@ -13,7 +13,7 @@ try {
 
   writeFileSync(".env", content);
 
-  console.log("✅ Build date injected:", date);
+  console.log("Build date injected:", date);
 } catch (error) {
-  console.error("❌ Error generating build info:", error);
+  console.error("Error generating build info:", error);
 }
