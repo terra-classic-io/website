@@ -706,6 +706,14 @@ export const projects: ProjectLink[] = [
     categories: ['tools']
   },
   { 
+    name: 'TerraScan',
+    url: 'https://scan.terraclassic.app',
+    description: 'Analytics',
+    indicator: 'support',
+    logo: '/public/logos/tools/terrascan.png',
+    categories: ['tools']
+  },
+  { 
     name: 'Terra Station',
     url: 'https://station.terra.money',
     description: 'Official Wallet',
