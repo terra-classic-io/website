@@ -543,6 +543,18 @@ const App: React.FC<{
     </div>
   );
 
+  //Retrieve Last Update Date from generate-build-info.js
+  const lastUpdate = import.meta.env.VITE_LAST_UPDATE;
+  const formattedUpdate = lastUpdate
+    ? new Date(lastUpdate)
+      .toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+      .toUpperCase()
+    : "";
+
   return (
     <div className="relative min-h-screen overflow-x-clip bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
       <Helmet>
@@ -586,7 +598,7 @@ const App: React.FC<{
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 text-sm text-slate-500 transition-colors duration-300 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-10 lg:px-12">
           <p>Built with ❤️ by the Terra Classic community.</p>
           <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">
-            <span>Updated Sept 29, 2025</span>
+            <span>UPDATED {formattedUpdate}</span>
           </div>
         </div>
       </footer>
