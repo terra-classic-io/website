@@ -874,4 +874,12 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/entertainment/genesisraid.png',
     categories: ['entertainment']
   }
+  {
+    name: "Benance Bird",
+    url: "https://benance-bird-mainnet.vercel.app/",
+    description: "Play-to-Earn and Burn arcade game on Terra Classic",
+    indicator: "onchain",
+    logo: "/public/logos/entertainment/Benance_Bird.png",
+    categories: ["entertainment"]
+}
 ];
