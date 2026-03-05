@@ -68,7 +68,7 @@ function MetricsShowcase({ tokens, stakingApr }: MetricsShowcaseProps): JSX.Elem
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-800/70">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800/70">
                     {logoPath ? (
                       <img
                         src={logoPath}
