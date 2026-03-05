@@ -19,6 +19,7 @@ import { categories } from "./data/categories";
 import { useTheme } from "./contexts/ThemeContext";
 import SortControls, { SortMode } from "./components/sort-controls";
 import type { DocNavigationOptions } from "./types/doc-navigation";
+import { LAST_UPDATE } from "./generated/build-info";
 const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
 const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
 const NotFoundPage = React.lazy(() => import("./components/not-found/not-found-page"));
@@ -543,6 +544,36 @@ const App: React.FC<{
     </div>
   );
 
+  // Retrieve last update date injected by generate-build-info.mjs
+  const lastUpdate = LAST_UPDATE;
+  const formattedUpdate = (() => {
+    if (!lastUpdate) {
+      return "";
+    }
+
+    const [yearText, monthText, dayText] = String(lastUpdate).split("-");
+    const year = Number(yearText);
+    const month = Number(monthText);
+    const day = Number(dayText);
+
+    if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+      return "";
+    }
+
+    const localDate = new Date(year, month - 1, day);
+    if (Number.isNaN(localDate.getTime())) {
+      return "";
+    }
+
+    return localDate
+      .toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+      .toUpperCase();
+  })();
+
   return (
     <div className="relative min-h-screen overflow-x-clip bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
       <Helmet>
@@ -586,7 +617,7 @@ const App: React.FC<{
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 text-sm text-slate-500 transition-colors duration-300 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-10 lg:px-12">
           <p>Built with ❤️ by the Terra Classic community.</p>
           <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">
-            <span>Updated Sept 29, 2025</span>
+            <span>UPDATED {formattedUpdate}</span>
           </div>
         </div>
       </footer>

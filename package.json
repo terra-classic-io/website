@@ -5,6 +5,9 @@
   "type": "module",
   "packageManager": "yarn@1.22.22",
   "scripts": {
+    "predev": "node generate-build-info.mjs",
+    "prebuild": "node generate-build-info.mjs",
+    "prebuild:pages": "node generate-build-info.mjs",
     "dev": "vite",
     "build": "tsc && vite build && SSR_TARGET=node vite build --ssr src/ssr.tsx",
     "build:pages": "tsc && CF_PAGES_BUILD=true vite build && SSR_TARGET=webworker CF_PAGES_BUILD=true vite build --ssr src/entry-worker.ts",
