@@ -873,7 +873,7 @@ export const projects: ProjectLink[] = [
     indicator: 'onchain',
     logo: '/public/logos/entertainment/genesisraid.png',
     categories: ['entertainment']
-  }
+  },
   {
     name: "Benance Bird",
     url: "https://benance-bird-mainnet.vercel.app/",
