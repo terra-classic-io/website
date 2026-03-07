@@ -889,5 +889,28 @@ export const projects: ProjectLink[] = [
     indicator: "onchain",
     logo: "/public/logos/entertainment/benance_bird.png",
     categories: ["entertainment"]
-}
-];
+},
+  {
+    name: 'DO Secret',
+    url: 'https://dosecret.cookie-verse.io',
+    description: 'Privacy application',
+    indicator: 'onchain',
+    logo: '/public/logos/applications/base.png',
+    categories: ['applications']
+  },
+  {
+    name: 'Golden Gram',
+    url: 'https://gg.cookie-verse.io',
+    description: 'Ecosystem application',
+    indicator: 'onchain',
+    logo: '/public/logos/applications/base.png',
+    categories: ['applications']
+  },
+  {
+    name: 'CW20 Bakery Burn',
+    url: 'https://cw20bakery.cookie-verse.io/burn',
+    description: 'Token burn tool',
+    indicator: 'onchain',
+    logo: '/public/logos/applications/base.png',
+    categories: ['applications', 'tools']
+  },
