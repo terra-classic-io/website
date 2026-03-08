@@ -882,20 +882,20 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/entertainment/genesisraid.png',
     categories: ['entertainment']
   },
-  {
+    {
     name: "Benance Bird",
     url: "https://benance-bird-mainnet.vercel.app",
     description: "Play-to-Earn and Burn arcade game on Terra Classic",
     indicator: "onchain",
     logo: "/public/logos/entertainment/benance_bird.png",
     categories: ["entertainment"]
-},
+  },
   {
     name: 'DO Secret',
     url: 'https://dosecret.cookie-verse.io',
-    description: 'Privacy application',
+    description: 'Bridge to Secret Network',
     indicator: 'onchain',
-    logo: '/public/logos/applications/base.png',
+    logo: '/public/logos/applications/dosecret.png',
     categories: ['applications']
   },
   {
@@ -903,7 +903,7 @@ export const projects: ProjectLink[] = [
     url: 'https://gg.cookie-verse.io',
     description: 'Ecosystem application',
     indicator: 'onchain',
-    logo: '/public/logos/applications/base.png',
+    logo: '/public/logos/applications/goldengram.png',
     categories: ['applications']
   },
   {
@@ -911,6 +911,7 @@ export const projects: ProjectLink[] = [
     url: 'https://cw20bakery.cookie-verse.io/burn',
     description: 'Token burn tool',
     indicator: 'onchain',
-    logo: '/public/logos/applications/base.png',
-    categories: ['applications', 'tools']
-  },
+    logo: '/public/logos/applications/cw20bakery.png',
+    categories: ['tools']
+  }
+];
