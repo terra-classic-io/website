@@ -901,7 +901,7 @@ export const projects: ProjectLink[] = [
   {
     name: 'Golden Gram',
     url: 'https://gg.cookie-verse.io',
-    description: 'Ecosystem application',
+    description: 'Gold Backed Stable Coin',
     indicator: 'onchain',
     logo: '/public/logos/applications/goldengram.png',
     categories: ['applications']
