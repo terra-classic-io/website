@@ -745,14 +745,6 @@ export const projects: ProjectLink[] = [
     categories: ['bridges']
   },
   { 
-    name: 'TrackTerra',
-    url: 'https://trackterra.org',
-    description: 'Explorer',
-    indicator: 'onchain',
-    logo: '/public/logos/tools/trackterra.png',
-    categories: ['tools']
-  },
-  { 
     name: 'TRITIUM',
     url: 'https://play.terratritium.com',
     description: 'Game',
