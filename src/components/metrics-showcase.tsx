@@ -21,6 +21,11 @@ const changeClassnameMap: Record<'positive' | 'negative', string> = {
   negative: 'text-rose-500 bg-rose-500/10',
 };
 
+const tokenLogoMap: Record<string, string> = {
+  LUNC: '/logos/tokens/uluna.svg',
+  USTC: '/logos/tokens/uusd.svg',
+};
+
 /**
  * MetricsShowcase renders headline metrics for LUNC, USTC, and staking rewards.
  */
@@ -54,6 +59,7 @@ function MetricsShowcase({ tokens, stakingApr }: MetricsShowcaseProps): JSX.Elem
         {tokens.map((tokenMetric) => {
           const changeTone: 'positive' | 'negative' = tokenMetric.isPositive ? 'positive' : 'negative';
           const badgeClassname: string = changeClassnameMap[changeTone];
+          const logoPath = tokenLogoMap[tokenMetric.symbol];
 
           return (
             <article
@@ -62,8 +68,16 @@ function MetricsShowcase({ tokens, stakingApr }: MetricsShowcaseProps): JSX.Elem
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-800/70">
-                    <TrendingUp size={22} />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800/70">
+                    {logoPath ? (
+                      <img
+                        src={logoPath}
+                        alt={`${tokenMetric.symbol} logo`}
+                        className="h-7 w-7 object-contain"
+                      />
+                    ) : (
+                      <TrendingUp size={22} />
+                    )}
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{tokenMetric.symbol}</h3>
