@@ -896,7 +896,7 @@ export const projects: ProjectLink[] = [
     description: 'Bridge to Secret Network',
     indicator: 'onchain',
     logo: '/public/logos/applications/dosecret.png',
-    categories: ['applications']
+    categories: ['bridges']
   },
   {
     name: 'Golden Gram',
