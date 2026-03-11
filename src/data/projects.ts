@@ -795,14 +795,6 @@ export const projects: ProjectLink[] = [
     categories: ['validators', 'information']
   },
   { 
-    name: 'Validators Telegram group',
-    url: 'https://t.me/transparentvalidatorchat',
-    description: 'Community Chat',
-    indicator: 'support',
-    logo: '/public/logos/validators/telegram.svg',
-    categories: ['validators', 'information']
-  },
-  { 
     name: 'Vultisig',
     url: 'https://vultisig.com',
     description: 'Multisig Wallet',
