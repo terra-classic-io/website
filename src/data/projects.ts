@@ -650,11 +650,11 @@ export const projects: ProjectLink[] = [
     categories: ['applications']
   },
   { 
-    name: 'StakeBin',
-    url: 'https://terraclassic.stakebin.io/',
+    name: 'StatsBin',
+    url: 'https://statsbin.com/',
     description: 'Analytics',
     indicator: 'support',
-    logo: '/public/logos/tools/stakebin.png',
+    logo: '/public/logos/tools/StatsBin.jpg',
     categories: ['tools']
   },
   { 
