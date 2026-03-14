@@ -650,14 +650,6 @@ export const projects: ProjectLink[] = [
     categories: ['applications']
   },
   { 
-    name: 'StakeBin',
-    url: 'https://terraclassic.stakebin.io/',
-    description: 'Analytics',
-    indicator: 'support',
-    logo: '/public/logos/tools/stakebin.png',
-    categories: ['tools']
-  },
-  { 
     name: 'Stakin.com',
     url: 'https://stakin.com',
     description: 'Dedicated nodes',
