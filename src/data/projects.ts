@@ -665,6 +665,14 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/infrastructure/stakin.svg',
     categories: ['infrastructure', 'validators']
   },
+  {
+    name: 'StatsBin',
+    url: 'https://statsbin.com',
+    description: 'Analytics',
+    indicator: 'support',
+    logo: '/public/logos/tools/statsbin.png',
+    categories: ['tools']
+  },
   { 
     name: 'Terra Casino',
     url: 'https://terracasino.io',
