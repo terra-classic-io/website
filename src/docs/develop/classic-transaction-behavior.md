@@ -1,4 +1,4 @@
-# Transaction best practices
+## Transaction best practices
 
 Terra Classic follows standard Cosmos transaction flows, but several chain-specific rules affect how applications should build, simulate, and broadcast transactions.
 
