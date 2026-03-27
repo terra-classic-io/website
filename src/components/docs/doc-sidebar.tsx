@@ -92,6 +92,35 @@ function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+function collectSearchResults(
+  section: DocSection,
+  pages: readonly DocPage[],
+  ancestors: readonly string[] = [],
+): SearchResult[] {
+  const results: SearchResult[] = [];
+
+  pages.forEach((page) => {
+    const pagePath: readonly string[] = [...ancestors, page.slug];
+    const markdownText = normalizeSearchText(page.markdown ?? "");
+    results.push({
+      key: `${section.slug}/${pagePath.join("/")}`,
+      sectionSlug: section.slug,
+      sectionTitle: section.title,
+      pagePath,
+      title: page.title,
+      summary: page.summary,
+      markdownText,
+      score: 0,
+    });
+
+    if (page.children && page.children.length > 0) {
+      results.push(...collectSearchResults(section, page.children, pagePath));
+    }
+  });
+
+  return results;
+}
+
 function DocSidebar(props: DocSidebarProps): JSX.Element {
   const {
     sections,
@@ -109,35 +138,6 @@ function DocSidebar(props: DocSidebarProps): JSX.Element {
       ? "flex h-full flex-col gap-10 overflow-y-auto pr-4"
       : "fixed top-24 w-72 -mt-3 flex h-[calc(100vh-6rem)] flex-col gap-10 overflow-y-auto pr-6";
   const normalizedQuery: string = searchQuery.trim().toLowerCase();
-
-  const collectSearchResults = (
-    section: DocSection,
-    pages: readonly DocPage[],
-    ancestors: readonly string[] = [],
-  ): SearchResult[] => {
-    const results: SearchResult[] = [];
-
-    pages.forEach((page) => {
-      const pagePath: readonly string[] = [...ancestors, page.slug];
-      const markdownText = normalizeSearchText(page.markdown ?? "");
-      results.push({
-        key: `${section.slug}/${pagePath.join("/")}`,
-        sectionSlug: section.slug,
-        sectionTitle: section.title,
-        pagePath,
-        title: page.title,
-        summary: page.summary,
-        markdownText,
-        score: 0,
-      });
-
-      if (page.children && page.children.length > 0) {
-        results.push(...collectSearchResults(section, page.children, pagePath));
-      }
-    });
-
-    return results;
-  };
 
   const searchResults = useMemo<SearchResult[]>(() => {
     if (!normalizedQuery) {
