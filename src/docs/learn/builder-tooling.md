@@ -5,4 +5,3 @@ Terra Classic supports CosmWasm smart contracts, IBC integrations, and a growing
 - [@goblinhunt/cosmes](https://www.npmjs.com/package/@goblinhunt/cosmes) — Classic-focused JavaScript SDK covering LCD, RPC, gRPC, and CosmWasm helpers with modern typings.
 - [Terra Classic LCD schema](https://terra-classic-lcd.publicnode.com/swagger/index.html) — OpenAPI specification for primary LCD endpoints, ideal for generated clients.
 - [CosmWasm Contracts](https://github.com/CosmWasm/cosmwasm/tree/main/contracts) — Sample contracts for CosmWasm to learn and expand on.
-- [/docs/develop/classic-transaction-behavior](/docs/develop/classic-transaction-behavior) — Integration notes for burn tax, Tax2Gas, tax exemptions, transaction simulation, and Classic-specific production pitfalls.

@@ -1,4 +1,4 @@
-# Terra Classic Transaction Behavior
+# Transaction best practices
 
 Terra Classic follows standard Cosmos transaction flows, but several chain-specific rules affect how applications should build, simulate, and broadcast transactions.
 
@@ -27,9 +27,9 @@ Terra Classic integrations usually rely on:
 
 Use the maintained endpoint list here: [/docs/develop/endpoints](/docs/develop/endpoints)
 
-## Check chain state before broadcasting
+## Optional preflight checks
 
-A production-grade integration should query live chain data before building transactions.
+A production-grade integration may query live chain data before building transactions when the app needs precise fee previews, sender-side tax handling, or received-amount estimates.
 
 Useful preflight checks include:
 
@@ -40,12 +40,12 @@ Useful preflight checks include:
 
 See the exact endpoints in [/docs/develop/endpoints](/docs/develop/endpoints).
 
-Typical checks:
+Typical optional checks:
 
 1. Fetch current gas prices.
 2. Fetch current tax parameters.
-3. Check whether sender and recipient are taxable when relevant.
-4. Simulate the transaction.
+3. Check whether sender and recipient are taxable when the UX depends on it.
+4. Simulate the transaction when the app needs a tighter estimate.
 5. Broadcast only after confirming final fee assumptions.
 
 ## Burn tax and Tax2Gas
@@ -58,6 +58,8 @@ Important consequences for integrators:
 - in some paths, tax can be charged through reverse-charge handling rather than simple top-level deduction
 - wallet UIs and backend services should not hardcode a single tax formula
 - governance changes can alter practical fee behaviour without requiring application code changes
+
+For many basic transfers, apps do not need to query taxability before broadcasting because the tax is automatically deducted on-chain. Preflight checks are mainly useful when the app wants to show the effect on the received amount or intentionally handle the tax on the sender side.
 
 If your app shows transfer previews, present the result as an estimate unless you have just simulated against current chain state.
 
@@ -74,9 +76,15 @@ This matters for:
 - contract-controlled transfers
 - internal service wallets
 
-Before treating a transfer as taxable, query the tax exemption registry through the LCD API.
+Before treating a transfer as taxable in the UI, query the tax exemption registry through the LCD API.
 
 If your app shows fee or received-amount estimates, this check should happen before the final confirmation screen.
+
+## Contract calls with funds
+
+Sending funds to a contract is tax-free on Terra Classic.
+
+That means contract execution flows should not be treated the same way as standard taxable wallet-to-wallet transfers when calculating expected outcomes in the UI.
 
 ## Disabled market swap behaviour
 
@@ -96,10 +104,10 @@ A safe integration flow looks like this:
 
 1. Resolve network and transport choice from configuration.
 2. Fetch current gas prices.
-3. Fetch tax parameters.
-4. Check taxability for the sender and recipient when relevant.
+3. Optionally fetch tax parameters when the app needs them for UX or accounting.
+4. Optionally check taxability for the sender and recipient when relevant.
 5. Build the unsigned transaction.
-6. Simulate gas usage.
+6. Simulate gas usage when the app needs a tighter estimate.
 7. Apply a gas adjustment margin.
 8. Show the user the final estimated cost.
 9. Broadcast the transaction.
@@ -113,6 +121,7 @@ Frontend apps should:
 - separate display amounts from micro-denom on-chain amounts
 - avoid assuming fixed gas prices
 - avoid assuming all `MsgSend` flows are taxed identically
+- treat contract calls with attached funds separately from taxable wallet-to-wallet sends
 - handle wallet rejection and broadcast failure separately
 
 A useful UX pattern is:
@@ -131,6 +140,7 @@ Backend services should:
 - use retries with backoff for LCD and RPC queries
 - prefer dedicated infrastructure for production
 - record both requested transfer amount and actual on-chain result
+- distinguish taxable transfers from tax-free contract funding flows
 - persist tx hash, code, raw log, and gas used for debugging
 
 If you operate automated jobs, add alerts for:
@@ -145,6 +155,10 @@ If you operate automated jobs, add alerts for:
 ### Hardcoding gas prices
 
 Gas prices should be refreshed from a live source instead of being baked into code indefinitely.
+
+### Assuming every transfer needs a tax preflight
+
+Basic transfers do not require an explicit tax query to succeed. Preflight checks are mostly for UX precision and accounting.
 
 ### Ignoring tax exemption routes
 
@@ -170,7 +184,7 @@ If a transaction fails unexpectedly:
 - verify account sequence and wallet state
 - refresh gas prices
 - re-check tax parameters
-- check sender and recipient taxability
+- check sender and recipient taxability if the UX or accounting depends on it
 - simulate again
 - inspect tx logs and error codes
 - retry against another healthy endpoint

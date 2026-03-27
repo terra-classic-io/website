@@ -309,18 +309,19 @@ const learnStaking: DocPage = {
   markdown: learnStakingGuide,
 };
 
+const developTxBestPractices: DocPage = {
+  slug: "tx-best-practices",
+  title: "Tx best practices",
+  summary: "Practical guidance for burn tax, Tax2Gas, tax-free contract funding, and safe Terra Classic transaction flows.",
+  markdown: classicTransactionBehaviorGuide,
+};
+
 const developBuilderTooling: DocPage = {
   slug: "builder-tooling",
   title: "Builder tooling",
   summary: "Essential SDKs and references for building Terra Classic dApps with modern tooling.",
   markdown: learnBuilderGuide,
   children: [
-    {
-      slug: "classic-transaction-behavior",
-      title: "Classic transaction behavior",
-      summary: "Integration guidance for burn tax, Tax2Gas, tax exemptions, and safe transaction flows.",
-      markdown: classicTransactionBehaviorGuide,
-    },
     {
       slug: "cosmes",
       title: "CosmES SDK",
@@ -603,7 +604,7 @@ export const docSections: readonly DocSection[] = [
     slug: "develop",
     title: "Develop",
     description: "Build Terra Classic dApps, run localnets, and reference Terra Core modules.",
-    pages: [developLocalnet, developBuilderTooling, developSmartContracts, developModuleSpecifications],
+    pages: [developLocalnet, developTxBestPractices, developBuilderTooling, developSmartContracts, developModuleSpecifications],
   },
   {
     slug: "learn",
