@@ -3,6 +3,7 @@ import type { DocSection } from "../types/doc-section";
 import startGuide from "../docs/start.md?raw";
 import buildTerraCoreGuide from "../docs/full-node/run-a-full-terra-node/build-terra-core.md?raw";
 import configureGeneralSettingsGuide from "../docs/full-node/run-a-full-terra-node/configure-general-settings.md?raw";
+import classicTransactionBehaviorGuide from "../docs/develop/classic-transaction-behavior.md?raw";
 import endpointsGuide from "../docs/develop/endpoints.md?raw";
 import joinNetworkGuide from "../docs/full-node/run-a-full-terra-node/join-a-network.md?raw";
 import setUpProductionGuide from "../docs/full-node/run-a-full-terra-node/set-up-production.md?raw";
@@ -314,6 +315,12 @@ const developBuilderTooling: DocPage = {
   summary: "Essential SDKs and references for building Terra Classic dApps with modern tooling.",
   markdown: learnBuilderGuide,
   children: [
+    {
+      slug: "classic-transaction-behavior",
+      title: "Classic transaction behavior",
+      summary: "Integration guidance for burn tax, Tax2Gas, tax exemptions, and safe transaction flows.",
+      markdown: classicTransactionBehaviorGuide,
+    },
     {
       slug: "cosmes",
       title: "CosmES SDK",
