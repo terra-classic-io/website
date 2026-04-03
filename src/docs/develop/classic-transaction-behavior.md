@@ -80,6 +80,8 @@ Before treating a transfer as taxable in the UI, query the tax exemption registr
 
 If your app shows fee or received-amount estimates, this check should happen before the final confirmation screen.
 
+For the current registry endpoints and examples, see the [Tax exemption registry](/docs/learn/fees#tax-exemption-registry) section in the fees guide.
+
 ## Contract calls with funds
 
 Sending funds to a contract is tax-free on Terra Classic.
