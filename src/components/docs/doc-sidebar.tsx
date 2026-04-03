@@ -74,7 +74,11 @@ function buildSearchPreview(content: string, queryTerms: readonly string[]): str
     .filter((index) => index >= 0)
     .sort((left, right) => left - right);
 
-  const firstMatchIndex = matchIndexes[0] ?? 0;
+  if (matchIndexes.length === 0) {
+    return undefined;
+  }
+
+  const firstMatchIndex = matchIndexes[0];
   const startIndex = Math.max(0, firstMatchIndex - 45);
   const endIndex = Math.min(normalizedContent.length, startIndex + SEARCH_PREVIEW_LENGTH);
   const preview = normalizedContent.slice(startIndex, endIndex).trim();
@@ -138,16 +142,19 @@ function DocSidebar(props: DocSidebarProps): JSX.Element {
       ? "flex h-full flex-col gap-10 overflow-y-auto pr-4"
       : "fixed top-24 w-72 -mt-3 flex h-[calc(100vh-6rem)] flex-col gap-10 overflow-y-auto pr-6";
   const normalizedQuery: string = searchQuery.trim().toLowerCase();
+  const flattenedSearchResults = useMemo<SearchResult[]>(
+    () => sections.flatMap((section) => collectSearchResults(section, section.pages)),
+    [sections],
+  );
 
   const searchResults = useMemo<SearchResult[]>(() => {
     if (!normalizedQuery) {
       return [];
     }
 
-    const queryTerms: readonly string[] = normalizedQuery.split(/\s+/).filter(Boolean);
-    const flattenedResults: SearchResult[] = sections.flatMap((section) => collectSearchResults(section, section.pages));
+    const queryTerms: readonly string[] = Array.from(new Set(normalizedQuery.split(/\s+/).filter(Boolean)));
 
-    return flattenedResults
+    return flattenedSearchResults
       .map((result) => {
         const titleLower = result.title.toLowerCase();
         const summaryLower = (result.summary ?? "").toLowerCase();
@@ -213,7 +220,7 @@ function DocSidebar(props: DocSidebarProps): JSX.Element {
 
         return left.title.localeCompare(right.title);
       });
-  }, [normalizedQuery, sections]);
+  }, [flattenedSearchResults, normalizedQuery]);
 
   const highlightMatches = (text: string, query: string): React.ReactNode => {
     const trimmedQuery = query.trim();
@@ -226,7 +233,8 @@ function DocSidebar(props: DocSidebarProps): JSX.Element {
       return text;
     }
 
-    const pattern = new RegExp(`(${queryTerms.map((term) => escapeRegExp(term)).join("|")})`, "gi");
+    const sortedQueryTermsForRegex = [...queryTerms].sort((left, right) => right.length - left.length);
+    const pattern = new RegExp(`(${sortedQueryTermsForRegex.map((term) => escapeRegExp(term)).join("|")})`, "gi");
     const segments = text.split(pattern);
 
     return segments.map((segment, index) => {
