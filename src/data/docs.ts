@@ -3,6 +3,7 @@ import type { DocSection } from "../types/doc-section";
 import startGuide from "../docs/start.md?raw";
 import buildTerraCoreGuide from "../docs/full-node/run-a-full-terra-node/build-terra-core.md?raw";
 import configureGeneralSettingsGuide from "../docs/full-node/run-a-full-terra-node/configure-general-settings.md?raw";
+import classicTransactionBehaviorGuide from "../docs/develop/classic-transaction-behavior.md?raw";
 import endpointsGuide from "../docs/develop/endpoints.md?raw";
 import joinNetworkGuide from "../docs/full-node/run-a-full-terra-node/join-a-network.md?raw";
 import setUpProductionGuide from "../docs/full-node/run-a-full-terra-node/set-up-production.md?raw";
@@ -308,6 +309,13 @@ const learnStaking: DocPage = {
   markdown: learnStakingGuide,
 };
 
+const developTxBestPractices: DocPage = {
+  slug: "tx-best-practices",
+  title: "Tx best practices",
+  summary: "Practical guidance for burn tax, Tax2Gas, tax-free contract funding, and safe Terra Classic transaction flows.",
+  markdown: classicTransactionBehaviorGuide,
+};
+
 const developBuilderTooling: DocPage = {
   slug: "builder-tooling",
   title: "Builder tooling",
@@ -596,7 +604,7 @@ export const docSections: readonly DocSection[] = [
     slug: "develop",
     title: "Develop",
     description: "Build Terra Classic dApps, run localnets, and reference Terra Core modules.",
-    pages: [developLocalnet, developBuilderTooling, developSmartContracts, developModuleSpecifications],
+    pages: [developLocalnet, developTxBestPractices, developBuilderTooling, developSmartContracts, developModuleSpecifications],
   },
   {
     slug: "learn",
