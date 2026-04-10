@@ -76,9 +76,33 @@ function resolveActiveTarget(segments: readonly string[]): ActiveDocTarget {
   };
 }
 
-function DocsShell({ docSegments, onNavigate }: DocsShellProps): JSX.Element {
+function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps): JSX.Element {
   const { section, page, trail, path } = useMemo(() => resolveActiveTarget(docSegments), [docSegments]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const homeHref: string = isDocsSubdomain ? "https://terra-classic.io" : "/";
+  const docsBaseUrl: string = isDocsSubdomain ? "https://docs.terra-classic.io" : "https://terra-classic.io/docs";
+  const pageUrl: string = path.length > 0
+    ? `${docsBaseUrl}/${section.slug}/${path.join("/")}`
+    : `${docsBaseUrl}/${section.slug}`;
+  const siteName: string = "Terra Classic Documentation";
+  const pageTitle: string = `${page.title} · Terra Classic Docs`;
+  const pageDescription: string = page.summary
+    || "Terra Classic documentation covering full node operations, network endpoints, wallets, and governance.";
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteName,
+    alternateName: "Terra Classic Docs",
+    url: docsBaseUrl,
+    publisher: {
+      "@type": "Organization",
+      name: "Terra Classic",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://terra-classic.io/favicon-512.png",
+      },
+    },
+  };
 
   const { previousPage, nextPage } = useMemo<{ previousPage?: DocPageWithPath; nextPage?: DocPageWithPath }>(() => {
     if (orderedDocPages.length === 0) {
@@ -167,11 +191,28 @@ function DocsShell({ docSegments, onNavigate }: DocsShellProps): JSX.Element {
   return (
     <div className="relative min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
       <Helmet>
-        <title>{`${page.title} · Terra Classic Docs`}</title>
-        <meta
-          name="description"
-          content="Terra Classic documentation covering full node operations, network endpoints, wallets, and governance."
-        />
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="application-name" content={siteName} />
+        <meta name="apple-mobile-web-app-title" content={siteName} />
+        <meta name="robots" content="index,follow" />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:site_name" content={siteName} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:image" content="https://terra-classic.io/og-image.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content="https://terra-classic.io/og-image.jpg" />
+        <link rel="canonical" href={pageUrl} />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
 
       <div className="pointer-events-none fixed inset-x-0 top-[-15%] h-[420px] bg-gradient-to-b from-sky-200/60 via-transparent to-transparent dark:from-sky-800/40" />
@@ -232,7 +273,7 @@ function DocsShell({ docSegments, onNavigate }: DocsShellProps): JSX.Element {
               <Menu size={16} />
             </button>
             <Link
-              to={window.location.hostname === "docs.terra-classic.io" ? "https://terra-classic.io" : "/"}
+              to={homeHref}
               className="inline-flex items-center gap-2 rounded-full border border-slate-300/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.32em] text-slate-600 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500"
             >
               <ArrowLeft size={16} />
@@ -263,7 +304,7 @@ function DocsShell({ docSegments, onNavigate }: DocsShellProps): JSX.Element {
             </div>
             <div className="flex flex-col items-end gap-3">
               <Link
-                to={window.location.hostname === "docs.terra-classic.io" ? "https://terra-classic.io" : "/"}
+                to={homeHref}
                 className="inline-flex items-center gap-2 rounded-full border border-slate-300/80 px-5 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-slate-600 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500"
               >
                 <ArrowLeft size={16} />
