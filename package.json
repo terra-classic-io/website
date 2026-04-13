@@ -20,7 +20,8 @@
     "lint:ts": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:md": "markdownlint-cli2",
     "type-check": "tsc --noEmit",
-    "check": "tsc --noEmit && eslint src --ext ts,tsx && markdownlint-cli2"
+    "check:projects": "node scripts/check-project-links.mjs",
+    "check": "tsc --noEmit && eslint src --ext ts,tsx && markdownlint-cli2 && yarn check:projects"
   },
   "dependencies": {
     "compression": "^1.8.0",
