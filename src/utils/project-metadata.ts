@@ -35,24 +35,34 @@ const normalizeHostname = (url: string): string => {
   try {
     const parsed = new URL(url, 'https://terra-classic.io');
     return parsed.hostname.replace(/^www\./, '') || 'terra-classic.io';
-  } catch (_error) {
+  } catch {
     return 'terra-classic.io';
   }
 };
 
-export const deriveProjectMetadata = (project: Pick<ProjectLink, 'name' | 'url' | 'description' | 'categories'>): DerivedProjectMetadata => {
+export const deriveProjectMetadata = (
+  project: Pick<ProjectLink, 'name' | 'url' | 'description' | 'categories'>
+): DerivedProjectMetadata => {
   const haystack = `${project.name} ${project.description ?? ''} ${(project.categories ?? []).join(' ')}`.toLowerCase();
-  const isMobile = haystack.includes('mobile') || haystack.includes('play.google.com') || project.url.includes('play.google.com');
+  const isMobile =
+    haystack.includes('mobile') ||
+    haystack.includes('play.google.com') ||
+    project.url.includes('play.google.com');
   const isDocs = haystack.includes('documentation') || project.url.startsWith('/docs');
-  const isApi = haystack.includes('endpoint') || haystack.includes('api') || haystack.includes('rpc') || haystack.includes('grpc') || haystack.includes('lcd');
+  const isApi =
+    haystack.includes('endpoint') ||
+    haystack.includes('api') ||
+    haystack.includes('rpc') ||
+    haystack.includes('grpc') ||
+    haystack.includes('lcd');
 
   const platformLabel: DerivedProjectMetadata['platformLabel'] = isDocs
     ? 'Docs'
     : isMobile
-    ? 'Mobile'
-    : isApi
-    ? 'API'
-    : 'Web';
+      ? 'Mobile'
+      : isApi
+        ? 'API'
+        : 'Web';
 
   return {
     featured: FEATURED_PROJECTS.has(project.name),
@@ -63,7 +73,10 @@ export const deriveProjectMetadata = (project: Pick<ProjectLink, 'name' | 'url' 
   };
 };
 
-export const matchesProjectSearch = (project: Pick<ProjectLink, 'name' | 'url' | 'description' | 'categories'>, searchQuery: string): boolean => {
+export const matchesProjectSearch = (
+  project: Pick<ProjectLink, 'name' | 'url' | 'description' | 'categories'>,
+  searchQuery: string
+): boolean => {
   const normalizedQuery = searchQuery.trim().toLowerCase();
   if (!normalizedQuery) {
     return true;
