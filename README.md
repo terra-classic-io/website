@@ -4,10 +4,13 @@ This repository powers [terra-classic.io](https://terra-classic.io), an unoffici
 
 ## Features
 
-- **Ecosystem directory** with applications, infrastructure providers, and analytics tools.
+- **Ecosystem directory** with applications, infrastructure providers, analytics tools, wallets, and markets.
+- **Search-first discovery flow** with keyword search and featured-resource filtering for faster navigation.
+- **Richer resource cards** that surface hostnames, platform labels, featured picks, and official badges.
 - **Documentation shell** that renders guides from the `src/docs/` tree.
 - **Responsive UI** implemented with React, Vite, and Tailwind CSS for desktop and mobile visitors.
 - **Server-side rendering (SSR)** support through Vite and Cloudflare Pages Workers for fast first paint.
+- **SEO foundations** including page titles, descriptions, canonical URLs, and social metadata.
 
 ## Getting started
 
@@ -23,6 +26,7 @@ The development server runs on Vite with hot module replacement. Ensure you are 
 - `yarn dev` – start the local development server.
 - `yarn lint` – lint all TypeScript and TSX sources with ESLint.
 - `yarn type-check` – perform a TypeScript type check without emitting output.
+- `yarn check:projects` – validate project names and URLs for duplicates or malformed entries.
 - `yarn build` – create production assets and SSR bundles for Node targets.
 - `yarn build:pages` – generate static assets and worker bundles for Cloudflare Pages.
 - `yarn deploy:pages` – run the Pages build and deploy using Wrangler.
@@ -40,10 +44,20 @@ The development server runs on Vite with hot module replacement. Ensure you are 
 
 ## Project structure
 
-- `src/` – React components, documentation content, design system tokens, and routing.
+- `src/` – React components, documentation content, design system tokens, routing, and discovery utilities.
 - `public/` – Static assets served as-is (logos, etc.).
+- `scripts/` – repository maintenance utilities such as project-link validation.
 - `dist/` – Build output produced by `yarn build` or `yarn build:pages`.
 - `wrangler.toml` – Cloudflare configuration, including the Pages output directory.
+
+## Content maintenance
+
+The ecosystem directory is intentionally curated, but it still needs regular hygiene as projects evolve. Recommended review loop:
+
+1. Run `yarn check:projects` before opening a PR.
+2. Confirm important links still resolve and descriptions still match the live product.
+3. Promote newly relevant destinations to the featured list when they become especially useful to newcomers.
+4. Remove stale, rebranded, or deprecated entries quickly to preserve trust.
 
 ## Contributing
 
