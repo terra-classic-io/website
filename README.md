@@ -8,8 +8,7 @@ Terra Classic ecosystem.
 
 - **Ecosystem directory** with applications, infrastructure,
   analytics tools, wallets, and markets.
-- **Search-first discovery flow** with keyword search and
-  featured-resource filtering.
+- **Search-first discovery flow** with keyword search.
 - **Documentation shell** that renders guides from the `src/docs/` tree.
 - **Responsive UI** built with React, Vite, and Tailwind CSS.
 - **Server-side rendering (SSR)** support through Vite and

@@ -15,14 +15,13 @@ import FAQAccordion from "./components/FAQAccordion";
 import HeroSection from "./components/hero-section";
 import MetricsShowcase, { TokenMetric } from "./components/metrics-showcase";
 import ThemeToggle from "./components/ThemeToggle";
-import SearchControls from "./components/search-controls";
 import { projects } from "./data/projects";
 import { categories } from "./data/categories";
 import { useTheme } from "./contexts/ThemeContext";
 import SortControls, { SortMode } from "./components/sort-controls";
 import type { DocNavigationOptions } from "./types/doc-navigation";
 import { LAST_UPDATE } from "./generated/build-info";
-import { deriveProjectMetadata, matchesProjectSearch } from "./utils/project-metadata";
+import { matchesProjectSearch } from "./utils/project-metadata";
 
 const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
 const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
@@ -152,7 +151,6 @@ const App: React.FC<{
   const [appState, setAppState] = useState<AppState>(mergedInitialState);
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [featuredOnly, setFeaturedOnly] = useState<boolean>(false);
   const categoriesContainerRef = useRef<HTMLDivElement | null>(null);
   const categoryRefs = useRef<CategoryRefMap>({});
   const location = useLocation();
@@ -312,16 +310,6 @@ const App: React.FC<{
 
   const totalResourceCount = useMemo<number>(() => projects.length, []);
 
-  const filteredProjectCount = useMemo<number>(() => {
-    return projects.filter((project) => {
-      const metadata = deriveProjectMetadata(project);
-      if (featuredOnly && !metadata.featured) {
-        return false;
-      }
-      return matchesProjectSearch(project, searchQuery);
-    }).length;
-  }, [featuredOnly, searchQuery]);
-
   const pathSegments = useMemo<readonly string[]>(
     () => location.pathname.split("/").filter(Boolean),
     [location.pathname]
@@ -378,11 +366,20 @@ const App: React.FC<{
   );
 
   const visibleCategories = useMemo<(keyof typeof categories)[]>(() => {
-    if (activeCategory === "All") {
-      return Object.keys(categories);
+    const allCategories = Object.keys(categories) as (keyof typeof categories)[];
+
+    if (activeCategory !== "All") {
+      return allCategories.filter((category) => category === activeCategory);
     }
-    return Object.keys(categories).filter((category) => category === activeCategory);
-  }, [activeCategory]);
+
+    return allCategories.filter((category) =>
+      projects.some(
+        (project) =>
+          project.categories?.includes(category) &&
+          matchesProjectSearch(project, searchQuery)
+      )
+    );
+  }, [activeCategory, searchQuery]);
 
   const tokenMetrics = useMemo<TokenMetric[]>(() => {
     const { LUNC, USTC } = appState.tokens;
@@ -410,17 +407,12 @@ const App: React.FC<{
         description: "Applications, infrastructure, and tools",
       },
       {
-        label: "Search-ready",
-        value: `${filteredProjectCount}`,
-        description: "Current matching results",
-      },
-      {
         label: "Staking APR",
         value: appState.staking.apr,
         description: "Source: validator.info",
       },
     ],
-    [appState.staking.apr, filteredProjectCount, totalResourceCount]
+    [appState.staking.apr, totalResourceCount]
   );
 
   const assignCategoryRef = useCallback(
@@ -550,7 +542,6 @@ const App: React.FC<{
           onExploreCategories={handleExploreCategories}
           onOpenDocs={handleOpenDocs}
           onOpenMap={handleOpenMap}
-          onSelectQuickCategory={handleCategorySelect}
           stats={heroStats}
           isMobile={appState.isMobile}
           isExpanded={heroDetailsExpanded}
@@ -564,16 +555,6 @@ const App: React.FC<{
             stakingApr={appState.staking.apr}
           />
         )}
-      </div>
-
-      <div className="mx-auto max-w-6xl px-4 sm:px-10 lg:px-12">
-        <SearchControls
-          searchQuery={searchQuery}
-          onSearchQueryChange={setSearchQuery}
-          featuredOnly={featuredOnly}
-          onToggleFeaturedOnly={() => setFeaturedOnly((previous) => !previous)}
-          resultCount={filteredProjectCount}
-        />
       </div>
 
       <div className="mx-auto max-w-6xl px-4 sm:px-10 lg:px-12">
@@ -593,6 +574,8 @@ const App: React.FC<{
           onTogglePrioritizeOnchain={() =>
             setPrioritizeOnchain((previous) => !previous)
           }
+          searchQuery={searchQuery}
+          onSearchQueryChange={setSearchQuery}
         />
       </div>
 
@@ -614,7 +597,6 @@ const App: React.FC<{
                 sortMode={sortMode}
                 prioritizeOnchain={prioritizeOnchain}
                 searchQuery={searchQuery}
-                featuredOnly={featuredOnly}
               />
             </div>
           ))}
@@ -707,12 +689,7 @@ const App: React.FC<{
 
       <footer className="relative z-20 border-t border-slate-200/60 bg-white/80 py-10 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 text-sm text-slate-500 transition-colors duration-300 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-10 lg:px-12">
-          <div className="space-y-2">
-            <p>Built with ❤️ by the Terra Classic community.</p>
-            <p className="text-xs text-slate-400 dark:text-slate-500">
-              Search, featured discovery, and richer resource cards now help users reach the right destination faster.
-            </p>
-          </div>
+          <p>Built with ❤️ by the Terra Classic community.</p>
           <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">
             <span>UPDATED {formattedUpdate}</span>
           </div>
