@@ -609,6 +609,22 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/dex/raydium.svg',
     categories: ['dex']
   },
+  {
+    name: 'Reputation',
+    url: 'https://reputation.money',
+    description: 'Reputation token launchpad',
+    indicator: 'onchain',
+    logo: '/public/logos/applications/reputation.png',
+    categories: ['applications']
+  },
+  {
+    name: 'Reputation DEX',
+    url: 'https://reputation.global',
+    description: 'Decentralized exchange for reputation tokens',
+    indicator: 'onchain',
+    logo: '/public/logos/dex/reputation.png',
+    categories: ['dex']
+  },
   { 
     name: 'Satellite',
     url: 'https://satellite.money/?destination_address=&asset_denom=uusdc&source=osmosis&destination=terra+classic',
