@@ -616,6 +616,7 @@ export const projects: ProjectLink[] = [
     indicator: 'onchain',
     logo: '/public/logos/applications/reputation.png',
     categories: ['applications']
+    wip: true,
   },
   {
     name: 'Reputation DEX',
@@ -624,6 +625,7 @@ export const projects: ProjectLink[] = [
     indicator: 'onchain',
     logo: '/public/logos/dex/reputation.png',
     categories: ['dex']
+    wip: true,
   },
   { 
     name: 'Satellite',
