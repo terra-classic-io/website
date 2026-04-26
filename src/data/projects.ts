@@ -615,7 +615,7 @@ export const projects: ProjectLink[] = [
     description: 'Reputation token launchpad',
     indicator: 'onchain',
     logo: '/public/logos/applications/reputation.png',
-    categories: ['applications']
+    categories: ['applications'],
     wip: true,
   },
   {
@@ -624,7 +624,7 @@ export const projects: ProjectLink[] = [
     description: 'Decentralized exchange for reputation tokens',
     indicator: 'onchain',
     logo: '/public/logos/dex/reputation.png',
-    categories: ['dex']
+    categories: ['dex'],
     wip: true,
   },
   { 
