@@ -1,3 +1,4 @@
+
 /**
  * @fileoverview HeroSection component renders the top-of-page hero experience with calls to action.
  */

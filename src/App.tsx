@@ -1,3 +1,4 @@
+
 import React, {
   useCallback,
   useEffect,
@@ -20,6 +21,8 @@ import { useTheme } from "./contexts/ThemeContext";
 import SortControls, { SortMode } from "./components/sort-controls";
 import type { DocNavigationOptions } from "./types/doc-navigation";
 import { LAST_UPDATE } from "./generated/build-info";
+import { matchesProjectSearch } from "./utils/project-metadata";
+
 const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
 const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
 const NotFoundPage = React.lazy(() => import("./components/not-found/not-found-page"));
@@ -147,6 +150,7 @@ const App: React.FC<{
 
   const [appState, setAppState] = useState<AppState>(mergedInitialState);
   const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const categoriesContainerRef = useRef<HTMLDivElement | null>(null);
   const categoryRefs = useRef<CategoryRefMap>({});
   const location = useLocation();
@@ -174,6 +178,7 @@ const App: React.FC<{
     }
     setHostname(window.location.hostname.toLowerCase());
   }, [normalizedInitialHostname]);
+
   const [heroDetailsExpanded, setHeroDetailsExpanded] = useState<boolean>(false);
 
   useEffect(() => {
@@ -303,10 +308,7 @@ const App: React.FC<{
     };
   }, []);
 
-  const totalResourceCount = useMemo<number>(
-    () => projects.length,
-    []
-  );
+  const totalResourceCount = useMemo<number>(() => projects.length, []);
 
   const pathSegments = useMemo<readonly string[]>(
     () => location.pathname.split("/").filter(Boolean),
@@ -362,13 +364,22 @@ const App: React.FC<{
     },
     [isDocsSubdomain, navigate]
   );
-  
+
   const visibleCategories = useMemo<(keyof typeof categories)[]>(() => {
-    if (activeCategory === "All") {
-      return Object.keys(categories);
+    const allCategories = Object.keys(categories) as (keyof typeof categories)[];
+
+    if (activeCategory !== "All") {
+      return allCategories.filter((category) => category === activeCategory);
     }
-    return Object.keys(categories).filter((category) => category === activeCategory);
-  }, [activeCategory]);
+
+    return allCategories.filter((category) =>
+      projects.some(
+        (project) =>
+          project.categories?.includes(category) &&
+          matchesProjectSearch(project, searchQuery)
+      )
+    );
+  }, [activeCategory, searchQuery]);
 
   const tokenMetrics = useMemo<TokenMetric[]>(() => {
     const { LUNC, USTC } = appState.tokens;
@@ -393,8 +404,7 @@ const App: React.FC<{
       {
         label: "Projects",
         value: `${totalResourceCount}+`,
-        description:
-          "Applications, infrastructure, and tools",
+        description: "Applications, infrastructure, and tools",
       },
       {
         label: "Staking APR",
@@ -455,9 +465,58 @@ const App: React.FC<{
     navigate("/bubbles");
   }, [navigate]);
 
+  const siteOrigin = useMemo<string>(() => {
+    if (typeof window !== "undefined" && window.location.origin) {
+      return window.location.origin;
+    }
+    if (normalizedHostname) {
+      return `https://${normalizedHostname}`;
+    }
+    return "https://terra-classic.io";
+  }, [normalizedHostname]);
+
+  const canonicalUrl = useMemo<string>(() => `${siteOrigin}${location.pathname}`, [location.pathname, siteOrigin]);
+
+  const seo = useMemo(() => {
+    if (location.pathname === "/bubbles") {
+      return {
+        title: "Terra Classic Ecosystem Map",
+        description: "Explore the Terra Classic ecosystem through an interactive project map spanning wallets, markets, tooling, builders, validators, and infrastructure.",
+      };
+    }
+
+    if (isDocsMode) {
+      return {
+        title: "Terra Classic Documentation",
+        description: "Read Terra Classic documentation for builders, validators, and ecosystem users across endpoints, governance, staking, and integration guides.",
+      };
+    }
+
+    return {
+      title: "Terra Classic Ecosystem Directory",
+      description: "Explore Terra Classic wallets, markets, validators, tools, bridges, infrastructure, and documentation from a community-curated ecosystem hub.",
+    };
+  }, [isDocsMode, location.pathname]);
+
+  const websiteSchema = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Terra Classic Ecosystem Directory",
+      url: siteOrigin,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${siteOrigin}/?q={search_term_string}`,
+        "query-input": "required name=search_term_string",
+      },
+      description: seo.description,
+    }),
+    [seo.description, siteOrigin]
+  );
+
   if (isDocsMode) {
     return (
-      <Suspense fallback={<div style={{ minHeight: 200 }} />}> 
+      <Suspense fallback={<div style={{ minHeight: 200 }} />}>
         <DocsShell
           docSegments={docSegments}
           onNavigate={handleDocsNavigate}
@@ -507,7 +566,7 @@ const App: React.FC<{
         />
       </div>
 
-      <div className="sticky top-0 z-50 backdrop-blur-sm mx-auto max-w-6xl px-4 sm:px-10 lg:px-12">
+      <div className="sticky top-0 z-50 mx-auto max-w-6xl px-4 backdrop-blur-sm sm:px-10 lg:px-12">
         <SortControls
           sortMode={sortMode}
           onChangeSortMode={setSortMode}
@@ -515,6 +574,8 @@ const App: React.FC<{
           onTogglePrioritizeOnchain={() =>
             setPrioritizeOnchain((previous) => !previous)
           }
+          searchQuery={searchQuery}
+          onSearchQueryChange={setSearchQuery}
         />
       </div>
 
@@ -535,6 +596,7 @@ const App: React.FC<{
                 category={category}
                 sortMode={sortMode}
                 prioritizeOnchain={prioritizeOnchain}
+                searchQuery={searchQuery}
               />
             </div>
           ))}
@@ -544,7 +606,6 @@ const App: React.FC<{
     </div>
   );
 
-  // Retrieve last update date injected by generate-build-info.mjs
   const lastUpdate = LAST_UPDATE;
   const formattedUpdate = (() => {
     if (!lastUpdate) {
@@ -577,10 +638,23 @@ const App: React.FC<{
   return (
     <div className="relative min-h-screen overflow-x-clip bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
       <Helmet>
+        <title>{seo.title}</title>
+        <meta name="description" content={seo.description} />
         <meta
           name="theme-color"
           content={resolvedTheme === "dark" ? "#020617" : "#e2e8f0"}
         />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={seo.title} />
+        <meta property="og:description" content={seo.description} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="Terra Classic Ecosystem Directory" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={seo.title} />
+        <meta name="twitter:description" content={seo.description} />
+        <meta name="robots" content="index,follow" />
+        <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
       </Helmet>
 
       <div className="pointer-events-none fixed inset-x-0 top-[-15%] hidden h-[420px] bg-gradient-to-b from-sky-200/70 via-transparent to-transparent dark:from-sky-900/30 sm:block" />
