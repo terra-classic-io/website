@@ -623,7 +623,7 @@ export const projects: ProjectLink[] = [
     url: 'https://reputation.global',
     description: 'Decentralized exchange for reputation tokens',
     indicator: 'onchain',
-    logo: '/public/logos/dex/reputation.png',
+    logo: 'public/logos/applications/reputation.png',
     categories: ['dex'],
     wip: true,
   },
