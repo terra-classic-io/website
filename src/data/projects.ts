@@ -178,6 +178,14 @@ export const projects: ProjectLink[] = [
     categories: ['applications', 'tools']
   },
   { 
+    name: 'DarkSun',
+    url: 'https://darksun.finance',
+    description: 'Portfolio tracker that provides real-time insights',
+    indicator: 'hybrid',
+    logo: '/public/logos/tools/darksun.webp',
+    categories: ['tools']
+  },
+  { 
     name: 'Discourse',
     url: 'https://discourse.luncgoblins.com',
     description: 'Community forum',
@@ -472,14 +480,6 @@ export const projects: ProjectLink[] = [
     categories: ['tools']
   },
   { 
-    name: 'LuncToken.org',
-    url: 'https://lunctoken.org',
-    description: 'News website',
-    indicator: 'onchain',
-    logo: '/public/logos/media/lunctoken.webp',
-    categories: ['information']
-  },
-  { 
     name: 'Lunc.Tools',
     url: 'https://lunc.tools',
     description: 'Analytics',
@@ -650,6 +650,14 @@ export const projects: ProjectLink[] = [
     categories: ['applications']
   },
   { 
+    name: 'StakeTax',
+    url: 'https://stake.tax',
+    description: 'Crypto tax reporting tool',
+    indicator: 'support',
+    logo: '/public/logos/applications/staketax.webp',
+    categories: ['applications','tools']
+  },
+  { 
     name: 'Stakin.com',
     url: 'https://stakin.com',
     description: 'Dedicated nodes',
@@ -664,6 +672,14 @@ export const projects: ProjectLink[] = [
     indicator: 'support',
     logo: '/public/logos/tools/statsbin.png',
     categories: ['tools']
+  },
+    { 
+    name: 'Summ',
+    url: 'https://summ.com',
+    description: 'Crypto tax reporting tool',
+    indicator: 'support',
+    logo: '/public/logos/applications/summ.png',
+    categories: ['applications','tools']
   },
   { 
     name: 'Terra Casino',
