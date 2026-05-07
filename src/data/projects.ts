@@ -424,14 +424,6 @@ export const projects: ProjectLink[] = [
     categories: ['entertainment']
   },
   { 
-    name: 'LUNC Burner',
-    url: 'https://lunc.tech',
-    description: 'Analytics',
-    indicator: 'onchain',
-    logo: '/public/logos/tools/lunctech.png',
-    categories: ['tools', 'information']
-  },
-  { 
     name: 'LuncDaily',
     url: 'https://luncdaily.com',
     description: 'News website',
