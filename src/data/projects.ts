@@ -650,14 +650,6 @@ export const projects: ProjectLink[] = [
     categories: ['applications']
   },
   { 
-    name: 'StakeTax',
-    url: 'https://stake.tax',
-    description: 'Crypto tax reporting tool',
-    indicator: 'support',
-    logo: '/public/logos/applications/staketax.webp',
-    categories: ['applications','tools']
-  },
-  { 
     name: 'Stakin.com',
     url: 'https://stakin.com',
     description: 'Dedicated nodes',
@@ -672,14 +664,6 @@ export const projects: ProjectLink[] = [
     indicator: 'support',
     logo: '/public/logos/tools/statsbin.png',
     categories: ['tools']
-  },
-    { 
-    name: 'Summ',
-    url: 'https://summ.com',
-    description: 'Crypto tax reporting tool',
-    indicator: 'support',
-    logo: '/public/logos/applications/summ.png',
-    categories: ['applications','tools']
   },
   { 
     name: 'Terra Casino',
