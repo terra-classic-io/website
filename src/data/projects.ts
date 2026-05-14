@@ -92,6 +92,15 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/cex/btcc.png',
     categories: ['cex']
   },
+  {
+    name: 'Burrito App',
+    url: 'https://burrito.money',
+    description: 'Wallet interface',
+    indicator: 'onchain',
+    logo: '/public/logos/applications/burrito.png',
+    categories: ['applications', 'tools'],
+    wip: true
+  },
   { 
     name: 'Bybit',
     url: 'https://www.bybit.com/trade/spot/LUNC/USDT',
