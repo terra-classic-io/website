@@ -189,10 +189,11 @@ export const projects: ProjectLink[] = [
   { 
     name: 'DarkSun',
     url: 'https://darksun.finance',
-    description: 'Portfolio tracker that provides real-time insights',
+    description: 'Portfolio tracker',
     indicator: 'hybrid',
     logo: '/public/logos/tools/darksun.webp',
-    categories: ['tools']
+    categories: ['applications', 'tools'],
+    wip: true
   },
   { 
     name: 'Discourse',
