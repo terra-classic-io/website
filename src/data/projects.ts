@@ -119,6 +119,14 @@ export const projects: ProjectLink[] = [
     darkLogo: '/public/logos/media/certik-dark.svg',
     categories: ['information']
   },
+  {
+    name: 'Chain Analytics - BiNodes',
+    url: 'https://www.binodes.com',
+    description: 'Analytics',
+    indicator: 'onchain',
+    logo: '/public/logos/infrastructure/binodes.png',
+    categories: ['tools', 'information']
+  },
   { 
     name: 'ChangeNOW',
     url: 'https://changenow.io/currencies/terra-classic?from=lunc&to=eth',
@@ -559,6 +567,14 @@ export const projects: ProjectLink[] = [
     indicator: 'onchain',
     logo: '/public/logos/wallets/orbitar.png',
     categories: ['wallets']
+  },
+  {
+    name: 'Open API - BiNodes',
+    url: 'https://www.binodes.com/contentdtl/md?uuid=open_api_instru',
+    description: 'Open Ecological Infrastructure',
+    indicator: 'support',
+    logo: '/public/logos/infrastructure/binodes.png',
+    categories: ['for-developers', 'infrastructure']
   },
   { 
     name: 'Osmosis',
