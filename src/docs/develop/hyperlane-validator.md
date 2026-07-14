@@ -47,6 +47,29 @@ You do not need to run Hyperlane on the same machine as your Terra validator nod
 
 For endpoint values, use the maintained [network endpoints](/docs/full-node/network-endpoints) page instead of copying endpoint URLs from older guides.
 
+## Infrastructure sizing
+
+Choose the server size based on what you run on the machine.
+
+| Setup | CPU | RAM | Disk | Notes |
+| --- | --- | --- | --- | --- |
+| Hyperlane validator only | 2 vCPU | 4 GB minimum | 40 GB SSD/NVMe | Suitable for a lightweight Docker Compose setup using external RPC, gRPC, and REST endpoints. |
+| Hyperlane validator with more headroom | 4 vCPU | 8 GB | 75 GB SSD/NVMe | Recommended when you want safer room for logs, monitoring, updates, and future agent changes. |
+| Hyperlane validator + relayer | 4-8 vCPU | 8-16 GB | 100 GB SSD/NVMe | Use more capacity if the same VPS also runs a relayer or multiple agents. |
+| Hyperlane plus Terra Classic full node | See full node guide | 16-32 GB+ | Large dedicated SSD/NVMe | Do not size this like a lightweight Hyperlane VPS. A full node has its own disk, RAM, and sync requirements. |
+
+For a validator-only Hyperlane agent, start with a small VPS and monitor it. The key requirements are reliable uptime, Docker support, stable network access to Terra Classic endpoints, and enough disk for RocksDB state plus logs.
+
+Use a larger server when:
+
+- you also run a Hyperlane relayer
+- you run more than one chain agent
+- you keep verbose debug logs for long periods
+- you run your own RPC, gRPC, REST, or full node infrastructure on the same machine
+- you want extra operational margin instead of minimum cost
+
+For production, keep the Hyperlane agent separate from your validator signing infrastructure when possible. This limits operational blast radius if the VPS needs maintenance.
+
 ## Installation flow
 
 The full setup has five phases:
