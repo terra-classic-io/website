@@ -5,6 +5,7 @@ import buildTerraCoreGuide from "../docs/full-node/run-a-full-terra-node/build-t
 import configureGeneralSettingsGuide from "../docs/full-node/run-a-full-terra-node/configure-general-settings.md?raw";
 import classicTransactionBehaviorGuide from "../docs/develop/classic-transaction-behavior.md?raw";
 import endpointsGuide from "../docs/develop/endpoints.md?raw";
+import hyperlaneValidatorGuide from "../docs/develop/hyperlane-validator.md?raw";
 import joinNetworkGuide from "../docs/full-node/run-a-full-terra-node/join-a-network.md?raw";
 import setUpProductionGuide from "../docs/full-node/run-a-full-terra-node/set-up-production.md?raw";
 import syncGuide from "../docs/full-node/run-a-full-terra-node/sync.md?raw";
@@ -316,6 +317,13 @@ const developTxBestPractices: DocPage = {
   markdown: classicTransactionBehaviorGuide,
 };
 
+const developHyperlaneValidator: DocPage = {
+  slug: "hyperlane-validator",
+  title: "Hyperlane validator",
+  summary: "Operate a Terra Classic Hyperlane validator with Docker, AWS S3 checkpoint storage, and VPS monitoring.",
+  markdown: hyperlaneValidatorGuide,
+};
+
 const developBuilderTooling: DocPage = {
   slug: "builder-tooling",
   title: "Builder tooling",
@@ -604,7 +612,7 @@ export const docSections: readonly DocSection[] = [
     slug: "develop",
     title: "Develop",
     description: "Build Terra Classic dApps, run localnets, and reference Terra Core modules.",
-    pages: [developLocalnet, developTxBestPractices, developBuilderTooling, developSmartContracts, developModuleSpecifications],
+    pages: [developLocalnet, developTxBestPractices, developHyperlaneValidator, developBuilderTooling, developSmartContracts, developModuleSpecifications],
   },
   {
     slug: "learn",
