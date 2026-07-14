@@ -21,7 +21,7 @@ Other Hyperlane participants must be able to read this S3 location. The bucket t
 Expected public S3 location format:
 
 ```text
-s3://hyperlane-validator-signatures-<validator-name>-terraclassic/
+s3://hyperlane-validator-signatures-[validator-name]-terraclassic/
 ```
 
 Example:
@@ -71,10 +71,14 @@ The real `.env` file should exist only on the VPS and should be ignored by Git.
 
 Create an S3 bucket in the AWS region you want to use.
 
+The bucket name should follow this convention so the validator name is visible to other operators:
+
+**`hyperlane-validator-signatures-[validator-name]-terraclassic`**
+
 Recommended naming pattern:
 
 ```text
-hyperlane-validator-signatures-<validator-name>-terraclassic
+hyperlane-validator-signatures-[validator-name]-terraclassic
 ```
 
 Example:
