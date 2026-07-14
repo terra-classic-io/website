@@ -45,7 +45,21 @@ You need:
 
 You do not need to run Hyperlane on the same machine as your Terra validator node. A separate VPS can use public or dedicated Terra Classic RPC, gRPC, and LCD endpoints.
 
-## Recommended repository layout
+For endpoint values, use the maintained [network endpoints](/docs/full-node/network-endpoints) page instead of copying endpoint URLs from older guides.
+
+## Installation flow
+
+The full setup has five phases:
+
+1. Prepare AWS S3 and IAM access.
+2. Create and fund a dedicated Terra Classic signer key.
+3. Prepare the VPS repository, `.env`, and Hyperlane config files.
+4. Start the Docker Compose service and confirm the validator announcement.
+5. Enable auto-start and monitoring.
+
+Keep each phase separate. Most installation issues come from mixing AWS permissions, Terra key format, and Docker startup checks at the same time.
+
+## Phase 0: repository layout
 
 Keep deployable files in Git, but keep secrets out of Git:
 
@@ -67,7 +81,23 @@ hyperlane/
 
 The real `.env` file should exist only on the VPS and should be ignored by Git.
 
-## Create the S3 bucket
+## Phase 0: collect configuration values
+
+Before writing the config files, collect the values below.
+
+| Value | Where to get it | Notes |
+| --- | --- | --- |
+| S3 bucket name | AWS S3 | Use `hyperlane-validator-signatures-[validator-name]-terraclassic`. |
+| AWS region | AWS S3 bucket region | Example: `eu-west-3`. |
+| IAM user ARN | AWS IAM | This user writes the checkpoint files. |
+| RPC URL | [Network endpoints](/docs/full-node/network-endpoints) or dedicated provider | Do not hardcode stale public endpoints in long-lived docs. |
+| gRPC URL | [Network endpoints](/docs/full-node/network-endpoints) or dedicated provider | Required by the Hyperlane agent. |
+| REST/LCD URL | [Network endpoints](/docs/full-node/network-endpoints) or dedicated provider | Used by Cosmos/Terra integrations. |
+| Hyperlane contract addresses | Terra Classic Hyperlane maintainers | Deployment-specific; verify before running. |
+| Terra signer private key | Your dedicated Hyperlane signer wallet | Never commit this value. |
+| Terra signer address | Derived from the signer key | Fund it with LUNC for announcement gas. |
+
+## Phase 1: create the S3 bucket
 
 Create an S3 bucket in the AWS region you want to use.
 
@@ -95,7 +125,7 @@ Use these bucket settings:
 - Default encryption: SSE-S3
 - Object lock: disabled
 
-## Bucket policy
+## Phase 1: bucket policy
 
 The bucket must be publicly listable and readable. This allows other validators and relayers to discover and fetch checkpoint metadata.
 
@@ -144,7 +174,7 @@ curl -s "https://<BUCKET_NAME>.s3.<REGION>.amazonaws.com/?list-type=2"
 
 If the bucket is public enough for Hyperlane discovery, the response should be XML listing output rather than `AccessDenied`.
 
-## IAM policy for the validator user
+## Phase 1: IAM policy for the validator user
 
 Attach a policy to the IAM user used by the VPS. Replace `<BUCKET_NAME>` and `<KMS_KEY_ARN>` if you use KMS signing.
 
@@ -176,7 +206,7 @@ Attach a policy to the IAM user used by the VPS. Replace `<BUCKET_NAME>` and `<K
 
 If your validator configuration uses AWS KMS signing, add the KMS permissions required by your runbook. If your configuration uses a local Terra Classic private key, KMS is not required for the validator key itself.
 
-## Create the Terra Classic signer key
+## Phase 2: create the Terra Classic signer key
 
 Create a dedicated key. Do not reuse your validator operator key.
 
@@ -198,7 +228,7 @@ If your export gives a base64-like key, convert it locally and verify the output
 
 After deriving the signer address, send a small amount of LUNC to it. The validator uses this address to announce its signature storage location on-chain.
 
-## VPS environment file
+## Phase 3: VPS environment file
 
 Create `vps/.env` on the VPS:
 
@@ -236,7 +266,7 @@ Expected:
 TERRA_PRIVATE_KEY format OK
 ```
 
-## Validator configuration
+## Phase 3: validator configuration
 
 `validator.terraclassic.json`:
 
@@ -267,7 +297,7 @@ TERRA_PRIVATE_KEY format OK
 
 `agent-config.docker.json`:
 
-The contract addresses in this file are deployment-specific. Use the current Terra Classic Hyperlane deployment values published by the Terra Classic Hyperlane maintainers. Do not treat the placeholders below as real addresses.
+The endpoints and contract addresses in this file are deployment-specific. Use the maintained [network endpoints](/docs/full-node/network-endpoints) page or your dedicated provider for RPC, gRPC, and REST values. Use the current Terra Classic Hyperlane deployment values published by the Terra Classic Hyperlane maintainers for contract addresses. Do not treat the placeholders below as real addresses.
 
 ```json
 {
@@ -279,20 +309,20 @@ The contract addresses in this file are deployment-specific. Use the current Ter
       "protocol": "cosmos",
       "rpcUrls": [
         {
-          "http": "https://rpc.terra-classic.hexxagon.io"
+          "http": "<TERRACLASSIC_RPC_URL>"
         },
         {
-          "http": "https://terra-classic-rpc.publicnode.com"
+          "http": "<OPTIONAL_BACKUP_TERRACLASSIC_RPC_URL>"
         }
       ],
       "grpcUrls": [
         {
-          "http": "https://terra-classic-grpc.publicnode.com:443"
+          "http": "<TERRACLASSIC_GRPC_URL>"
         }
       ],
       "restUrls": [
         {
-          "http": "https://terra-classic-lcd.publicnode.com"
+          "http": "<TERRACLASSIC_REST_URL>"
         }
       ],
       "canonicalAsset": "uluna",
@@ -327,9 +357,9 @@ The contract addresses in this file are deployment-specific. Use the current Ter
 
 > **Note**
 >
-> Do not leave `grpcUrls` empty. The Hyperlane agent expects a valid gRPC definition for Terra Classic.
+> Do not leave `grpcUrls` empty. The Hyperlane agent expects a valid gRPC definition for Terra Classic. Use the maintained [network endpoints](/docs/full-node/network-endpoints) page to pick current public endpoints, or use your own dedicated infrastructure for production.
 
-## Docker Compose
+## Phase 4: Docker Compose
 
 Example `docker-compose.yml`:
 
@@ -370,7 +400,7 @@ docker compose up -d
 docker logs hpl-validator-terraclassic --tail 120
 ```
 
-## Healthy output
+## Phase 4: healthy output
 
 Useful signs:
 
@@ -403,7 +433,7 @@ curl -I "https://<BUCKET_NAME>.s3.<REGION>.amazonaws.com/metadata_latest.json"
 
 Public reads should return `200 OK` for existing objects.
 
-## Start automatically after reboot
+## Phase 5: start automatically after reboot
 
 Create a `systemd` unit that starts Docker Compose at boot:
 
@@ -436,7 +466,7 @@ sudo systemctl start hyperlane-validator-terraclassic.service
 
 `active (exited)` is expected for this kind of service because `systemd` starts Docker Compose and exits. The long-running process is the Docker container.
 
-## Health check
+## Phase 5: health check
 
 Example `healthcheck.sh`:
 
