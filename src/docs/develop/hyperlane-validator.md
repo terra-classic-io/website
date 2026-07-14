@@ -267,6 +267,8 @@ TERRA_PRIVATE_KEY format OK
 
 `agent-config.docker.json`:
 
+The contract addresses in this file are deployment-specific. Use the current Terra Classic Hyperlane deployment values published by the Terra Classic Hyperlane maintainers. Do not treat the placeholders below as real addresses.
+
 ```json
 {
   "chains": {
@@ -309,11 +311,11 @@ TERRA_PRIVATE_KEY format OK
         "chunk": 5
       },
       "contractAddressBytes": 32,
-      "mailbox": "0x4b911a4e9984913279a709a623f2120ba0c0a3967acd026b1301894398a96fed",
-      "validatorAnnounce": "0x42e7b6e599b20c160b328b92453f2a9c63446e3be3a5a465bc31ba7d4a26f3f0",
-      "interchainGasPaymaster": "0x5f793ba34a28e104c505896601bef42d414dc20313654fd8cab911b36efe522e",
-      "merkleTreeHook": "0x3c7e0d10013db710c6b8322dab479e3f0950fc1dbe49a1cf3e9950429db9f8ca",
-      "interchainSecurityModule": "0xe5c4262ca68f0f794ec1d1697b7f2632b4ab4b16c0aa8216175bc",
+      "mailbox": "<TERRACLASSIC_MAILBOX_ADDRESS>",
+      "validatorAnnounce": "<TERRACLASSIC_VALIDATOR_ANNOUNCE_ADDRESS>",
+      "interchainGasPaymaster": "<TERRACLASSIC_INTERCHAIN_GAS_PAYMASTER_ADDRESS>",
+      "merkleTreeHook": "<TERRACLASSIC_MERKLE_TREE_HOOK_ADDRESS>",
+      "interchainSecurityModule": "<TERRACLASSIC_INTERCHAIN_SECURITY_MODULE_ADDRESS>",
       "gas": {
         "adjustment": 1.5,
         "min_gas_amount": 2000000
