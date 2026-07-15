@@ -5,6 +5,12 @@ import { HelmetProvider } from "react-helmet-async";
 import { StaticRouter } from "react-router-dom/server";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
+export {
+  buildSitemapXml,
+  getCanonicalRedirectUrl,
+  resolveSeoRoute,
+} from "./utils/seo-routes";
+
 declare const __SSR_TARGET__: "node" | "webworker";
 
 type RenderOptions = {

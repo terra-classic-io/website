@@ -49,12 +49,15 @@ export default defineConfig(({ command, mode }) => {
   // SSR build for Cloudflare Pages: produce dist/_worker.js
   const pagesSsrConfig = {
     ...base,
+    resolve: {
+      ...base.resolve,
+      // Prefer edge-compatible package exports over browser builds that access `document`.
+      conditions: ['workerd', 'worker', 'module', 'import', 'default'],
+    },
     ssr: {
       // Avoid bundling DOM-heavy markdown libs; React.lazy ensures they aren't needed during SSR
       noExternal: true,
       external: [
-        'react-markdown',
-        'remark-gfm',
         // Exclude browser-only feature routes/components; SSR will render Suspense fallback.
         './src/components/project-map/project-map-page.tsx',
         './src/components/project-map/project-map.tsx',

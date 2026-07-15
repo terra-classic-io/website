@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import ProjectMap from "./project-map";
 import { projects } from "../../data/projects";
@@ -11,14 +10,6 @@ const ProjectMapPage: React.FC = () => {
 
   return (
     <div className="relative min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
-      <Helmet>
-        <title>Terra Classic Project Map</title>
-        <meta
-          name="description"
-          content="Explore Terra Classic ecosystem projects through an interactive force-directed map clustered by category."
-        />
-      </Helmet>
-
       <div className="pointer-events-none absolute inset-x-0 top-[-15%] h-[420px] bg-gradient-to-b from-sky-200/70 via-transparent to-transparent dark:from-sky-900/35" />
       <div className="pointer-events-none absolute left-[-12%] top-1/3 h-80 w-80 rounded-full bg-sky-400/25 blur-3xl dark:bg-sky-500/15" />
       <div className="pointer-events-none absolute right-[-14%] top-1/4 h-96 w-96 rounded-full bg-indigo-400/20 blur-[120px] dark:bg-indigo-500/12" />

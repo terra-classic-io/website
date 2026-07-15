@@ -8,6 +8,7 @@ import { createServer as createViteServer } from 'vite';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProduction = process.env.NODE_ENV === 'production';
 const PORT = process.env.PORT || 3000;
+const HTML_CACHE_CONTROL = 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400';
 
 // Create a simple logger
 const logger = {
@@ -56,15 +57,10 @@ async function createServer() {
         maxAge: '1y',
         etag: true,
         lastModified: true,
-        fallthrough: false // Don't fall through to the next middleware
+        fallthrough: true
       })
     );
-    
-    // Serve index.html for all other routes (client-side routing)
-    app.use('*', (req, res, next) => {
-      res.sendFile(path.join(__dirname, 'dist/client/index.html'));
-    });
-    
+
     logger.info('Production server started');
   }
 
@@ -72,53 +68,77 @@ async function createServer() {
   app.use('*', async (req, res, next) => {
     const url = req.originalUrl;
     
-    // Skip API requests and static files
+    // Skip API requests.
     if (url.startsWith('/api/')) {
       return next();
-    }
-
-    if (url.includes('.')) {
-      if (!res.headersSent) {
-        logger.warn(`Static asset not found: ${url}`);
-        res.status(404).send('Not Found');
-      }
-      return;
     }
     
     try {
       logger.info(`Rendering ${url} with SSR`);
-      
-      // Read the template file
-      let template = fs.readFileSync(
-        path.resolve(__dirname, 'index.html'), 
-        'utf-8'
-      );
-      
-      let render;
+
+      let ssrModule;
       if (!isProduction) {
-        // In development: Apply Vite HTML transforms and load module
-        template = await vite.transformIndexHtml(url, template);
-        ({ render } = await vite.ssrLoadModule('/src/ssr.tsx'));
+        ssrModule = await vite.ssrLoadModule('/src/ssr.tsx');
       } else {
-        // In production: Load the built SSR module
-        ({ render } = await import('./dist/server/ssr.js'));
+        ssrModule = await import('./dist/server/ssr.js');
       }
-      
+
+      const requestOrigin = `${req.protocol}://${req.get('host')}`;
+      const requestUrl = new URL(req.originalUrl, requestOrigin);
+      const canonicalRedirectUrl = ssrModule.getCanonicalRedirectUrl(requestUrl);
+      if (canonicalRedirectUrl) {
+        return res.redirect(308, canonicalRedirectUrl);
+      }
+
+      if (requestUrl.pathname === '/sitemap.xml') {
+        return res
+          .status(200)
+          .set({
+            'Content-Type': 'application/xml; charset=utf-8',
+            'Cache-Control': 'public, max-age=3600, s-maxage=86400',
+            'X-Content-Type-Options': 'nosniff',
+          })
+          .end(req.method === 'HEAD' ? undefined : ssrModule.buildSitemapXml());
+      }
+
+      if (requestUrl.pathname.includes('.')) {
+        logger.warn(`Static asset not found: ${url}`);
+        return res.status(404).send('Not Found');
+      }
+
+      const templatePath = path.resolve(
+        __dirname,
+        isProduction ? 'dist/client/index.html' : 'index.html'
+      );
+      let template = fs.readFileSync(templatePath, 'utf-8');
+      if (!isProduction) {
+        template = await vite.transformIndexHtml(url, template);
+      }
+
+      const { render } = ssrModule;
       // Render the app to string
-      const { html, head, initialState } = await render(url, { 
+      const { html, head, initialState } = await render(requestUrl.toString(), {
         userAgent: req.headers['user-agent'] || '' 
       });
+      const { statusCode } = ssrModule.resolveSeoRoute(requestUrl.pathname);
       
       // Inject the rendered content into the template
       const responseHtml = template
         .replace('<!-- SSR_HEAD -->', head || '')
         .replace('<!-- SSR_APP -->', html || '')
-        .replace('<!-- SSR_STATE -->', 
-          `<script>window.__INITIAL_STATE__ = ${JSON.stringify(initialState || {}).replace(/</g, '\\u003c')}</script>`
-        );
+        .replace('<!-- SSR_STATE -->', initialState || '{}');
       
       // Send the fully rendered page
-      res.status(200).set({ 'Content-Type': 'text/html' }).end(responseHtml);
+      res
+        .status(statusCode)
+        .set({
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': HTML_CACHE_CONTROL,
+          'X-Robots-Tag': statusCode === 404 ? 'noindex, follow' : 'index, follow',
+          'X-Content-Type-Options': 'nosniff',
+          'Referrer-Policy': 'strict-origin-when-cross-origin',
+        })
+        .end(req.method === 'HEAD' ? undefined : responseHtml);
       
     } catch (e) {
       // If an error is caught, let vite fix the stack trace for dev

@@ -3,26 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#4f46e5" />
-  <meta name="description" content="Comprehensive directory of the Terra Classic blockchain ecosystem - protocols, dApps, tools and resources." />
-  <meta name="keywords" content="Terra Classic, LUNC, USTC, blockchain, crypto, staking, DeFi, ecosystem" />
   <meta name="author" content="Terra Classic Community" />
-  <meta name="application-name" content="Terra Classic Ecosystem" />
-  <meta name="apple-mobile-web-app-title" content="Terra Classic Ecosystem" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Terra Classic Ecosystem" />
-  <meta property="og:description" content="Explore the Terra Classic blockchain ecosystem - protocols, dApps, tools and resources." />
-  <meta property="og:site_name" content="Terra Classic Ecosystem" />
-  <meta property="og:url" content="https://terra-classic.io/" />
-  <meta property="og:image" content="https://terra-classic.io/og-image.jpg" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Terra Classic Ecosystem" />
-  <meta name="twitter:description" content="Explore the Terra Classic blockchain ecosystem - protocols, dApps, tools and resources." />
-  <meta name="twitter:image" content="https://terra-classic.io/og-image.jpg" />
-  <link rel="canonical" href="https://terra-classic.io/" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="application-name" content="Terra Classic" />
+  <meta name="apple-mobile-web-app-title" content="Terra Classic" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg" />
   <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
-  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="icon" href="/favicon.ico" sizes="256x256" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
   <!-- Preconnect to external domains -->
@@ -75,20 +62,5 @@
     });
   </script>
   
-  <!-- Service Worker Registration -->
-  <script>
-    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js').then(
-          function(registration) {
-            console.log('ServiceWorker registration successful');
-          },
-          function(err) {
-            console.log('ServiceWorker registration failed: ', err);
-          }
-        );
-      });
-    }
-  </script>
 </body>
 </html>

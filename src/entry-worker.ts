@@ -5,9 +5,15 @@ import type {
   Response as CfResponse,
 } from "@cloudflare/workers-types";
 import { render } from "./ssr";
+import {
+  buildSitemapXml,
+  getCanonicalRedirectUrl,
+  resolveSeoRoute,
+} from "./utils/seo-routes";
 
 // On Pages client build (CF_PAGES_BUILD), we emit to dist/ root.
 const TEMPLATE_PATH = "/index.html";
+const HTML_CACHE_CONTROL = "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400";
 
 /**
  * Read the base HTML template from Cloudflare Pages static assets.
@@ -51,6 +57,22 @@ const handleRequest = async (
   const userAgent = request.headers.get("user-agent") ?? "";
   const pathname = url.pathname;
 
+  const canonicalRedirectUrl = getCanonicalRedirectUrl(url);
+  if (canonicalRedirectUrl) {
+    return Response.redirect(canonicalRedirectUrl, 308) as unknown as CfResponse;
+  }
+
+  if (pathname === "/sitemap.xml") {
+    return new Response(request.method === "HEAD" ? null : buildSitemapXml(), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/xml; charset=utf-8",
+        "Cache-Control": "public, max-age=3600, s-maxage=86400",
+        "X-Content-Type-Options": "nosniff",
+      },
+    }) as unknown as CfResponse;
+  }
+
   if (env.ASSETS && (pathname.startsWith("/assets/") || pathname.startsWith("/favicon") || pathname.startsWith("/robots") || pathname.startsWith("/manifest"))) {
     const directAssetResponse = await env.ASSETS.fetch(request);
     if (!directAssetResponse.ok) {
@@ -77,19 +99,21 @@ const handleRequest = async (
 
   const baseTemplate = await readTemplate(request, env.ASSETS);
   const { html, head, initialState } = await render(url.toString(), { userAgent });
+  const { statusCode } = resolveSeoRoute(pathname);
 
   const responseHtml = baseTemplate
     .replace("<!-- SSR_HEAD -->", head ?? "")
     .replace("<!-- SSR_APP -->", html ?? "")
     .replace("<!-- SSR_STATE -->", initialState ?? "{}");
 
-  return new Response(responseHtml, {
-    status: 200,
+  return new Response(request.method === "HEAD" ? null : responseHtml, {
+    status: statusCode,
     headers: {
       "Content-Type": "text/html; charset=utf-8",
-      "Cache-Control": "no-cache, no-store, must-revalidate",
-      Pragma: "no-cache",
-      Expires: "0",
+      "Cache-Control": HTML_CACHE_CONTROL,
+      "X-Robots-Tag": statusCode === 404 ? "noindex, follow" : "index, follow",
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
     },
   }) as unknown as CfResponse;
 };

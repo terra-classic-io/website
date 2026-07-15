@@ -20,9 +20,21 @@ import { useTheme } from "./contexts/ThemeContext";
 import SortControls, { SortMode } from "./components/sort-controls";
 import type { DocNavigationOptions } from "./types/doc-navigation";
 import { LAST_UPDATE } from "./generated/build-info";
+import DocsShell from "./components/docs/docs-shell";
+import NotFoundPage from "./components/not-found/not-found-page";
+import { buildDocPath } from "./utils/seo-routes";
+import {
+  HOME_DESCRIPTION,
+  HOME_TITLE,
+  OG_IMAGE_URL,
+  PROJECT_MAP_DESCRIPTION,
+  PROJECT_MAP_TITLE,
+  SITE_LOCALE,
+  SITE_NAME,
+  SITE_ORIGIN,
+  homeStructuredData,
+} from "./utils/seo";
 const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
-const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
-const NotFoundPage = React.lazy(() => import("./components/not-found/not-found-page"));
 
 export type TokenInfo = {
   readonly price: string;
@@ -346,17 +358,17 @@ const App: React.FC<{
 
   const handleDocsNavigate = useCallback(
     (sectionSlug: string, pagePath?: readonly string[], options?: DocNavigationOptions) => {
-      const effectivePagePath: readonly string[] = pagePath ?? [];
-      const segments: string[] = [];
-      if (!isDocsSubdomain) {
-        segments.push("docs");
-      }
-      if (sectionSlug) {
-        segments.push(sectionSlug);
-      }
-      segments.push(...effectivePagePath.filter((segment) => segment.length > 0));
-
-      const nextPath = segments.length > 0 ? `/${segments.join("/")}` : "/";
+      const effectiveSectionSlug = sectionSlug || "start";
+      const effectivePagePath: readonly string[] = sectionSlug
+        ? (pagePath ?? [])
+        : ["start"];
+      const canonicalPath = buildDocPath(
+        effectiveSectionSlug,
+        effectivePagePath.filter((segment) => segment.length > 0),
+      );
+      const nextPath = isDocsSubdomain
+        ? canonicalPath.replace(/^\/docs/, "") || "/"
+        : canonicalPath;
       const hash = options?.hash ?? "";
       navigate(`${nextPath}${hash}`);
     },
@@ -447,23 +459,13 @@ const App: React.FC<{
     [scrollToElement]
   );
 
-  const handleOpenDocs = useCallback(() => {
-    handleDocsNavigate("", []);
-  }, [handleDocsNavigate]);
-
-  const handleOpenMap = useCallback(() => {
-    navigate("/bubbles");
-  }, [navigate]);
-
   if (isDocsMode) {
     return (
-      <Suspense fallback={<div style={{ minHeight: 200 }} />}> 
-        <DocsShell
-          docSegments={docSegments}
-          onNavigate={handleDocsNavigate}
-          isDocsSubdomain={isDocsSubdomain}
-        />
-      </Suspense>
+      <DocsShell
+        docSegments={docSegments}
+        onNavigate={handleDocsNavigate}
+        isDocsSubdomain={isDocsSubdomain}
+      />
     );
   }
 
@@ -481,8 +483,6 @@ const App: React.FC<{
       >
         <HeroSection
           onExploreCategories={handleExploreCategories}
-          onOpenDocs={handleOpenDocs}
-          onOpenMap={handleOpenMap}
           stats={heroStats}
           isMobile={appState.isMobile}
           isExpanded={heroDetailsExpanded}
@@ -576,12 +576,58 @@ const App: React.FC<{
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
-      <Helmet>
-        <meta
-          name="theme-color"
-          content={resolvedTheme === "dark" ? "#020617" : "#e2e8f0"}
-        />
-      </Helmet>
+      {location.pathname === "/" ? (
+        <Helmet>
+            <title>{HOME_TITLE}</title>
+            <meta name="description" content={HOME_DESCRIPTION} />
+            <meta name="robots" content="index,follow,max-image-preview:large" />
+            <link rel="canonical" href={`${SITE_ORIGIN}/`} />
+            <meta property="og:type" content="website" />
+            <meta property="og:locale" content={SITE_LOCALE} />
+            <meta property="og:site_name" content={SITE_NAME} />
+            <meta property="og:title" content={HOME_TITLE} />
+            <meta property="og:description" content={HOME_DESCRIPTION} />
+            <meta property="og:url" content={`${SITE_ORIGIN}/`} />
+            <meta property="og:image" content={OG_IMAGE_URL} />
+            <meta property="og:image:width" content="1166" />
+            <meta property="og:image:height" content="728" />
+            <meta property="og:image:alt" content="Terra Classic ecosystem" />
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:title" content={HOME_TITLE} />
+            <meta name="twitter:description" content={HOME_DESCRIPTION} />
+            <meta name="twitter:image" content={OG_IMAGE_URL} />
+            <script type="application/ld+json">
+              {JSON.stringify(homeStructuredData)}
+            </script>
+            <meta
+              name="theme-color"
+              content={resolvedTheme === "dark" ? "#020617" : "#e2e8f0"}
+            />
+        </Helmet>
+      ) : null}
+      {location.pathname === "/bubbles" ? (
+        <Helmet>
+            <title>{PROJECT_MAP_TITLE}</title>
+            <meta name="description" content={PROJECT_MAP_DESCRIPTION} />
+            <meta name="robots" content="index,follow,max-image-preview:large" />
+            <link rel="canonical" href={`${SITE_ORIGIN}/bubbles`} />
+            <meta property="og:type" content="website" />
+            <meta property="og:locale" content={SITE_LOCALE} />
+            <meta property="og:site_name" content={SITE_NAME} />
+            <meta property="og:title" content={PROJECT_MAP_TITLE} />
+            <meta property="og:description" content={PROJECT_MAP_DESCRIPTION} />
+            <meta property="og:url" content={`${SITE_ORIGIN}/bubbles`} />
+            <meta property="og:image" content={OG_IMAGE_URL} />
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:title" content={PROJECT_MAP_TITLE} />
+            <meta name="twitter:description" content={PROJECT_MAP_DESCRIPTION} />
+            <meta name="twitter:image" content={OG_IMAGE_URL} />
+            <meta
+              name="theme-color"
+              content={resolvedTheme === "dark" ? "#020617" : "#e2e8f0"}
+            />
+        </Helmet>
+      ) : null}
 
       <div className="pointer-events-none fixed inset-x-0 top-[-15%] hidden h-[420px] bg-gradient-to-b from-sky-200/70 via-transparent to-transparent dark:from-sky-900/30 sm:block" />
       <div className="pointer-events-none fixed left-[-12%] top-1/3 hidden h-80 w-80 rounded-full bg-sky-400/25 blur-3xl dark:bg-sky-500/15 sm:block" />
@@ -603,13 +649,7 @@ const App: React.FC<{
         />
         <Route
           path="*"
-          element={
-            <Suspense
-              fallback={<div style={{ minHeight: 200 }} />}
-            >
-              <NotFoundPage />
-            </Suspense>
-          }
+          element={<NotFoundPage />}
         />
       </Routes>
 

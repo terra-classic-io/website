@@ -213,7 +213,7 @@ export const projects: ProjectLink[] = [
   },
   { 
     name: 'Documentation',
-    url: '/docs',
+    url: '/docs/start',
     description: 'Documentation for end-users and developers',
     indicator: 'onchain',
     categories: ['for-developers', 'validators', 'information']

@@ -3,6 +3,7 @@
  */
 
 import React from "react";
+import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 
 /**
@@ -11,6 +12,11 @@ import { Link } from "react-router-dom";
 const NotFoundPage: React.FC = () => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
+      <Helmet>
+        <title>Page Not Found | Terra Classic</title>
+        <meta name="robots" content="noindex,follow" />
+        <meta name="theme-color" content="#e2e8f0" />
+      </Helmet>
       <div className="pointer-events-none fixed inset-x-0 top-[-20%] h-[420px] bg-gradient-to-b from-sky-200/80 via-transparent to-transparent dark:from-sky-900/30" />
       <div className="pointer-events-none fixed left-[-12%] top-1/3 h-80 w-80 rounded-full bg-sky-400/25 blur-3xl dark:bg-sky-500/15" />
       <div className="pointer-events-none fixed right-[-14%] top-1/4 h-96 w-96 rounded-full bg-indigo-400/20 blur-[120px] dark:bg-indigo-500/10" />
@@ -36,7 +42,7 @@ const NotFoundPage: React.FC = () => {
             Return home
           </Link>
           <Link
-            to="/docs"
+            to="/docs/start"
             className="inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-sky-500/90 px-6 py-3 text-sm font-semibold uppercase tracking-[0.24em] text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-sky-400 dark:bg-sky-500 dark:hover:bg-sky-400"
           >
             Browse docs
@@ -59,7 +65,7 @@ const NotFoundPage: React.FC = () => {
               </span>
             </Link>
             <Link
-              to="/docs/develop"
+              to="/docs/develop/terra-core-localnet"
               className="flex flex-col gap-1 rounded-2xl border border-slate-200/70 bg-white/70 p-4 text-left text-sm shadow-sm transition hover:-translate-y-1 hover:border-violet-400/60 hover:text-violet-600 dark:border-slate-800/70 dark:bg-slate-900/60"
             >
               <span className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">
@@ -70,7 +76,7 @@ const NotFoundPage: React.FC = () => {
               </span>
             </Link>
             <Link
-              to="/docs/learn"
+              to="/docs/learn/overview"
               className="flex flex-col gap-1 rounded-2xl border border-slate-200/70 bg-white/70 p-4 text-left text-sm shadow-sm transition hover:-translate-y-1 hover:border-emerald-400/60 hover:text-emerald-600 dark:border-slate-800/70 dark:bg-slate-900/60"
             >
               <span className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">

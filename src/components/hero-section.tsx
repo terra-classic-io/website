@@ -3,6 +3,7 @@
  */
 
 import { ArrowDown, ChevronDown, Globe, ShieldCheck, Wallet } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import terraClassicLogoUrl from '../assets/terra-classic.svg';
 
 type HeroStatistic = {
@@ -13,8 +14,6 @@ type HeroStatistic = {
 
 type HeroSectionProps = {
   readonly onExploreCategories: () => void;
-  readonly onOpenDocs: () => void;
-  readonly onOpenMap: () => void;
   readonly stats: readonly HeroStatistic[];
   readonly isMobile: boolean;
   readonly isExpanded: boolean;
@@ -26,8 +25,6 @@ type HeroSectionProps = {
  */
 function HeroSection({
   onExploreCategories,
-  onOpenDocs,
-  onOpenMap,
   stats,
   isMobile,
   isExpanded,
@@ -51,12 +48,11 @@ function HeroSection({
         <div className="max-w-2xl space-y-4 lg:space-y-5">
           <div className="space-y-4">
             <h1 className="text-[2.4rem] font-semibold leading-[1.18] tracking-tight text-slate-900 dark:text-white sm:text-[2.9rem] lg:text-[3.1rem]">
-              <span className="hidden sm:inline">Everything you need to explore, build and stake on the</span><span className="inline sm:hidden">The</span> <strong>Terra Classic</strong> network.
+              Everything you need to explore, build and stake on the <strong>Terra Classic</strong> network.
             </h1>
             {shouldShowDetails ? (
               <p className="text-base leading-[1.7] text-slate-600 dark:text-slate-300 lg:text-[17px]">
-                This is a community-curated resource hub for Terra Classic. As a decentralized and community-owned network, Terra-Classic has no official website. On this page you can find applications, tooling, and knowledge to help teams ship faster and empower the
-                global Terra Classic community. Dive into the ecosystem, connect with infrastructure and find your place in the Terra Classic community.
+                Terra Classic is the original Terra blockchain, powered by LUNC and governed by its global community. This community-curated hub brings together trusted wallets, validators, infrastructure, dApps, and developer documentation so users and builders can explore the network with confidence.
               </p>
             ) : (
               <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
@@ -73,20 +69,18 @@ function HeroSection({
               Explore Ecosystem
               <ArrowDown size={18} />
             </button>
-            <button
-              type="button"
-              onClick={onOpenDocs}
+            <Link
+              to="/docs/start"
               className="inline-flex items-center gap-2 rounded-full border border-slate-300/80 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500"
             >
               View Documentation
-            </button>
-            <button
-              type="button"
-              onClick={onOpenMap}
+            </Link>
+            <Link
+              to="/bubbles"
               className="hidden sm:inline-flex items-center gap-2 rounded-full border border-slate-300/80 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500"
             >
               Ecosystem Map
-            </button>
+            </Link>
           </div>
           <div className="hidden pt-6 text-sm text-slate-600 dark:text-slate-300 lg:grid lg:grid-cols-3 lg:gap-4">
             <div className="group flex items-start gap-3 rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm transition hover:-translate-y-1 hover:border-sky-400/70 dark:border-slate-800/60 dark:bg-slate-900/60">

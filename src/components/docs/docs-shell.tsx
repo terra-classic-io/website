@@ -10,6 +10,16 @@ import { docSections } from "../../data/docs";
 import ThemeToggle from "../ThemeToggle";
 import type { DocNavigationOptions } from "../../types/doc-navigation";
 import type { DocPageWithPath } from "../../types/doc-page-with-path";
+import { LAST_UPDATE } from "../../generated/build-info";
+import { buildDocPath } from "../../utils/seo-routes";
+import {
+  LOGO_URL,
+  OG_IMAGE_URL,
+  SITE_LOCALE,
+  SITE_NAME,
+  SITE_ORIGIN,
+  absoluteUrl,
+} from "../../utils/seo";
 
 type DocsShellProps = {
   readonly docSegments: readonly string[];
@@ -22,6 +32,7 @@ type ActiveDocTarget = {
   readonly page: DocPage;
   readonly trail: readonly DocPage[];
   readonly path: readonly string[];
+  readonly isExactMatch: boolean;
 };
 
 const DRAWER_TITLE_ID: string = "docs-navigation-drawer-title";
@@ -48,60 +59,131 @@ const orderedDocPages: readonly DocPageWithPath[] = docSections.flatMap((section
 const FALLBACK_SECTION = docSections[0];
 const FALLBACK_PAGE = FALLBACK_SECTION.pages[0];
 
-function resolvePageByPath(pages: readonly DocPage[], pathSegments: readonly string[]): { page: DocPage; trail: readonly DocPage[] } {
+function resolvePageByPath(
+  pages: readonly DocPage[],
+  pathSegments: readonly string[],
+): { page: DocPage; trail: readonly DocPage[]; isExactMatch: boolean } {
   if (pathSegments.length === 0) {
     const firstPage = pages[0] ?? FALLBACK_PAGE;
-    return { page: firstPage, trail: [firstPage] };
+    return { page: firstPage, trail: [firstPage], isExactMatch: true };
   }
 
   const [currentSlug, ...remaining] = pathSegments;
-  const currentPage = pages.find((candidate) => candidate.slug === currentSlug) ?? pages[0] ?? FALLBACK_PAGE;
+  const matchedPage = pages.find((candidate) => candidate.slug === currentSlug);
+  const currentPage = matchedPage ?? pages[0] ?? FALLBACK_PAGE;
   if (remaining.length === 0 || !currentPage.children || currentPage.children.length === 0) {
-    return { page: currentPage, trail: [currentPage] };
+    return {
+      page: currentPage,
+      trail: [currentPage],
+      isExactMatch: Boolean(matchedPage) && remaining.length === 0,
+    };
   }
 
   const childResult = resolvePageByPath(currentPage.children, remaining);
-  return { page: childResult.page, trail: [currentPage, ...childResult.trail] };
+  return {
+    page: childResult.page,
+    trail: [currentPage, ...childResult.trail],
+    isExactMatch: Boolean(matchedPage) && childResult.isExactMatch,
+  };
 }
 
 function resolveActiveTarget(segments: readonly string[]): ActiveDocTarget {
   const [sectionSlug, ...pageSegments] = segments;
-  const section = docSections.find((candidate) => candidate.slug === sectionSlug) ?? FALLBACK_SECTION;
+  const matchedSection = docSections.find((candidate) => candidate.slug === sectionSlug);
+  const section = matchedSection ?? FALLBACK_SECTION;
   const resolved = resolvePageByPath(section.pages, pageSegments);
+  const path = resolved.trail.map((entry) => entry.slug);
+  const canonicalSegments = buildDocPath(section.slug, path)
+    .replace(/^\/docs\/?/, "")
+    .split("/")
+    .filter(Boolean);
+  const isCanonicalPath =
+    canonicalSegments.length === segments.length
+    && canonicalSegments.every((segment, index) => segment === segments[index]);
+
   return {
     section,
     page: resolved.page,
     trail: resolved.trail,
-    path: resolved.trail.map((entry) => entry.slug),
+    path,
+    isExactMatch:
+      Boolean(matchedSection) && resolved.isExactMatch && isCanonicalPath,
   };
 }
 
 function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps): JSX.Element {
-  const { section, page, trail, path } = useMemo(() => resolveActiveTarget(docSegments), [docSegments]);
+  const { section, page, trail, path, isExactMatch } = useMemo(
+    () => resolveActiveTarget(docSegments),
+    [docSegments],
+  );
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const homeHref: string = isDocsSubdomain ? "https://terra-classic.io" : "/";
-  const docsBaseUrl: string = isDocsSubdomain ? "https://docs.terra-classic.io" : "https://terra-classic.io/docs";
-  const pageUrl: string = path.length > 0
-    ? `${docsBaseUrl}/${section.slug}/${path.join("/")}`
-    : `${docsBaseUrl}/${section.slug}`;
-  const siteName: string = "Terra Classic Documentation";
-  const pageTitle: string = `${page.title} · Terra Classic Docs`;
+  const canonicalPath = buildDocPath(section.slug, path);
+  const pageUrl = absoluteUrl(canonicalPath);
+  const duplicatePageTitle = orderedDocPages.filter((entry) => entry.title === page.title).length > 1;
+  const titleParent = duplicatePageTitle && trail.length > 1
+    ? trail[trail.length - 2]?.title
+    : undefined;
+  const pageTitle: string = page.title === "Terra Classic Documentation"
+    ? "Terra Classic Documentation — Guides for LUNC Users & Builders"
+    : `${page.title}${titleParent ? ` — ${titleParent}` : ""} | Terra Classic Docs`;
   const pageDescription: string = page.summary
     || "Terra Classic documentation covering full node operations, network endpoints, wallets, and governance.";
+  const breadcrumbItems = [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: SITE_NAME,
+      item: `${SITE_ORIGIN}/`,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Documentation",
+      item: absoluteUrl("/docs/start"),
+    },
+    ...trail
+      .map((entry, index) => ({
+        "@type": "ListItem",
+        position: index + 3,
+        name: entry.title,
+        item: absoluteUrl(buildDocPath(section.slug, path.slice(0, index + 1))),
+      }))
+      .filter((item) => item.item !== absoluteUrl("/docs/start")),
+  ];
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: siteName,
-    alternateName: "Terra Classic Docs",
-    url: docsBaseUrl,
-    publisher: {
-      "@type": "Organization",
-      name: "Terra Classic",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://terra-classic.io/favicon-512.png",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "@id": `${pageUrl}#article`,
+        headline: page.title,
+        description: pageDescription,
+        url: pageUrl,
+        mainEntityOfPage: pageUrl,
+        inLanguage: "en",
+        dateModified: LAST_UPDATE,
+        author: {
+          "@type": "Organization",
+          name: "Terra Classic Community",
+          url: `${SITE_ORIGIN}/`,
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "Terra Classic Community",
+          url: `${SITE_ORIGIN}/`,
+          logo: {
+            "@type": "ImageObject",
+            url: LOGO_URL,
+          },
+        },
       },
-    },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${pageUrl}#breadcrumb`,
+        itemListElement: breadcrumbItems,
+      },
+    ],
   };
 
   const { previousPage, nextPage } = useMemo<{ previousPage?: DocPageWithPath; nextPage?: DocPageWithPath }>(() => {
@@ -191,28 +273,24 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
   return (
     <div className="relative min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
       <Helmet>
-        <title>{pageTitle}</title>
+        <title>{isExactMatch ? pageTitle : "Documentation Page Not Found | Terra Classic"}</title>
         <meta name="description" content={pageDescription} />
-        <meta name="application-name" content={siteName} />
-        <meta name="apple-mobile-web-app-title" content={siteName} />
-        <meta name="robots" content="index,follow" />
+        <meta name="robots" content={isExactMatch ? "index,follow,max-image-preview:large" : "noindex,follow"} />
         <meta property="og:type" content="article" />
+        <meta property="og:locale" content={SITE_LOCALE} />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
-        <meta property="og:site_name" content={siteName} />
+        <meta property="og:site_name" content={SITE_NAME} />
         <meta property="og:url" content={pageUrl} />
-        <meta property="og:image" content="https://terra-classic.io/og-image.jpg" />
+        <meta property="og:image" content={OG_IMAGE_URL} />
+        <meta property="article:modified_time" content={LAST_UPDATE} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
-        <meta name="twitter:image" content="https://terra-classic.io/og-image.jpg" />
+        <meta name="twitter:image" content={OG_IMAGE_URL} />
         <link rel="canonical" href={pageUrl} />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/site.webmanifest" />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
+        <meta name="theme-color" content="#e2e8f0" />
       </Helmet>
 
       <div className="pointer-events-none fixed inset-x-0 top-[-15%] h-[420px] bg-gradient-to-b from-sky-200/60 via-transparent to-transparent dark:from-sky-800/40" />
