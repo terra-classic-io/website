@@ -15,6 +15,16 @@ This guide is based on the Terra Classic Hyperlane validator deployment work and
 
 Use the upstream repository as the reference source for current deployment-specific values, especially Hyperlane contract addresses.
 
+## What is Hyperlane?
+
+Hyperlane is an interoperability protocol that lets blockchains exchange messages without requiring every chain to use the same native bridge standard. A chain integrates Hyperlane by deploying a set of contracts, including a mailbox contract for message dispatch and verification.
+
+For Terra Classic, Hyperlane can provide infrastructure for cross-chain messaging between Terra Classic and other Hyperlane-connected ecosystems. This can support use cases such as token bridging, cross-chain applications, interchain governance flows, and integrations with external liquidity or application layers.
+
+The validator described in this guide does not validate Terra Classic blocks. Instead, it participates in Hyperlane security by observing Terra Classic Hyperlane contracts, signing checkpoints, and publishing those signatures so relayers and other participants can verify message state.
+
+In this Terra Classic deployment, validator signatures are published to a public AWS S3 location. The S3 bucket acts as the publicly readable checkpoint store, while your IAM user and Terra signer key remain private operational components.
+
 > **Warning**
 >
 > Never commit private keys, AWS access keys, seed phrases, or `.env` files to Git. Keep secrets only on the VPS or in a secure secret manager.
