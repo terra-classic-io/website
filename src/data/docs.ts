@@ -319,7 +319,7 @@ const developTxBestPractices: DocPage = {
 
 const developHyperlaneValidator: DocPage = {
   slug: "hyperlane-validator",
-  title: "Hyperlane validator",
+  title: "Run Hyperlane validator",
   summary: "Operate a Terra Classic Hyperlane validator with Docker, AWS S3 checkpoint storage, and VPS monitoring.",
   markdown: hyperlaneValidatorGuide,
 };

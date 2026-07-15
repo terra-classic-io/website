@@ -8,6 +8,13 @@ Hyperlane lets Terra Classic publish validator checkpoints that other chains and
 - an IAM user with write access to that bucket
 - a funded Terra Classic signer address for validator announcements
 
+This guide is based on the Terra Classic Hyperlane validator deployment work and documentation maintained by Igor Soares and the Terra Classic Hyperlane contributors:
+
+- [terra-classic-hyperlane/hyperlane-validator](https://github.com/terra-classic-hyperlane/hyperlane-validator)
+- [S3 architecture notes](https://github.com/terra-classic-hyperlane/hyperlane-validator/blob/main/ARCHITECTURE-S3.md)
+
+Use the upstream repository as the reference source for current deployment-specific values, especially Hyperlane contract addresses.
+
 > **Warning**
 >
 > Never commit private keys, AWS access keys, seed phrases, or `.env` files to Git. Keep secrets only on the VPS or in a secure secret manager.
