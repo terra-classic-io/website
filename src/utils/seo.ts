@@ -3,6 +3,10 @@ export const SITE_NAME = "Terra Classic";
 export const SITE_ALTERNATE_NAME = "Terra Classic Ecosystem";
 export const SITE_LOCALE = "en_US";
 export const OG_IMAGE_URL = `${SITE_ORIGIN}/og-image.jpg`;
+export const OG_IMAGE_TYPE = "image/jpeg";
+export const OG_IMAGE_WIDTH = "1200";
+export const OG_IMAGE_HEIGHT = "630";
+export const OG_IMAGE_ALT = "Terra Classic — Explore. Build. Stake.";
 export const LOGO_URL = `${SITE_ORIGIN}/favicon-512.png`;
 
 export const HOME_TITLE =

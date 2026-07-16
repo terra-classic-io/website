@@ -9,6 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProduction = process.env.NODE_ENV === 'production';
 const PORT = process.env.PORT || 3000;
 const HTML_CACHE_CONTROL = 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400';
+const NOT_FOUND_CACHE_CONTROL = 'private, max-age=300';
 
 // Create a simple logger
 const logger = {
@@ -103,7 +104,14 @@ async function createServer() {
 
       if (requestUrl.pathname.includes('.')) {
         logger.warn(`Static asset not found: ${url}`);
-        return res.status(404).send('Not Found');
+        return res
+          .status(404)
+          .set({
+            'Cache-Control': NOT_FOUND_CACHE_CONTROL,
+            'X-Robots-Tag': 'noindex, follow',
+            'X-Content-Type-Options': 'nosniff',
+          })
+          .send('Not Found');
       }
 
       const templatePath = path.resolve(
@@ -133,7 +141,7 @@ async function createServer() {
         .status(statusCode)
         .set({
           'Content-Type': 'text/html; charset=utf-8',
-          'Cache-Control': HTML_CACHE_CONTROL,
+          'Cache-Control': statusCode === 404 ? NOT_FOUND_CACHE_CONTROL : HTML_CACHE_CONTROL,
           'X-Robots-Tag': statusCode === 404 ? 'noindex, follow' : 'index, follow',
           'X-Content-Type-Options': 'nosniff',
           'Referrer-Policy': 'strict-origin-when-cross-origin',
@@ -167,7 +175,14 @@ async function createServer() {
   // Fallback 404 handler for requests not captured above
   app.use((req, res, next) => {
     if (!res.headersSent) {
-      res.status(404).send('Not Found');
+      res
+        .status(404)
+        .set({
+          'Cache-Control': NOT_FOUND_CACHE_CONTROL,
+          'X-Robots-Tag': 'noindex, follow',
+          'X-Content-Type-Options': 'nosniff',
+        })
+        .send('Not Found');
     }
   });
 

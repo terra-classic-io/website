@@ -14,6 +14,7 @@ import {
 // On Pages client build (CF_PAGES_BUILD), we emit to dist/ root.
 const TEMPLATE_PATH = "/index.html";
 const HTML_CACHE_CONTROL = "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400";
+const NOT_FOUND_CACHE_CONTROL = "private, max-age=300";
 
 /**
  * Read the base HTML template from Cloudflare Pages static assets.
@@ -110,7 +111,7 @@ const handleRequest = async (
     status: statusCode,
     headers: {
       "Content-Type": "text/html; charset=utf-8",
-      "Cache-Control": HTML_CACHE_CONTROL,
+      "Cache-Control": statusCode === 404 ? NOT_FOUND_CACHE_CONTROL : HTML_CACHE_CONTROL,
       "X-Robots-Tag": statusCode === 404 ? "noindex, follow" : "index, follow",
       "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "strict-origin-when-cross-origin",

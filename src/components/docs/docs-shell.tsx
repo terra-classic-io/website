@@ -14,7 +14,11 @@ import { LAST_UPDATE } from "../../generated/build-info";
 import { buildDocPath } from "../../utils/seo-routes";
 import {
   LOGO_URL,
+  OG_IMAGE_ALT,
+  OG_IMAGE_HEIGHT,
+  OG_IMAGE_TYPE,
   OG_IMAGE_URL,
+  OG_IMAGE_WIDTH,
   SITE_LOCALE,
   SITE_NAME,
   SITE_ORIGIN,
@@ -283,11 +287,16 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
         <meta property="og:site_name" content={SITE_NAME} />
         <meta property="og:url" content={pageUrl} />
         <meta property="og:image" content={OG_IMAGE_URL} />
+        <meta property="og:image:type" content={OG_IMAGE_TYPE} />
+        <meta property="og:image:width" content={OG_IMAGE_WIDTH} />
+        <meta property="og:image:height" content={OG_IMAGE_HEIGHT} />
+        <meta property="og:image:alt" content={OG_IMAGE_ALT} />
         <meta property="article:modified_time" content={LAST_UPDATE} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
         <meta name="twitter:image" content={OG_IMAGE_URL} />
+        <meta name="twitter:image:alt" content={OG_IMAGE_ALT} />
         <link rel="canonical" href={pageUrl} />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
         <meta name="theme-color" content="#e2e8f0" />

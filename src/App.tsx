@@ -26,7 +26,11 @@ import { buildDocPath } from "./utils/seo-routes";
 import {
   HOME_DESCRIPTION,
   HOME_TITLE,
+  OG_IMAGE_ALT,
+  OG_IMAGE_HEIGHT,
+  OG_IMAGE_TYPE,
   OG_IMAGE_URL,
+  OG_IMAGE_WIDTH,
   PROJECT_MAP_DESCRIPTION,
   PROJECT_MAP_TITLE,
   SITE_LOCALE,
@@ -589,13 +593,15 @@ const App: React.FC<{
             <meta property="og:description" content={HOME_DESCRIPTION} />
             <meta property="og:url" content={`${SITE_ORIGIN}/`} />
             <meta property="og:image" content={OG_IMAGE_URL} />
-            <meta property="og:image:width" content="1166" />
-            <meta property="og:image:height" content="728" />
-            <meta property="og:image:alt" content="Terra Classic ecosystem" />
+            <meta property="og:image:type" content={OG_IMAGE_TYPE} />
+            <meta property="og:image:width" content={OG_IMAGE_WIDTH} />
+            <meta property="og:image:height" content={OG_IMAGE_HEIGHT} />
+            <meta property="og:image:alt" content={OG_IMAGE_ALT} />
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" content={HOME_TITLE} />
             <meta name="twitter:description" content={HOME_DESCRIPTION} />
             <meta name="twitter:image" content={OG_IMAGE_URL} />
+            <meta name="twitter:image:alt" content={OG_IMAGE_ALT} />
             <script type="application/ld+json">
               {JSON.stringify(homeStructuredData)}
             </script>
@@ -618,10 +624,15 @@ const App: React.FC<{
             <meta property="og:description" content={PROJECT_MAP_DESCRIPTION} />
             <meta property="og:url" content={`${SITE_ORIGIN}/bubbles`} />
             <meta property="og:image" content={OG_IMAGE_URL} />
+            <meta property="og:image:type" content={OG_IMAGE_TYPE} />
+            <meta property="og:image:width" content={OG_IMAGE_WIDTH} />
+            <meta property="og:image:height" content={OG_IMAGE_HEIGHT} />
+            <meta property="og:image:alt" content={OG_IMAGE_ALT} />
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" content={PROJECT_MAP_TITLE} />
             <meta name="twitter:description" content={PROJECT_MAP_DESCRIPTION} />
             <meta name="twitter:image" content={OG_IMAGE_URL} />
+            <meta name="twitter:image:alt" content={OG_IMAGE_ALT} />
             <meta
               name="theme-color"
               content={resolvedTheme === "dark" ? "#020617" : "#e2e8f0"}
