@@ -58,6 +58,7 @@ const MAX_CELL_SIZE: number = 320;
 const COLUMN_DENOMINATOR: number = 6;
 
 const sanitizeText = (value?: string): string => (value ?? "").trim();
+const normalizeLogoPath = (value?: string): string | undefined => value?.replace(/^\/public/, "");
 
 const computeCellSize = (viewportWidth: number): number => {
   const candidate: number = viewportWidth / COLUMN_DENOMINATOR;
@@ -169,7 +170,7 @@ const normalizeLink = (
     centroid,
     polygon,
     hasLogo: Boolean((link as { logo?: string }).logo),
-    logoSrc: (link as { logo?: string }).logo,
+    logoSrc: normalizeLogoPath((link as { logo?: string }).logo),
     iconKey,
     tooltip: `Open ${link.name}${sanitizedDescription.length > 0 ? `: ${sanitizedDescription}` : ""}`,
   };

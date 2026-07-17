@@ -12,6 +12,7 @@ import {
   Newspaper,
   ShieldCheck,
   Link2,
+  ArrowRight,
 } from "lucide-react";
 import { ProjectIndicator } from "../data/projects";
 
@@ -141,7 +142,8 @@ function normalizeLogoPath(rawLogo?: string): string | undefined {
     return rawLogo;
   }
 
-  return rawLogo.startsWith("/") ? rawLogo : `/${rawLogo}`;
+  const publicPath = rawLogo.replace(/^\/public/, "");
+  return publicPath.startsWith("/") ? publicPath : `/${publicPath}`;
 }
 
 function LinkItem({
@@ -165,7 +167,7 @@ function LinkItem({
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-white/30 bg-white/80 px-3 py-3 text-xs shadow-[0_14px_32px_-24px_rgba(15,23,42,0.55)] backdrop-blur-lg transition hover:-translate-y-1 hover:shadow-[0_22px_48px_-28px_rgba(14,116,144,0.55)] dark:border-white/10 dark:bg-slate-900/70 sm:px-4"
+      className="group relative flex flex-col gap-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-3 text-xs transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50/50 dark:border-white/10 dark:bg-white/[0.025] dark:hover:border-blue-500/35 dark:hover:bg-blue-500/[0.05] sm:px-4"
     >
       <div className="flex items-center gap-3">
         <div
@@ -231,28 +233,7 @@ function LinkItem({
         </span>
         <span className="inline-flex items-center gap-1 rounded-full bg-white/50 px-2.5 py-0.5 text-[9px] font-semibold tracking-[0.26em] text-sky-600 transition group-hover:translate-x-0.5 group-hover:bg-white/70 dark:bg-white/10 dark:text-sky-400 sm:px-3 sm:text-[10px] sm:tracking-[0.3em]">
           Visit
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M5 12h14"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M13 6l6 6-6 6"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <ArrowRight size={12} />
         </span>
       </div>
       <div className="pointer-events-none absolute inset-0 rounded-2xl border border-transparent bg-gradient-to-br from-slate-100/45 via-transparent to-sky-100/30 opacity-0 transition group-hover:border-sky-400/40 group-hover:opacity-100 dark:from-sky-500/10 dark:to-transparent" />

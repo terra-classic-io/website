@@ -11,6 +11,7 @@ type TokenInfo = {
   price: string;
   change: string;
   isPositive: boolean;
+  marketCap: string;
 };
 
 type AppState = {
@@ -39,11 +40,13 @@ const getInitialState = (): AppState => {
           price: '$0.00023',
           change: '+5.6%',
           isPositive: true,
+          marketCap: '$-.--',
         },
         USTC: {
           price: '$0.016',
           change: '+2.3%',
           isPositive: true,
+          marketCap: '$-.--',
         },
       },
       staking: {
@@ -60,11 +63,13 @@ const getInitialState = (): AppState => {
           price: '$0.00023',
           change: '+0.0%',
           isPositive: true,
+          marketCap: '$-.--',
         },
         USTC: {
           price: '$0.016',
           change: '+0.0%',
           isPositive: true,
+          marketCap: '$-.--',
         },
       },
       staking: {
@@ -117,15 +122,4 @@ declare global {
     }
   }
   
-  // Only declare process if it doesn't exist
-  interface ImportMetaEnv {
-    MODE: 'development' | 'production';
-    DEV: boolean;
-    PROD: boolean;
-    SSR: boolean;
-  }
-  
-  interface ImportMeta {
-    readonly env: ImportMetaEnv;
-  }
 }

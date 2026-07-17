@@ -140,7 +140,7 @@ function DocSidebar(props: DocSidebarProps): JSX.Element {
   const containerClassName: string =
     variant === "drawer"
       ? "flex h-full flex-col gap-10 overflow-y-auto pr-4"
-      : "fixed top-24 w-72 -mt-3 flex h-[calc(100vh-6rem)] flex-col gap-10 overflow-y-auto pr-6";
+      : "sticky top-[96px] flex max-h-[calc(100vh-116px)] flex-col gap-7 overflow-y-auto pr-1";
   const normalizedQuery: string = searchQuery.trim().toLowerCase();
   const flattenedSearchResults = useMemo<SearchResult[]>(
     () => sections.flatMap((section) => collectSearchResults(section, section.pages)),

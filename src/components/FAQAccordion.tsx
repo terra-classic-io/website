@@ -55,7 +55,7 @@ const FAQAccordion: React.FC = () => {
       answer: (
         <>
           <p>
-            To stake LUNC, connect a wallet such as `Keplr`, `Galaxy Station`, or `Cosmostation`, choose a validator, and delegate tokens. Staking APR moves with governance parameters and network usage. As of 2025 it typically ranges between 6% and 8% annualized.
+            To stake LUNC, connect a wallet such as `Keplr`, `Galaxy Station`, or `Cosmostation`, choose a validator, and delegate tokens. Staking APR moves with governance parameters and network usage; check the live network signal shown on this page before making a decision.
           </p>
           <p>
             Rewards stay in the distribution module until you claim them. Remember that staking comes with a 21-day unbonding period; undelegated tokens cannot be moved until that period ends and do not gain rewards. Diversifying among trustworthy validators reduces risk of slashing events.
@@ -133,7 +133,7 @@ const FAQAccordion: React.FC = () => {
   return (
     <section className="py-12 mt-8 border-t border-gray-200 dark:border-gray-700">
       <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Frequently Asked Questions</h2>
-      <p className="text-gray-600 dark:text-gray-300 mb-8">Get answers to the most common questions about Terra Classic in 2025</p>
+      <p className="text-gray-600 dark:text-gray-300 mb-8">Get answers to common questions about Terra Classic</p>
       
       <div className="divide-y divide-gray-200 dark:divide-gray-700 border-t border-b border-gray-200 dark:border-gray-700">
         {faqs.map((faq, index) => (

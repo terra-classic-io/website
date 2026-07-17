@@ -11,11 +11,11 @@ interface SectionProps {
   readonly prioritizeOnchain: boolean;
 }
 
-const panelClassname: string = 'relative flex flex-col h-full overflow-hidden rounded-3xl border border-slate-200/70 bg-gradient-to-br from-white/90 via-white/75 to-white/95 p-6 pb-10 shadow-xl shadow-slate-900/5 ring-1 ring-slate-200/60 transition hover:-translate-y-1 hover:shadow-2xl dark:border-slate-800/60 dark:bg-gradient-to-br dark:from-slate-950/90 dark:via-slate-950/60 dark:to-slate-900/70 dark:ring-slate-800/80 md:rounded-[32px] md:p-8 md:pb-12';
-const gradientEdgeClassname: string = 'absolute inset-y-6 left-6 hidden w-px rounded-full bg-gradient-to-b from-sky-400/70 via-transparent to-indigo-500/40 md:block';
-const highlightOrbClassname: string = 'pointer-events-none absolute -right-14 top-16 hidden h-44 w-44 rounded-full bg-sky-500/10 blur-3xl dark:bg-sky-500/25 md:block';
+const panelClassname: string = 'relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-blue-200 hover:shadow-[0_24px_60px_-42px_rgba(37,99,235,0.45)] dark:border-white/10 dark:bg-[#061121] dark:hover:border-blue-500/30 md:p-7';
+const gradientEdgeClassname: string = 'absolute inset-y-7 left-0 w-[3px] rounded-r-full bg-gradient-to-b from-blue-500 via-blue-400 to-transparent';
+const highlightOrbClassname: string = 'pointer-events-none absolute -right-14 top-16 hidden h-44 w-44 rounded-full bg-blue-500/[0.06] blur-3xl dark:bg-blue-500/10 md:block';
 
-const MAX_VISIBLE_LINKS = 1;
+const MAX_VISIBLE_LINKS = 4;
 const SERVER_SEED: string = 'server-seed';
 
 const CategorySection: React.FC<SectionProps> = ({ category, sortMode, prioritizeOnchain }) => {
@@ -97,8 +97,8 @@ const CategorySection: React.FC<SectionProps> = ({ category, sortMode, prioritiz
         <span className={gradientEdgeClassname} aria-hidden="true" />
         <span className={highlightOrbClassname} aria-hidden="true" />
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-          <div className="pl-0 md:pl-10">
-            <h2 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
+          <div className="pl-1 md:pl-3">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">
               {categories[category].title}
             </h2>
             {categories[category].description && (
@@ -108,18 +108,18 @@ const CategorySection: React.FC<SectionProps> = ({ category, sortMode, prioritiz
             )}
           </div>
           {resourceCountLabel && (
-            <span className="inline-flex shrink-0 items-center self-start rounded-full border border-slate-300/60 bg-white/40 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-slate-500 backdrop-blur dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-400 md:text-[11px] md:tracking-[0.35em]">
+            <span className="inline-flex shrink-0 items-center self-start rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-400">
               {resourceCountLabel.toUpperCase()}
             </span>
           )}
         </div>
-        <div className="relative mt-6 ml-0 md:mt-8 md:ml-3 flex-1">
+        <div className="relative mt-6 flex-1">
           <ul
             id={`${sectionId}-links`}
             ref={listRef}
             onScroll={handleScroll}
             className={`category-scroll grid gap-3 pr-0 pb-10 transition-all duration-300 ${
-              hasOverflow ? 'max-h-[420px] overflow-y-auto pr-1' : 'max-h-full'
+              hasOverflow ? 'max-h-[430px] overflow-y-auto pr-1' : 'max-h-full'
             }`}
           >
             {sortedLinks.map(link => (
@@ -145,7 +145,7 @@ const CategorySection: React.FC<SectionProps> = ({ category, sortMode, prioritiz
               <button
                 type="button"
                 onClick={handleNudge}
-                className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.32em] text-slate-600 shadow-[0_12px_24px_-16px_rgba(96,165,250,0.6)] transition hover:bg-white dark:bg-transparent dark:text-slate-200 dark:hover:bg-slate-900 md:px-5 md:text-[11px] md:tracking-[0.45em]"
+                className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/95 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-sm transition hover:border-blue-300 hover:text-blue-600 dark:border-white/10 dark:bg-[#071426] dark:text-slate-200"
                 aria-controls={`${sectionId}-links`}
               >
                 {Math.max(hiddenCount, 1)} more

@@ -56,7 +56,8 @@ async function createServer() {
         maxAge: '1y',
         etag: true,
         lastModified: true,
-        fallthrough: false // Don't fall through to the next middleware
+        // Let application routes such as /docs and /bubbles reach the SPA fallback.
+        fallthrough: true
       })
     );
     

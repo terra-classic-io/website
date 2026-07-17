@@ -9,7 +9,7 @@ import React, {
 import { select } from "d3-selection";
 import { zoom as d3Zoom, ZoomBehavior, ZoomTransform, zoomIdentity } from "d3-zoom";
 import { useSearchParams } from "react-router-dom";
-import { ProjectIndicator } from "../../data/projects";
+import { ProjectIndicator, projects } from "../../data/projects";
 import { categories as sourceCategories } from "../../data/categories";
 import { useTheme } from "../../contexts/ThemeContext";
 import {
@@ -29,8 +29,9 @@ import type { ProjectMapCategory, ProjectMapEdge, ProjectMapLayout, ProjectMapNo
 import { renderProjectMap, RenderTransform } from "./renderer";
 import { ProjectMapSimulation } from "./simulator";
 import { clampNodeToCategory, clampNodeToViewport, pointInPolygon } from "./geometry";
+import ProjectDirectoryView from "./project-directory-view";
 import styles from "./project-map.module.css";
-import { RefreshCcw } from "lucide-react";
+import { ArrowUpRight, ExternalLink, LayoutGrid, Network, RefreshCcw } from "lucide-react";
 
 interface TooltipState {
   readonly nodeId: string;
@@ -140,6 +141,8 @@ type DragState = {
   moved: boolean;
 };
 
+type ProjectViewMode = "bubble" | "directory";
+
 const ProjectMap: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasWrapperRef = useRef<HTMLDivElement | null>(null);
@@ -164,6 +167,8 @@ const ProjectMap: React.FC = () => {
   const [searchMatches, setSearchMatches] = useState<ReadonlySet<string>>(new Set());
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [focusedNodeId, setFocusedNodeId] = useState<string | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ProjectViewMode>("directory");
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [_, setIsPanning] = useState<boolean>(false);
@@ -761,17 +766,60 @@ const ProjectMap: React.FC = () => {
   }, [isDragging, layout.height, layout.width, transform.translateX, transform.translateY, transform.zoom, calculateLocalPoint]);
 
   const nodesForRendering = nodesRef.current;
+  const selectedNode = nodesForRendering.find((node) => node.id === selectedNodeId)
+    ?? nodesForRendering.find((node) => node.name.toLowerCase() === "terraswap")
+    ?? nodesForRendering.find((node) => node.url.length > 0);
+  const selectedLogo = selectedNode?.logoSrc?.replace(/^\/public/, "");
+
+  const selectViewMode = (nextMode: ProjectViewMode): void => {
+    setViewMode(nextMode);
+    trackEvent({ event: "project_view_changed", payload: { view: nextMode } });
+  };
 
   return (
     <div
-      className={`${styles.container} rounded-[28px] border border-slate-200/70 bg-white/80 p-6 shadow-xl shadow-slate-500/20 backdrop-blur-xl transition-colors duration-300 dark:border-slate-800/60 dark:bg-slate-900/70 dark:shadow-slate-900/40 sm:p-8`}
+      className={`${styles.container} rounded-2xl border border-slate-200 bg-white/75 p-3 shadow-sm backdrop-blur-xl transition-colors duration-300 dark:border-white/10 dark:bg-white/[0.02] sm:p-4`}
       ref={containerRef}
-      onDoubleClick={handleDoubleClick}
+      onDoubleClick={viewMode === "bubble" ? handleDoubleClick : undefined}
     >
+      <div className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white/90 p-4 dark:border-white/10 dark:bg-[#061121]/90 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Project view</p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Explore visually or browse the classic directory.</p>
+        </div>
+        <div className="inline-flex w-fit rounded-lg border border-slate-200 bg-slate-50 p-1 dark:border-white/10 dark:bg-white/[0.03]" role="group" aria-label="Project view mode">
+          <button
+            type="button"
+            onClick={() => selectViewMode("bubble")}
+            aria-pressed={viewMode === "bubble"}
+            className={`inline-flex h-9 items-center gap-2 rounded-md px-3 text-xs font-semibold transition ${viewMode === "bubble" ? "bg-white text-blue-600 shadow-sm dark:bg-blue-500/15 dark:text-blue-300" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
+          >
+            <Network size={15} />
+            Bubble map
+          </button>
+          <button
+            type="button"
+            onClick={() => selectViewMode("directory")}
+            aria-pressed={viewMode === "directory"}
+            className={`inline-flex h-9 items-center gap-2 rounded-md px-3 text-xs font-semibold transition ${viewMode === "directory" ? "bg-white text-blue-600 shadow-sm dark:bg-blue-500/15 dark:text-blue-300" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
+          >
+            <LayoutGrid size={15} />
+            Directory
+          </button>
+        </div>
+      </div>
       <div
-        className={`${styles.controls} rounded-2xl border border-slate-200/70 bg-white/70 p-4 backdrop-blur-md transition-colors duration-300 dark:border-slate-700/60 dark:bg-slate-900/60 sm:p-5`}
+        className={`${styles.controls} rounded-xl border border-slate-200 bg-white/90 p-4 backdrop-blur-md transition-colors duration-300 dark:border-white/10 dark:bg-[#061121]/90`}
       >
         <div className={styles.filterScroll}>
+          <button
+            type="button"
+            className={activeCategoryIds.length === 0 ? styles.activeChip : styles.chip}
+            onClick={() => setActiveCategoryIds([])}
+          >
+            All categories
+            <span className={styles.chipCount}>{projects.length}</span>
+          </button>
           {categoriesRef.current.map((category) => {
             const isActive = activeCategoryIds.includes(category.id);
             return (
@@ -796,108 +844,157 @@ const ProjectMap: React.FC = () => {
           <input
             type="search"
             aria-label="Search projects"
-            placeholder="Search projects"
+            placeholder="Search projects..."
             value={searchQuery}
             onChange={(event) => handleSearchChange(event.target.value)}
             className="rounded-full border border-slate-200/70 bg-white/70 p-2 backdrop-blur-md transition-colors duration-300 dark:border-slate-700/60 dark:bg-slate-900/60"
           />
-          <button type="button" onClick={resetView} className={`${styles.resetButton} bg-slate-200/70 dark:bg-slate-700/70 mt-10 ml-auto flex items-center`}>
+          <button type="button" onClick={resetView} className={`${styles.resetButton} flex items-center`}>
             <RefreshCcw className="mr-2 h-4 w-4" />
             Reset view
           </button>
         </div>
       </div>
-      <div className={styles.canvasWrapper} ref={canvasWrapperRef}>
-        <canvas ref={canvasRef} className={styles.canvas} />
-        <div className={styles.overlay}>
-          {nodesForRendering.map((node) => {
-            const categoryActive = activeCategoryIds.length === 0 || activeCategoryIds.includes(node.categoryId);
-            const matches = searchMatches.has(node.id);
-            const interactive = categoryActive && matches;
-            const screenPosition = computeNodeScreenPosition(node, transform);
-            const size = Math.max(MIN_TAP_TARGET, node.radius * 2 * transform.zoom);
-            return (
-              <button
-                key={node.id}
-                type="button"
-                className={styles.nodeButton}
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  transform: `translate3d(${screenPosition.x - size / 2}px, ${screenPosition.y - size / 2}px, 0)`,
-                  opacity: interactive ? 1 : 0.15,
-                  pointerEvents: interactive ? "auto" : "none",
-                  zIndex: hoveredNodeId === node.id ? 10 : 1,
-                }}
-                aria-label={`Open ${node.name}: ${node.description ?? "No description provided."}`}
-                aria-describedby={tooltip?.nodeId === node.id ? tooltipId : undefined}
-                aria-hidden={interactive ? undefined : "true"}
-                tabIndex={interactive ? 0 : -1}
-                onPointerDown={(event) => handlePointerDown(node.id, event)}
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerUp}
-                onPointerCancel={handlePointerUp}
-                onPointerLeave={() => handleHoverNode(null, null)}
-                onMouseEnter={(event) => handleHoverNode(node.id, event)}
-                onMouseMove={(event) => handleHoverNode(node.id, event)}
-                onMouseLeave={() => handleHoverNode(null, null)}
-                onFocus={(event) => handleFocusNode(node.id, event)}
-                onBlur={handleBlurNode}
-                onKeyDown={(event) => handleKeyDown(node.id, event)}
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  if (lastDraggedNodeIdRef.current === node.id) {
-                    lastDraggedNodeIdRef.current = null;
-                    return;
-                  }
-                  lastDraggedNodeIdRef.current = null;
-                  if (interactive) {
-                    openNodeUrl(node);
-                  }
-                }}
-              />
-            );
-          })}
-        </div>
-        <div
-          ref={tooltipRef}
-          id={tooltipId}
-          className={styles.tooltip}
-          role="status"
-          aria-live="polite"
-        />
-      </div>
-      <section className="bg-white/80 p-3 dark:bg-slate-900/70">
-        <header>
-          <h3 className="text-slate-900 dark:text-white font-semibold uppercase">Indicator legend</h3>
-        </header>
-        <div className={`${styles.legendGrid}`}>
-          {legendEntries.map(([indicator, visual]) => (
-            <div key={indicator} className={`${styles.legendItem} bg-white/80 dark:bg-slate-900/70 text-slate-900 dark:text-white`}>
-              <span
-                className={styles.legendBadge}
-                style={{
-                  borderStyle: visual.ringStyle === "dashed" ? "dashed" : visual.ringStyle === "segmented" ? "dotted" : "solid",
-                  borderColor: visual.ringColor,
-                }}
-              />
-              <div>
-                <p className={`${styles.legendTitle} text-slate-900 dark:text-white`}>
-                  {indicator === "onchain" && "On-chain"}
-                  {indicator === "hybrid" && "Hybrid"}
-                  {indicator === "support" && "Support"}
-                </p>
-                <p className={`${styles.legendDescription} text-slate-900 dark:text-white`}>
-                  {visual.ringStyle === "solid" && "Thick solid ring with green dot"}
-                  {visual.ringStyle === "segmented" && "Segmented amber ring"}
-                  {visual.ringStyle === "dashed" && "Thin grey dashed ring"}
-                </p>
-              </div>
+      <div className={viewMode === "bubble" ? styles.workspace : "hidden"}>
+        <div className={styles.mapPanel}>
+          <div className={styles.canvasWrapper} ref={canvasWrapperRef}>
+            <canvas ref={canvasRef} className={styles.canvas} />
+            <div className={styles.overlay}>
+              {nodesForRendering.map((node) => {
+                const categoryActive = activeCategoryIds.length === 0 || activeCategoryIds.includes(node.categoryId);
+                const matches = searchMatches.has(node.id);
+                const interactive = categoryActive && matches;
+                const screenPosition = computeNodeScreenPosition(node, transform);
+                const size = Math.max(MIN_TAP_TARGET, node.radius * 2 * transform.zoom);
+                return (
+                  <button
+                    key={node.id}
+                    type="button"
+                    className={styles.nodeButton}
+                    style={{
+                      width: `${size}px`,
+                      height: `${size}px`,
+                      transform: `translate3d(${screenPosition.x - size / 2}px, ${screenPosition.y - size / 2}px, 0)`,
+                      opacity: interactive ? 1 : 0.15,
+                      pointerEvents: interactive ? "auto" : "none",
+                      zIndex: hoveredNodeId === node.id ? 10 : selectedNode?.id === node.id ? 8 : 1,
+                    }}
+                    aria-label={`View details for ${node.name}: ${node.description ?? "No description provided."}`}
+                    aria-describedby={tooltip?.nodeId === node.id ? tooltipId : undefined}
+                    aria-hidden={interactive ? undefined : "true"}
+                    tabIndex={interactive ? 0 : -1}
+                    onPointerDown={(event) => handlePointerDown(node.id, event)}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerCancel={handlePointerUp}
+                    onPointerLeave={() => handleHoverNode(null, null)}
+                    onMouseEnter={(event) => handleHoverNode(node.id, event)}
+                    onMouseMove={(event) => handleHoverNode(node.id, event)}
+                    onMouseLeave={() => handleHoverNode(null, null)}
+                    onFocus={(event) => handleFocusNode(node.id, event)}
+                    onBlur={handleBlurNode}
+                    onKeyDown={(event) => handleKeyDown(node.id, event)}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      if (lastDraggedNodeIdRef.current === node.id) {
+                        lastDraggedNodeIdRef.current = null;
+                        return;
+                      }
+                      lastDraggedNodeIdRef.current = null;
+                      if (interactive) {
+                        setSelectedNodeId(node.id);
+                        trackEvent({ event: "select_project", payload: { name: node.name, category: node.categoryTitle } });
+                      }
+                    }}
+                  />
+                );
+              })}
             </div>
-          ))}
+            <div
+              ref={tooltipRef}
+              id={tooltipId}
+              className={styles.tooltip}
+              role="status"
+              aria-live="polite"
+            />
+          </div>
+          <section className={styles.legendSection}>
+            <header>
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Indicator legend</h3>
+            </header>
+            <div className={styles.legendGrid}>
+              {legendEntries.map(([indicator, visual]) => (
+                <div key={indicator} className={styles.legendItem}>
+                  <span
+                    className={styles.legendBadge}
+                    style={{
+                      borderStyle: visual.ringStyle === "dashed" ? "dashed" : visual.ringStyle === "segmented" ? "dotted" : "solid",
+                      borderColor: visual.ringColor,
+                    }}
+                  />
+                  <div>
+                    <p className="text-xs font-semibold text-slate-950 dark:text-white">
+                      {indicator === "onchain" && "On-chain"}
+                      {indicator === "hybrid" && "Hybrid"}
+                      {indicator === "support" && "Support"}
+                    </p>
+                    <p className="mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">
+                      {visual.ringStyle === "solid" && "Native on-chain integration"}
+                      {visual.ringStyle === "segmented" && "Hybrid ecosystem integration"}
+                      {visual.ringStyle === "dashed" && "Terra Classic support"}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
-      </section>
+
+        <aside className={styles.detailsPanel} aria-live="polite">
+          {selectedNode ? (
+            <>
+              <div className="flex items-center gap-4">
+                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 p-2 dark:border-white/10 dark:bg-white/5">
+                  {selectedLogo ? <img src={selectedLogo} alt="" className="h-12 w-12 object-contain" /> : <span className="text-lg font-bold text-blue-600 dark:text-blue-400">{selectedNode.monogram}</span>}
+                </span>
+                <div className="min-w-0">
+                  <h2 className="truncate text-xl font-semibold tracking-tight text-slate-950 dark:text-white">{selectedNode.name}</h2>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{selectedNode.categoryTitle} · {selectedNode.description ?? "Ecosystem project"}</p>
+                </div>
+              </div>
+              <p className="mt-8 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                {selectedNode.description
+                  ? `${selectedNode.name} is listed in the Terra Classic ecosystem directory as ${selectedNode.description.toLowerCase()}.`
+                  : `${selectedNode.name} is part of the community-curated Terra Classic ecosystem directory.`}
+              </p>
+              <dl className="mt-8 divide-y divide-slate-200 border-y border-slate-200 text-xs dark:divide-white/10 dark:border-white/10">
+                <div className="flex items-center justify-between py-4"><dt className="text-slate-500 dark:text-slate-400">Category</dt><dd className="font-semibold text-slate-950 dark:text-white">{selectedNode.categoryTitle}</dd></div>
+                <div className="flex items-center justify-between py-4"><dt className="text-slate-500 dark:text-slate-400">Integration</dt><dd className="capitalize text-slate-950 dark:text-white">{selectedNode.indicator}</dd></div>
+                <div className="flex items-center justify-between py-4"><dt className="text-slate-500 dark:text-slate-400">Status</dt><dd className="rounded-full bg-emerald-500/10 px-2 py-1 font-semibold text-emerald-600 dark:text-emerald-400">Listed</dd></div>
+                <div className="flex items-center justify-between gap-4 py-4"><dt className="text-slate-500 dark:text-slate-400">Website</dt><dd className="min-w-0 truncate font-semibold text-blue-600 dark:text-blue-400">{selectedNode.url.replace(/^https?:\/\//, "")}</dd></div>
+              </dl>
+              <button type="button" onClick={() => openNodeUrl(selectedNode)} className="mt-8 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-[0_16px_30px_-16px_rgba(37,99,235,0.75)] transition hover:bg-blue-500">
+                View project details
+                <ArrowUpRight size={16} />
+              </button>
+              <a href="/#resource-directory" className="mt-4 flex items-center justify-center gap-2 text-xs font-semibold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400">
+                Browse directory
+                <ExternalLink size={13} />
+              </a>
+            </>
+          ) : (
+            <p className="text-sm text-slate-500 dark:text-slate-400">Select a project to view its details.</p>
+          )}
+        </aside>
+      </div>
+      {viewMode === "directory" ? (
+        <ProjectDirectoryView
+          categories={layout.categories}
+          activeCategoryIds={activeCategoryIds}
+          searchQuery={searchQuery}
+        />
+      ) : null}
     </div>
   );
 };
