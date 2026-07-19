@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { ArrowRight, Github, Menu, ThumbsDown, ThumbsUp, X } from "lucide-react";
+import { ArrowRight, ChevronRight, Github, Menu, ThumbsDown, ThumbsUp, X } from "lucide-react";
 import type { DocPage } from "../../types/doc-page";
 import type { DocSection } from "../../types/doc-section";
 import DocContent from "./doc-content";
 import DocSidebar from "./doc-sidebar";
-import { docSections } from "../../data/docs";
+import { docSections, getDocSourcePath } from "../../data/docs";
 import SiteHeader from "../site-header";
 import terraClassicLogoUrl from "../../assets/terra-classic.svg";
 import type { DocNavigationOptions } from "../../types/doc-navigation";
 import type { DocPageWithPath } from "../../types/doc-page-with-path";
+import { extractDocMarkdownHeadings } from "../../lib/docs-markdown";
 
 type DocsShellProps = {
   readonly docSegments: readonly string[];
@@ -88,6 +89,15 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
   const pageTitle: string = `${page.title} · Terra Classic Docs`;
   const pageDescription: string = page.summary
     || "Terra Classic documentation covering full node operations, network endpoints, wallets, and governance.";
+  const pageSourcePath: string | undefined = getDocSourcePath(page);
+  const editPageUrl: string = pageSourcePath
+    ? `https://github.com/terra-classic-io/website/edit/main/${pageSourcePath}`
+    : "https://github.com/terra-classic-io/website";
+  const pageOutline = useMemo(
+    () => page.sections?.map((contentSection) => ({ title: contentSection.title, id: "" }))
+      ?? extractDocMarkdownHeadings(page.markdown ?? ""),
+    [page.markdown, page.sections],
+  );
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -303,9 +313,38 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
         <main className="min-w-0 space-y-0 overflow-hidden rounded-2xl border border-slate-200 bg-white/75 shadow-sm dark:border-white/10 dark:bg-white/[0.02]">
           <header className="relative flex min-h-[210px] items-center justify-between gap-6 overflow-hidden border-b border-slate-200 bg-gradient-to-r from-white via-white to-blue-50 px-6 py-10 dark:border-white/10 dark:from-[#061121] dark:via-[#071426] dark:to-blue-950/50 sm:px-9">
             <div className="space-y-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-blue-600 dark:text-blue-400">
-                {section.title}
-              </p>
+              <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                <a href={homeHref} className="transition hover:text-blue-600 dark:hover:text-blue-400">Home</a>
+                <ChevronRight size={13} aria-hidden="true" />
+                <button
+                  type="button"
+                  onClick={() => handleNavigate(section.slug, [section.pages[0]?.slug ?? ""])}
+                  className="transition hover:text-blue-600 dark:hover:text-blue-400"
+                >
+                  {section.title}
+                </button>
+                {trail.map((entry, index) => {
+                  const isCurrentPage = index === trail.length - 1;
+                  const targetPath = trail.slice(0, index + 1).map((target) => target.slug);
+
+                  return (
+                    <span key={`${entry.slug}-${index}`} className="flex items-center gap-1.5">
+                      <ChevronRight size={13} aria-hidden="true" />
+                      {isCurrentPage ? (
+                        <span className="font-medium text-slate-700 dark:text-slate-200" aria-current="page">{entry.title}</span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleNavigate(section.slug, targetPath)}
+                          className="transition hover:text-blue-600 dark:hover:text-blue-400"
+                        >
+                          {entry.title}
+                        </button>
+                      )}
+                    </span>
+                  );
+                })}
+              </nav>
               <h1 className="text-4xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white">
                 {page.title}
               </h1>
@@ -317,6 +356,22 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
               </div>
             </div>
           </header>
+          {page.heroImage ? (
+            <div className="px-6 pt-8 sm:px-9 sm:pt-10">
+              <div className="relative h-64 overflow-hidden rounded-2xl border border-blue-200/70 bg-blue-50 shadow-sm dark:border-blue-500/20 dark:bg-[#020b19] sm:h-72">
+                <img
+                  src={page.heroImage.light}
+                  alt={page.heroImage.alt}
+                  className="h-full w-full object-cover object-[center_72%] dark:hidden"
+                />
+                <img
+                  src={page.heroImage.dark}
+                  alt={page.heroImage.alt}
+                  className="hidden h-full w-full object-cover object-[center_72%] dark:block"
+                />
+              </div>
+            </div>
+          ) : null}
           <div className="px-6 py-8 sm:px-9 sm:py-10">
             <DocContent
               page={page}
@@ -335,8 +390,14 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
               <h2 className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">On this page</h2>
               <ul className="mt-5 space-y-4 border-l border-slate-200 pl-4 text-xs dark:border-white/10">
                 <li className="font-semibold text-blue-600 dark:text-blue-400">{page.title}</li>
-                {(page.sections ?? []).slice(0, 4).map((contentSection) => (
-                  <li key={contentSection.title} className="text-slate-500 dark:text-slate-400">{contentSection.title}</li>
+                {pageOutline.slice(0, 6).map((outlineItem) => (
+                  <li key={outlineItem.title} className="text-slate-500 dark:text-slate-400">
+                    {outlineItem.id ? (
+                      <a href={`#${outlineItem.id}`} className="transition hover:text-blue-600 dark:hover:text-blue-400">
+                        {outlineItem.title}
+                      </a>
+                    ) : outlineItem.title}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -347,7 +408,7 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
                 <button type="button" aria-label="This page was not helpful" className="inline-flex h-10 w-14 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:border-blue-300 hover:text-blue-600 dark:border-white/10 dark:text-slate-300"><ThumbsDown size={16} /></button>
               </div>
             </div>
-            <a href="https://github.com/terra-classic-io/website" target="_blank" rel="noopener noreferrer" className="group block rounded-2xl border border-slate-200 bg-white/75 p-5 shadow-sm transition hover:border-blue-300 dark:border-white/10 dark:bg-white/[0.02] dark:hover:border-blue-500/40">
+            <a href={editPageUrl} target="_blank" rel="noopener noreferrer" className="group block rounded-2xl border border-slate-200 bg-white/75 p-5 shadow-sm transition hover:border-blue-300 dark:border-white/10 dark:bg-white/[0.02] dark:hover:border-blue-500/40">
               <h2 className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Edit this page</h2>
               <span className="mt-4 flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-slate-200"><Github size={18} /> Improve on GitHub <ArrowRight size={14} className="ml-auto transition group-hover:translate-x-1" /></span>
             </a>

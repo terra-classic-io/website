@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { ArrowRight, Bell, BookOpen, ExternalLink } from "lucide-react";
 import terraClassicLogoUrl from "../assets/terra-classic.svg";
 import { projects } from "../data/projects";
+import { stablecoinAssets } from "../data/stablecoins";
 
 type HeroSectionProps = {
   readonly onExploreCategories: () => void;
@@ -13,15 +14,55 @@ type OrbitBadge = {
   readonly symbol: string;
   readonly name: string;
   readonly logo: string;
-  readonly position: string;
+  readonly orbitAngle: number;
+  readonly orbitRadius: string;
+  readonly orbitDuration: string;
+  readonly orbitDirection: 1 | -1;
+  readonly orbitScaleY: number;
+  readonly orbitTilt: number;
 };
 
-const orbitBadges: readonly OrbitBadge[] = [
-  { symbol: "USTC", name: "TerraClassic USD", logo: "/logos/tokens/uusd.svg", position: "left-[3%] top-[16%]" },
-  { symbol: "LUNC", name: "Terra Luna Classic", logo: "/logos/tokens/uluna.svg", position: "right-[1%] top-[29%]" },
-  { symbol: "TerraSwap", name: "Decentralized exchange", logo: "/logos/dex/terraswap.svg", position: "left-[1%] bottom-[21%]" },
-  { symbol: "Terraport", name: "DeFi protocol", logo: "/logos/dex/terraport.svg", position: "right-[4%] bottom-[14%]" },
+type OrbitLayout = Omit<OrbitBadge, "symbol" | "name" | "logo"> & {
+  readonly denom: string;
+};
+
+const orbitLayouts: readonly OrbitLayout[] = [
+  { denom: "ueur", orbitAngle: 180, orbitRadius: "clamp(210px, 21vw, 300px)", orbitDuration: "90s", orbitDirection: 1, orbitScaleY: 0.42, orbitTilt: 12 },
+  { denom: "ucny", orbitAngle: 0, orbitRadius: "clamp(210px, 21vw, 300px)", orbitDuration: "90s", orbitDirection: 1, orbitScaleY: 0.42, orbitTilt: 12 },
+  { denom: "uusd", orbitAngle: 90, orbitRadius: "clamp(190px, 19vw, 270px)", orbitDuration: "106s", orbitDirection: -1, orbitScaleY: 0.58, orbitTilt: -17 },
+  { denom: "ukrw", orbitAngle: 270, orbitRadius: "clamp(190px, 19vw, 270px)", orbitDuration: "106s", orbitDirection: -1, orbitScaleY: 0.58, orbitTilt: -17 },
+  { denom: "ujpy", orbitAngle: -30, orbitRadius: "clamp(180px, 17vw, 230px)", orbitDuration: "122s", orbitDirection: 1, orbitScaleY: 0.78, orbitTilt: 48 },
+  { denom: "uaud", orbitAngle: 150, orbitRadius: "clamp(180px, 17vw, 230px)", orbitDuration: "122s", orbitDirection: 1, orbitScaleY: 0.78, orbitTilt: 48 },
+  { denom: "uluna", orbitAngle: -110, orbitRadius: "clamp(172px, 15vw, 198px)", orbitDuration: "138s", orbitDirection: -1, orbitScaleY: 1, orbitTilt: 0 },
+  { denom: "ugbp", orbitAngle: 70, orbitRadius: "clamp(172px, 15vw, 198px)", orbitDuration: "138s", orbitDirection: -1, orbitScaleY: 1, orbitTilt: 0 },
 ];
+
+const orbitBadges: readonly OrbitBadge[] = orbitLayouts.flatMap((layout) => {
+  const asset = stablecoinAssets.find((candidate) => candidate.denom === layout.denom);
+  if (!asset) {
+    return [];
+  }
+
+  return [{
+    ...layout,
+    symbol: asset.symbol,
+    name: asset.name,
+    logo: asset.logo ?? terraClassicLogoUrl,
+  }];
+});
+
+type OrbitStyle = CSSProperties & {
+  readonly "--orbit-angle": string;
+  readonly "--orbit-counter-angle": string;
+  readonly "--orbit-duration": string;
+  readonly "--orbit-radius": string;
+  readonly "--orbit-turn": string;
+  readonly "--orbit-counter-turn": string;
+  readonly "--orbit-scale-y": string;
+  readonly "--orbit-inverse-scale-y": string;
+  readonly "--orbit-tilt": string;
+  readonly "--orbit-counter-tilt": string;
+};
 
 const MAX_FEATURED_PROJECTS = 5;
 
@@ -108,6 +149,7 @@ function HeroSection({
           </div>
 
           <div className="relative mx-auto hidden min-h-[490px] w-full max-w-[720px] lg:block" aria-hidden="true">
+            <span className="network-core-halo absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
             <div className="network-globe absolute left-1/2 top-1/2 h-[390px] w-[390px] -translate-x-1/2 -translate-y-1/2 xl:h-[430px] xl:w-[430px]">
               <span className="network-globe__latitude network-globe__latitude--one" />
               <span className="network-globe__latitude network-globe__latitude--two" />
@@ -116,24 +158,44 @@ function HeroSection({
               <span className="network-globe__star network-globe__star--one" />
               <span className="network-globe__star network-globe__star--two" />
               <span className="network-globe__star network-globe__star--three" />
-              <div className="absolute left-1/2 top-1/2 flex h-36 w-36 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-blue-300/40 bg-gradient-to-br from-blue-400 via-blue-600 to-blue-800 shadow-[0_0_80px_rgba(37,99,235,0.52)]">
-                <img src={terraClassicLogoUrl} alt="" className="h-28 w-28 brightness-0 invert" />
+              <div className="absolute left-1/2 top-1/2 flex h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-blue-300/30 bg-[radial-gradient(circle,rgba(96,165,250,0.28),rgba(37,99,235,0.1)_62%,transparent_78%)] shadow-[0_0_180px_rgba(37,99,235,0.56)]">
+                <img src={terraClassicLogoUrl} alt="" className="h-[320px] w-[320px] max-w-none object-contain drop-shadow-[0_30px_54px_rgba(14,60,165,0.55)]" />
               </div>
             </div>
             <span className="network-orbit network-orbit--one" />
             <span className="network-orbit network-orbit--two" />
             <span className="network-orbit network-orbit--three" />
-            {orbitBadges.map((badge) => (
-              <div key={badge.symbol} className={`absolute ${badge.position} flex items-center gap-3 rounded-xl border border-slate-200 bg-white/88 p-2 pr-3 shadow-lg backdrop-blur dark:border-white/15 dark:bg-[#071426]/88`}>
-                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-blue-500/30 bg-slate-50 dark:bg-white/5">
-                  <img src={badge.logo} alt="" className="h-7 w-7 object-contain" />
-                </span>
-                <span>
-                  <strong className="block text-xs text-slate-950 dark:text-white">{badge.symbol}</strong>
-                  <span className="block text-[10px] text-slate-500 dark:text-slate-400">{badge.name}</span>
-                </span>
-              </div>
-            ))}
+            {orbitBadges.map((badge) => {
+              const orbitTurn = badge.orbitDirection * 360;
+              const orbitStyle: OrbitStyle = {
+                "--orbit-angle": `${badge.orbitAngle}deg`,
+                "--orbit-counter-angle": `${-badge.orbitAngle}deg`,
+                "--orbit-duration": badge.orbitDuration,
+                "--orbit-radius": badge.orbitRadius,
+                "--orbit-turn": `${orbitTurn}deg`,
+                "--orbit-counter-turn": `${-orbitTurn}deg`,
+                "--orbit-scale-y": String(badge.orbitScaleY),
+                "--orbit-inverse-scale-y": String(1 / badge.orbitScaleY),
+                "--orbit-tilt": `${badge.orbitTilt}deg`,
+                "--orbit-counter-tilt": `${-badge.orbitTilt}deg`,
+              };
+
+              return (
+                <div key={badge.symbol} className="network-asset-orbit" style={orbitStyle}>
+                  <div className="network-asset-orbit__radial">
+                    <div className="network-asset-orbit__badge z-10 flex min-w-[140px] items-center gap-2.5 rounded-xl border border-slate-200 bg-white/90 p-2 pr-3 shadow-lg backdrop-blur dark:border-white/15 dark:bg-[#071426]/90 xl:min-w-[150px]">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-blue-500/30 bg-slate-50 dark:bg-white/5">
+                        <img src={badge.logo} alt="" className="h-7 w-7 object-contain" />
+                      </span>
+                      <span className="min-w-0">
+                        <strong className="block text-xs text-slate-950 dark:text-white">{badge.symbol}</strong>
+                        <span className="block truncate text-[10px] text-slate-500 dark:text-slate-400">{badge.name}</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -152,18 +214,18 @@ function HeroSection({
               className={`${responsiveVisibility} group min-h-[96px] items-center gap-4 border-b border-slate-200 px-5 transition hover:bg-blue-50/70 dark:border-white/10 dark:hover:bg-blue-500/[0.06] sm:border-b-0 sm:border-r`}
               title={project.name}
             >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-slate-100 p-1.5 dark:bg-white/5">
+              <span className="project-logo-tint flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-blue-50 p-1 dark:bg-blue-500/10">
                 {logo ? (
                   darkLogo ? (
                     <>
-                      <img src={logo} alt="" className="h-9 w-9 object-contain dark:hidden" />
-                      <img src={darkLogo} alt="" className="hidden h-9 w-9 object-contain dark:block" />
+                      <img src={logo} alt="" className="project-logo-tint__image h-full w-full rounded-full object-contain dark:hidden" />
+                      <img src={darkLogo} alt="" className="project-logo-tint__image hidden h-full w-full rounded-full object-contain dark:block" />
                     </>
                   ) : (
-                    <img src={logo} alt="" className="h-9 w-9 object-contain" />
+                    <img src={logo} alt="" className="project-logo-tint__image h-full w-full rounded-full object-contain" />
                   )
                 ) : (
-                  <img src={terraClassicLogoUrl} alt="" className="h-9 w-9 object-contain" />
+                  <img src={terraClassicLogoUrl} alt="" className="project-logo-tint__image h-full w-full rounded-full object-contain" />
                 )}
               </span>
               <span className="min-w-0">

@@ -61,6 +61,32 @@ body {
   color: rgb(37 99 235);
 }
 
+.project-logo-tint {
+  position: relative;
+  isolation: isolate;
+}
+
+.project-logo-tint__image {
+  filter: saturate(0.72) contrast(1.06) brightness(0.98);
+  opacity: 1;
+}
+
+.project-logo-tint::after {
+  position: absolute;
+  inset: 0.25rem;
+  border-radius: inherit;
+  background: rgb(37 99 235);
+  content: "";
+  mix-blend-mode: soft-light;
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+.dark .project-logo-tint::after {
+  background: rgb(96 165 250);
+  opacity: 0.26;
+}
+
 .dark .footer-social {
   border-color: rgba(255, 255, 255, 0.1);
   color: rgb(148 163 184);
@@ -93,6 +119,30 @@ body {
     0 0 105px rgba(37, 99, 235, 0.34);
 }
 
+.network-core-halo {
+  width: 560px;
+  height: 560px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    rgba(96, 165, 250, 0.28) 0%,
+    rgba(59, 130, 246, 0.16) 30%,
+    rgba(37, 99, 235, 0.08) 52%,
+    transparent 74%
+  );
+  filter: blur(3px);
+}
+
+.dark .network-core-halo {
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.24) 0%,
+    rgba(37, 99, 235, 0.16) 32%,
+    rgba(14, 60, 165, 0.09) 56%,
+    transparent 76%
+  );
+}
+
 .network-globe::before,
 .network-globe::after {
   position: absolute;
@@ -110,8 +160,111 @@ body {
 }
 
 .network-globe::after {
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(96, 165, 250, 0.28);
   box-shadow: inset 0 0 35px rgba(37, 99, 235, 0.2);
+}
+
+.dark .network-globe::after {
+  border-color: rgba(96, 165, 250, 0.22);
+}
+
+.stablecoins-feature-card,
+.treasury-feature-card,
+.developers-feature-card,
+.governance-feature-card {
+  background-color: rgb(248 250 252);
+  background-position: calc(100% + 14px) center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.stablecoins-feature-card::before,
+.treasury-feature-card::before,
+.developers-feature-card::before,
+.governance-feature-card::before {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      100deg,
+      rgba(255, 255, 255, 0.96) 0%,
+      rgba(248, 250, 252, 0.88) 30%,
+      rgba(248, 250, 252, 0.58) 48%,
+      rgba(248, 250, 252, 0.16) 66%,
+      transparent 78%
+    ),
+    linear-gradient(180deg, transparent 58%, rgba(248, 250, 252, 0.08) 100%);
+  content: "";
+  pointer-events: none;
+}
+
+.stablecoins-feature-card {
+  background-image: url("/images/stablecoins-card-light.png");
+}
+
+.treasury-feature-card {
+  background-image: url("/images/treasury-card-light.png");
+}
+
+.developers-feature-card {
+  background-image: url("/images/developers-card-light.png");
+}
+
+.governance-feature-card {
+  background-image: url("/images/governance-card-light.png");
+}
+
+.dark .stablecoins-feature-card,
+.dark .treasury-feature-card,
+.dark .developers-feature-card,
+.dark .governance-feature-card {
+  background-color: rgb(2 11 25);
+  border-bottom-color: rgba(96, 165, 250, 0.42) !important;
+}
+
+.dark .stablecoins-feature-card {
+  background-image: url("/images/stablecoins-card-dark.png");
+}
+
+.dark .treasury-feature-card {
+  background-image: url("/images/treasury-card-dark.png");
+}
+
+.dark .developers-feature-card {
+  background-image: url("/images/developers-card-dark.png");
+}
+
+.dark .governance-feature-card {
+  background-image: url("/images/governance-card-dark.png");
+}
+
+.dark .stablecoins-feature-card::before,
+.dark .treasury-feature-card::before,
+.dark .developers-feature-card::before,
+.dark .governance-feature-card::before {
+  background:
+    linear-gradient(
+      105deg,
+      rgba(2, 11, 25, 0.99) 0%,
+      rgba(2, 11, 25, 0.96) 42%,
+      rgba(2, 11, 25, 0.86) 62%,
+      rgba(2, 11, 25, 0.52) 82%,
+      rgba(2, 11, 25, 0.18) 100%
+    ),
+    linear-gradient(180deg, rgba(2, 11, 25, 0.08) 48%, rgba(2, 11, 25, 0.52) 100%);
+}
+
+.feature-card-content p,
+.feature-card-content button {
+  text-shadow:
+    0 1px 1px rgba(255, 255, 255, 1),
+    0 0 7px rgba(255, 255, 255, 0.96),
+    0 0 16px rgba(255, 255, 255, 0.78);
+}
+
+.dark .feature-card-content p,
+.dark .feature-card-content button {
+  text-shadow: none;
 }
 
 .network-globe__latitude,
@@ -205,6 +358,26 @@ body {
 
 .network-orbit--three::after { right: 17%; bottom: 6%; }
 
+.network-asset-orbit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: rotate(var(--orbit-tilt)) scaleY(var(--orbit-scale-y)) rotate(var(--orbit-angle));
+  transform-origin: center;
+}
+
+.network-asset-orbit__radial {
+  transform: translateX(var(--orbit-radius));
+}
+
+.network-asset-orbit__badge {
+  transform: translate(-50%, -50%) rotate(var(--orbit-counter-angle)) scaleY(var(--orbit-inverse-scale-y)) rotate(var(--orbit-counter-tilt));
+  transform-origin: center;
+  will-change: transform;
+}
+
 .market-sparkline {
   position: absolute;
   right: 1rem;
@@ -289,7 +462,15 @@ body {
 
 @media (prefers-reduced-motion: no-preference) {
   .network-globe::before {
-    animation: globe-drift 18s linear infinite;
+    animation: globe-drift 72s linear infinite;
+  }
+
+  .network-asset-orbit {
+    animation: network-asset-orbit-spin var(--orbit-duration) linear infinite;
+  }
+
+  .network-asset-orbit__badge {
+    animation: network-asset-orbit-counter-spin var(--orbit-duration) linear infinite;
   }
 
   .ecosystem-constellation__ring {
@@ -300,6 +481,16 @@ body {
 @keyframes globe-drift {
   from { transform: rotate(0deg) scale(1.02); }
   to { transform: rotate(360deg) scale(1.02); }
+}
+
+@keyframes network-asset-orbit-spin {
+  from { transform: rotate(var(--orbit-tilt)) scaleY(var(--orbit-scale-y)) rotate(var(--orbit-angle)); }
+  to { transform: rotate(var(--orbit-tilt)) scaleY(var(--orbit-scale-y)) rotate(calc(var(--orbit-angle) + var(--orbit-turn))); }
+}
+
+@keyframes network-asset-orbit-counter-spin {
+  from { transform: translate(-50%, -50%) rotate(var(--orbit-counter-angle)) scaleY(var(--orbit-inverse-scale-y)) rotate(var(--orbit-counter-tilt)); }
+  to { transform: translate(-50%, -50%) rotate(calc(var(--orbit-counter-angle) + var(--orbit-counter-turn))) scaleY(var(--orbit-inverse-scale-y)) rotate(var(--orbit-counter-tilt)); }
 }
 
 @keyframes constellation-pulse {

@@ -437,6 +437,10 @@ const App: React.FC<{
     handleDocsNavigate("", []);
   }, [handleDocsNavigate]);
 
+  const handleOpenStablecoins = useCallback(() => {
+    handleDocsNavigate("learn", ["stablecoins"]);
+  }, [handleDocsNavigate]);
+
   const handleOpenMap = useCallback(() => {
     navigate("/bubbles");
   }, [navigate]);
@@ -465,6 +469,7 @@ const App: React.FC<{
           tokens={tokenMetrics}
           stakingApr={appState.staking.apr}
           onOpenDocs={handleOpenDocs}
+          onOpenStablecoins={handleOpenStablecoins}
           onOpenMap={handleOpenMap}
         />
       </div>

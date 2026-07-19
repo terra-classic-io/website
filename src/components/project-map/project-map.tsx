@@ -993,6 +993,7 @@ const ProjectMap: React.FC = () => {
           categories={layout.categories}
           activeCategoryIds={activeCategoryIds}
           searchQuery={searchQuery}
+          onClearCategories={() => setActiveCategoryIds([])}
         />
       ) : null}
     </div>

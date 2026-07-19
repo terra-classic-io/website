@@ -28,6 +28,7 @@ import galaxyStationSendGuide from "../docs/learn/galaxy-station/galaxy-station-
 import galaxyStationStakingGuide from "../docs/learn/galaxy-station/galaxy-station-staking.md?raw";
 import galaxyStationGovernanceGuide from "../docs/learn/galaxy-station/galaxy-station-governance.md?raw";
 import learnProtocolGuide from "../docs/learn/protocol.md?raw";
+import learnStablecoinsGuide from "../docs/learn/stablecoins.md?raw";
 import learnFeesGuide from "../docs/learn/fees.md?raw";
 import learnGlossaryGuide from "../docs/learn/glossary.md?raw";
 import learnAssetsGuide from "../docs/learn/assets.md?raw";
@@ -76,6 +77,23 @@ import smartContractsSetupGuide from "../docs/develop/smart-contracts/set-up-loc
 import smartContractsWriteGuide from "../docs/develop/smart-contracts/write-smart-contract.md?raw";
 import smartContractsInteractGuide from "../docs/develop/smart-contracts/interact-with-smart-contract.md?raw";
 import smartContractsManageCw20Guide from "../docs/develop/smart-contracts/manage-cw20-tokens.md?raw";
+
+const markdownSourceModules = import.meta.glob<string>("../docs/**/*.md", {
+  eager: true,
+  import: "default",
+  query: "?raw",
+});
+
+const markdownSourcePathByContent = new Map<string, string>(
+  Object.entries(markdownSourceModules).map(([modulePath, markdown]) => [
+    markdown,
+    modulePath.replace(/^\.\.\//, "src/"),
+  ]),
+);
+
+export function getDocSourcePath(page: DocPage): string | undefined {
+  return page.markdown ? markdownSourcePathByContent.get(page.markdown) : undefined;
+}
 
 const systemConfiguration: DocPage = {
   slug: "system-configuration",
@@ -187,6 +205,18 @@ const learnProtocol: DocPage = {
   title: "Terra Classic protocol",
   summary: "How Terra Classic stablecoins, LUNC, staking, and governance interconnect.",
   markdown: learnProtocolGuide,
+};
+
+const learnStablecoins: DocPage = {
+  slug: "stablecoins",
+  title: "Stablecoins",
+  summary: "Understand Terra Classic's fiat-denominated assets, their network denominations, uses, and risks.",
+  heroImage: {
+    light: "/images/stablecoins-card-light.png",
+    dark: "/images/stablecoins-card-dark.png",
+    alt: "Blue digital coins representing Terra Classic fiat-denominated assets",
+  },
+  markdown: learnStablecoinsGuide,
 };
 
 const learnFees: DocPage = {
@@ -613,6 +643,7 @@ export const docSections: readonly DocSection[] = [
     pages: [
       learnOverview,
       learnProtocol,
+      learnStablecoins,
       learnWallets,
       learnStaking,
       learnFees,

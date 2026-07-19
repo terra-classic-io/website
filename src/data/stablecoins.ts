@@ -21,7 +21,7 @@ export const stablecoinAssets: readonly StablecoinAsset[] = [
   { symbol: "CHTC", denom: "ucny", name: "TerraClassic CNH", currency: "CNH", glyph: "¥", accent: "#dc2626", logo: "/logos/tokens/ucny.svg" },
   { symbol: "SDTC", denom: "usdr", name: "TerraClassic SDR", currency: "SDR", glyph: "SDR", accent: "#7c3aed", logo: "/logos/tokens/usdr.svg" },
   { symbol: "MNTC", denom: "umnt", name: "TerraClassic MNT", currency: "MNT", glyph: "₮", accent: "#0f766e", logo: "/logos/tokens/umnt.svg" },
-  { symbol: "GBPTC", denom: "ugbp", name: "TerraClassic GBP", currency: "GBP", glyph: "£", accent: "#4f46e5", logo: "/logos/tokens/ugbp.svg" },
+  { symbol: "GBTC", denom: "ugbp", name: "TerraClassic GBP", currency: "GBP", glyph: "£", accent: "#4f46e5", logo: "/logos/tokens/ugbp.svg" },
   { symbol: "INTC", denom: "uinr", name: "TerraClassic INR", currency: "INR", glyph: "₹", accent: "#ea580c", logo: "/logos/tokens/uinr.svg" },
   { symbol: "CATC", denom: "ucad", name: "TerraClassic CAD", currency: "CAD", glyph: "C$", accent: "#dc2626", logo: "/logos/tokens/ucad.svg" },
   { symbol: "CHFC", denom: "uchf", name: "TerraClassic CHF", currency: "CHF", glyph: "Fr", accent: "#e11d48", logo: "/logos/tokens/uchf.svg" },

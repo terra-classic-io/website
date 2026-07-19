@@ -29,6 +29,7 @@ type ProjectDirectoryViewProps = {
   readonly categories: readonly ProjectMapCategory[];
   readonly activeCategoryIds: readonly string[];
   readonly searchQuery: string;
+  readonly onClearCategories: () => void;
 };
 
 type CategoryDirectoryEntry = {
@@ -179,6 +180,7 @@ function ProjectDirectoryView({
   categories,
   activeCategoryIds,
   searchQuery,
+  onClearCategories,
 }: ProjectDirectoryViewProps): JSX.Element {
   const [sortMode, setSortMode] = useState<DirectorySortMode>("random");
   const [prioritizeOnchain, setPrioritizeOnchain] = useState<boolean>(false);
@@ -186,6 +188,7 @@ function ProjectDirectoryView({
   const [focusedCategoryId, setFocusedCategoryId] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<ProjectLink | null>(null);
   const directoryContentRef = useRef<HTMLDivElement | null>(null);
+  const filterFocusedCategoryIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     setDailySeed(getOrCreateDailySeed("terra-project-map-directory"));
@@ -256,7 +259,36 @@ function ProjectDirectoryView({
     }
   }, [focusedCategoryId, focusedEntry]);
 
+  useEffect(() => {
+    if (activeCategoryIds.length === 1) {
+      const filteredEntry = entries.find((entry) => entry.id === activeCategoryIds[0]);
+      if (!filteredEntry) {
+        return;
+      }
+
+      filterFocusedCategoryIdRef.current = filteredEntry.id;
+      if (focusedCategoryId !== filteredEntry.id) {
+        setFocusedCategoryId(filteredEntry.id);
+        setSelectedProject(filteredEntry.projects[0] ?? null);
+        window.requestAnimationFrame(() => {
+          directoryContentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
+      return;
+    }
+
+    if (filterFocusedCategoryIdRef.current) {
+      const categoryOpenedFromFilter = filterFocusedCategoryIdRef.current;
+      filterFocusedCategoryIdRef.current = null;
+      if (focusedCategoryId === categoryOpenedFromFilter) {
+        setFocusedCategoryId(null);
+        setSelectedProject(null);
+      }
+    }
+  }, [activeCategoryIds, entries, focusedCategoryId]);
+
   const focusCategory = (entry: CategoryDirectoryEntry): void => {
+    filterFocusedCategoryIdRef.current = null;
     setFocusedCategoryId(entry.id);
     setSelectedProject(entry.projects[0] ?? null);
     window.requestAnimationFrame(() => {
@@ -265,8 +297,10 @@ function ProjectDirectoryView({
   };
 
   const closeCategoryFocus = (): void => {
+    filterFocusedCategoryIdRef.current = null;
     setFocusedCategoryId(null);
     setSelectedProject(null);
+    onClearCategories();
   };
 
   const selectedLogo = normalizeLogoPath(selectedProjectDetails?.logo);

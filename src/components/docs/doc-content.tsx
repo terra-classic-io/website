@@ -19,6 +19,7 @@ import type { DocPage } from "../../types/doc-page";
 import type { DocSection } from "../../types/doc-section";
 import type { DocNavigationHandler } from "../../types/doc-navigation";
 import type { DocPageWithPath } from "../../types/doc-page-with-path";
+import { slugifyDocHeading } from "../../lib/docs-markdown";
 import DocNavigationFooter from "./doc-navigation-footer";
 
 const CALLOUT_STYLE: Record<DocCalloutBlock["variant"], string> = {
@@ -439,17 +440,23 @@ const createMarkdownComponents = (
       )}
     />
   ),
-  h2: ({ node: _, className, ...props }) => (
+  h2: ({ node: _, className, children, ...props }) => (
     <h2
       {...props}
+      id={slugifyDocHeading(React.Children.toArray(children).join(" "))}
       className={mergeClassNames("mt-10 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-50", className)}
-    />
+    >
+      {children}
+    </h2>
   ),
-  h3: ({ node: _, className, ...props }) => (
+  h3: ({ node: _, className, children, ...props }) => (
     <h3
       {...props}
+      id={slugifyDocHeading(React.Children.toArray(children).join(" "))}
       className={mergeClassNames("mt-8 text-2xl font-semibold text-slate-900 dark:text-slate-100", className)}
-    />
+    >
+      {children}
+    </h3>
   ),
   h4: ({ node: _, className, ...props }) => (
     <h4
@@ -530,7 +537,7 @@ const createMarkdownComponents = (
     </blockquote>
   ),
   table: ({ node: _, className, children, ...props }) => (
-    <div className="mt-7 overflow-hidden rounded-2xl border border-slate-200/70 first:mt-0 dark:border-slate-800/60">
+    <div className="mt-7 overflow-x-auto rounded-2xl border border-slate-200/70 first:mt-0 dark:border-slate-800/60">
       <table {...props} className={mergeClassNames("w-full text-left text-sm text-slate-600 dark:text-slate-200", className)}>
         {children}
       </table>

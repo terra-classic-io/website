@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   BarChart3,
@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import terraClassicLogoUrl from "../assets/terra-classic.svg";
 import { categories } from "../data/categories";
-import { projects } from "../data/projects";
+import { projects, type ProjectLink } from "../data/projects";
 import { stablecoinAssets } from "../data/stablecoins";
 
 export type TokenMetric = {
@@ -32,6 +32,7 @@ type MetricsShowcaseProps = {
   readonly tokens: readonly TokenMetric[];
   readonly stakingApr: string;
   readonly onOpenDocs: () => void;
+  readonly onOpenStablecoins: () => void;
   readonly onOpenMap: () => void;
 };
 
@@ -46,9 +47,75 @@ const ecosystemFeatures = [
   { title: "And more", body: "Explore every listed project", icon: Blocks, tone: "text-blue-600 dark:text-blue-400" },
 ] as const;
 
-function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenMap }: MetricsShowcaseProps): JSX.Element {
+const constellationNodes = [
+  { category: "entertainment", position: "left-[12%] top-[28%]", tone: "border-violet-400/50 text-violet-600 dark:text-violet-400", fallbackIcon: Gamepad2 },
+  { category: "infrastructure", position: "right-[10%] top-[21%]", tone: "border-blue-400/50 text-blue-600 dark:text-blue-400", fallbackIcon: Network },
+  { category: "applications", position: "bottom-[12%] left-[27%]", tone: "border-orange-400/50 text-orange-500", fallbackIcon: CircleDollarSign },
+  { category: "wallets", position: "bottom-[18%] right-[14%]", tone: "border-emerald-400/50 text-emerald-500", fallbackIcon: WalletCards },
+] as const;
+
+type ConstellationCategory = (typeof constellationNodes)[number]["category"];
+type ConstellationProjects = Partial<Record<ConstellationCategory, ProjectLink>>;
+type PreviousConstellationProjects = Partial<Record<ConstellationCategory, string>>;
+
+const CONSTELLATION_STORAGE_KEY = "terra-classic:constellation-projects";
+
+function normalizeLogoPath(logo?: string): string | undefined {
+  return logo?.replace(/^\/public/, "");
+}
+
+function pickConstellationProjects(
+  randomize: boolean,
+  previousProjects: PreviousConstellationProjects = {}
+): ConstellationProjects {
+  const selection: ConstellationProjects = {};
+  const selectedNames = new Set<string>();
+
+  constellationNodes.forEach(({ category }) => {
+    const candidates = projects.filter((project) => (
+      Boolean(project.logo)
+      && project.categories?.includes(category)
+      && !selectedNames.has(project.name)
+    ));
+    const freshCandidates = candidates.filter((project) => project.name !== previousProjects[category]);
+    const pool = freshCandidates.length > 0 ? freshCandidates : candidates;
+    const selectedProject = randomize
+      ? pool[Math.floor(Math.random() * pool.length)]
+      : pool[0];
+
+    if (selectedProject) {
+      selection[category] = selectedProject;
+      selectedNames.add(selectedProject.name);
+    }
+  });
+
+  return selection;
+}
+
+function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, onOpenMap }: MetricsShowcaseProps): JSX.Element {
   const onchainProjects = projects.filter((project) => project.indicator === "onchain").length;
   const stablecoinCarouselRef = useRef<HTMLDivElement | null>(null);
+  const [constellationProjects, setConstellationProjects] = useState<ConstellationProjects>(() => pickConstellationProjects(false));
+
+  useEffect(() => {
+    let previousProjects: PreviousConstellationProjects = {};
+    try {
+      previousProjects = JSON.parse(window.localStorage.getItem(CONSTELLATION_STORAGE_KEY) ?? "{}") as PreviousConstellationProjects;
+    } catch {
+      previousProjects = {};
+    }
+
+    const nextProjects = pickConstellationProjects(true, previousProjects);
+    setConstellationProjects(nextProjects);
+
+    try {
+      window.localStorage.setItem(CONSTELLATION_STORAGE_KEY, JSON.stringify(
+        Object.fromEntries(Object.entries(nextProjects).map(([category, project]) => [category, project?.name]))
+      ));
+    } catch {
+      // The randomized selection still works when browser storage is unavailable.
+    }
+  }, []);
 
   const scrollStablecoins = useCallback((direction: -1 | 1) => {
     const carousel = stablecoinCarouselRef.current;
@@ -184,10 +251,33 @@ function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenMap }: MetricsS
             <span className="absolute left-1/2 top-1/2 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-blue-300 bg-white p-2 shadow-[0_0_50px_rgba(37,99,235,0.28)] dark:border-blue-500/40 dark:bg-[#071426]">
               <img src={terraClassicLogoUrl} alt="" className="h-16 w-16" />
             </span>
-            <span className="absolute left-[12%] top-[28%] flex h-11 w-11 items-center justify-center rounded-full border border-violet-400/50 bg-white text-violet-600 shadow-lg dark:bg-[#071426] dark:text-violet-400"><Gamepad2 size={20} /></span>
-            <span className="absolute right-[10%] top-[21%] flex h-11 w-11 items-center justify-center rounded-full border border-blue-400/50 bg-white text-blue-600 shadow-lg dark:bg-[#071426] dark:text-blue-400"><Network size={20} /></span>
-            <span className="absolute bottom-[12%] left-[27%] flex h-11 w-11 items-center justify-center rounded-full border border-orange-400/50 bg-white text-orange-500 shadow-lg dark:bg-[#071426]"><CircleDollarSign size={20} /></span>
-            <span className="absolute bottom-[18%] right-[14%] flex h-11 w-11 items-center justify-center rounded-full border border-emerald-400/50 bg-white text-emerald-500 shadow-lg dark:bg-[#071426]"><WalletCards size={20} /></span>
+            {constellationNodes.map((node) => {
+              const project = constellationProjects[node.category];
+              const logo = normalizeLogoPath(project?.logo);
+              const darkLogo = normalizeLogoPath(project?.darkLogo);
+              const FallbackIcon = node.fallbackIcon;
+
+              return (
+                <span
+                  key={node.category}
+                  className={`absolute ${node.position} ${node.tone} flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border bg-white p-1 shadow-lg dark:bg-[#071426]`}
+                  title={project?.name}
+                >
+                  {logo ? (
+                    darkLogo ? (
+                      <>
+                        <img src={logo} alt="" className="h-full w-full rounded-full object-contain dark:hidden" />
+                        <img src={darkLogo} alt="" className="hidden h-full w-full rounded-full object-contain dark:block" />
+                      </>
+                    ) : (
+                      <img src={logo} alt="" className="h-full w-full rounded-full object-contain" />
+                    )
+                  ) : (
+                    <FallbackIcon size={20} />
+                  )}
+                </span>
+              );
+            })}
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
@@ -206,23 +296,54 @@ function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenMap }: MetricsS
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[
-          { id: "stablecoin-card", title: "Stablecoins", subtitle: "The foundation of digital finance.", body: "Discover assets, payment rails, trading venues, and DeFi applications across Terra Classic.", icon: CircleDollarSign, action: onOpenMap, accent: "from-blue-600/18" },
+          { id: "stablecoin-card", title: "Stablecoins", subtitle: "The foundation of digital finance.", body: "Discover assets, payment rails, trading venues, and DeFi applications across Terra Classic.", icon: CircleDollarSign, action: onOpenStablecoins, accent: "from-blue-600/18" },
           { id: "treasury", title: "Treasury", subtitle: "Sustainable growth. Secured for the future.", body: "Understand community governance, shared funds, and the proposals shaping long-term network development.", icon: Landmark, action: onOpenDocs, accent: "from-sky-600/16" },
           { id: "developers", title: "Developers", subtitle: "Build. Innovate. Disrupt.", body: "Use guides, endpoints, modules, and open-source tooling to ship the next generation of applications.", icon: Code2, action: onOpenDocs, accent: "from-violet-600/16" },
           { id: "governance", title: "Governance", subtitle: "Community-led. Future-focused.", body: "Review the resources that help delegators, validators, and contributors participate in on-chain decisions.", icon: Users, action: onOpenDocs, accent: "from-indigo-600/16" },
-        ].map((card) => (
-          <article id={card.id} key={card.title} className={`group relative min-h-[310px] scroll-mt-28 overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br ${card.accent} via-white to-white p-6 dark:border-white/10 dark:via-[#061121] dark:to-[#061121]`}>
-            <card.icon size={30} className="text-blue-600 dark:text-blue-400" />
-            <h3 className="mt-5 text-xl font-semibold text-slate-950 dark:text-white">{card.title}</h3>
-            <p className="mt-4 max-w-[260px] text-lg font-medium leading-6 text-slate-900 dark:text-slate-100">{card.subtitle}</p>
-            <p className="mt-4 max-w-[290px] text-xs leading-5 text-slate-600 dark:text-slate-400">{card.body}</p>
-            <button type="button" onClick={card.action} className="mt-6 inline-flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400">
-              Learn more
-              <ArrowRight size={14} className="transition group-hover:translate-x-1" />
-            </button>
-            <span className="pointer-events-none absolute -bottom-16 -right-12 h-44 w-44 rounded-full border-[28px] border-blue-600/10 dark:border-blue-500/10" />
-          </article>
-        ))}
+        ].map((card) => {
+          const artworkClass = card.id === "stablecoin-card"
+            ? "stablecoins-feature-card"
+            : card.id === "treasury"
+              ? "treasury-feature-card"
+              : card.id === "developers"
+                ? "developers-feature-card"
+              : card.id === "governance"
+                  ? "governance-feature-card"
+                  : "";
+          const hasFeatureArtwork = artworkClass.length > 0;
+
+          return (
+            <article
+              id={card.id}
+              key={card.title}
+              className={`group relative min-h-[310px] scroll-mt-28 overflow-hidden rounded-2xl border p-6 ${
+                hasFeatureArtwork
+                  ? `${artworkClass} border-blue-200/80 dark:border-blue-500/20`
+                  : `border-slate-200 bg-gradient-to-br ${card.accent} via-white to-white dark:border-white/10 dark:via-[#061121] dark:to-[#061121]`
+              }`}
+            >
+              <div className={`relative z-10 ${hasFeatureArtwork ? "feature-card-content" : ""}`}>
+                <card.icon size={30} className="text-blue-600 dark:text-blue-400" />
+                <h3 className="mt-5 text-xl font-semibold text-slate-950 dark:text-white">{card.title}</h3>
+                <p className="mt-4 max-w-[260px] text-lg font-medium leading-6 text-slate-900 dark:text-slate-100">{card.subtitle}</p>
+                <p className={`mt-4 max-w-[290px] text-xs leading-5 ${
+                  hasFeatureArtwork
+                    ? "text-[13px] font-medium text-slate-800 dark:text-slate-300"
+                    : "text-slate-600 dark:text-slate-400"
+                }`}>{card.body}</p>
+                <button type="button" onClick={card.action} className={`mt-6 inline-flex items-center gap-2 font-semibold text-blue-600 dark:text-blue-400 ${
+                  hasFeatureArtwork ? "text-[13px]" : "text-xs"
+                }`}>
+                  Learn more
+                  <ArrowRight size={14} className="transition group-hover:translate-x-1" />
+                </button>
+              </div>
+              {!hasFeatureArtwork ? (
+                <span className="pointer-events-none absolute -bottom-16 -right-12 h-44 w-44 rounded-full border-[28px] border-blue-600/10 dark:border-blue-500/10" />
+              ) : null}
+            </article>
+          );
+        })}
       </section>
     </div>
   );
