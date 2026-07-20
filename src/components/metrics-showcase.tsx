@@ -19,6 +19,7 @@ import terraClassicLogoUrl from "../assets/terra-classic.svg";
 import { categories } from "../data/categories";
 import { projects, type ProjectLink } from "../data/projects";
 import { stablecoinAssets } from "../data/stablecoins";
+import ResilientImage from "./resilient-image";
 
 export type TokenMetric = {
   readonly symbol: string;
@@ -159,7 +160,14 @@ function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, on
                       className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-slate-50 text-[11px] font-bold dark:bg-white/5"
                       style={{ borderColor: `${asset?.accent ?? "#2563eb"}55`, color: asset?.accent ?? "#2563eb" }}
                     >
-                      {asset?.logo ? <img src={asset.logo} alt="" className="h-8 w-8" /> : asset?.glyph ?? metric.symbol.slice(0, 2)}
+                      {asset?.logo ? (
+                        <ResilientImage
+                          src={asset.logo}
+                          alt=""
+                          className="h-8 w-8 object-contain"
+                          fallback={<span>{asset.glyph ?? metric.symbol.slice(0, 2)}</span>}
+                        />
+                      ) : asset?.glyph ?? metric.symbol.slice(0, 2)}
                     </span>
                     <span className="min-w-0">
                       <strong className="block text-sm text-slate-950 dark:text-white">{metric.symbol}</strong>
@@ -272,11 +280,11 @@ function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, on
                   {logo ? (
                     darkLogo ? (
                       <>
-                        <img src={logo} alt="" className="h-full w-full rounded-full object-contain dark:hidden" />
-                        <img src={darkLogo} alt="" className="hidden h-full w-full rounded-full object-contain dark:block" />
+                        <ResilientImage src={logo} alt="" className="h-full w-full rounded-full object-contain dark:hidden" fallback={<FallbackIcon size={20} />} />
+                        <ResilientImage src={darkLogo} alt="" className="hidden h-full w-full rounded-full object-contain dark:block" fallback={<FallbackIcon size={20} />} />
                       </>
                     ) : (
-                      <img src={logo} alt="" className="h-full w-full rounded-full object-contain" />
+                      <ResilientImage src={logo} alt="" className="h-full w-full rounded-full object-contain" fallback={<FallbackIcon size={20} />} />
                     )
                   ) : (
                     <FallbackIcon size={20} />

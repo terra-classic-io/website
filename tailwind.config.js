@@ -14,7 +14,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
       },
       boxShadow: {
         'card': '0 4px 20px rgba(0, 0, 0, 0.08)',
@@ -34,4 +34,3 @@ module.exports = {
   },
   plugins: [],
 };
-

@@ -3,44 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Terra Classic — Powering the future of digital money</title>
   <meta name="theme-color" content="#020b19" />
-  <meta name="description" content="Explore Terra Classic infrastructure, stablecoins, projects, network resources, and community-maintained documentation." />
-  <meta name="keywords" content="Terra Classic, LUNC, USTC, blockchain, crypto, staking, DeFi, ecosystem" />
-  <meta name="author" content="Terra Classic Community" />
-  <meta name="application-name" content="Terra Classic Ecosystem" />
-  <meta name="apple-mobile-web-app-title" content="Terra Classic Ecosystem" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Terra Classic — Powering the future of digital money" />
-  <meta property="og:description" content="Explore Terra Classic infrastructure, stablecoins, projects, and community-maintained documentation." />
-  <meta property="og:site_name" content="Terra Classic Ecosystem" />
-  <meta property="og:url" content="https://terra-classic.io/" />
-  <meta property="og:image" content="https://terra-classic.io/og.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Terra Classic — Powering the future of digital money" />
-  <meta name="twitter:description" content="Explore Terra Classic infrastructure, stablecoins, projects, and community-maintained documentation." />
-  <meta name="twitter:image" content="https://terra-classic.io/og.png" />
-  <link rel="canonical" href="https://terra-classic.io/" />
+  <meta name="color-scheme" content="light dark" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
-  <!-- Preconnect to external domains -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <!-- Preload critical resources -->
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
-  <noscript>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
-  </noscript>
-  <!-- Inline critical CSS -->
   <style id="critical-css">
-    /* Critical CSS will be inlined here */
-    body { margin: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
     #root { min-height: 100vh; display: flex; flex-direction: column; }
   </style>
   <!-- SSR: Head tags will be injected here by the server -->
@@ -56,42 +27,5 @@
   <!-- Load the app -->
   <script type="module" src="/src/main.tsx"></script>
   
-  <!-- Load non-critical CSS asynchronously -->
-  <script>
-    // Load non-critical CSS
-    function loadCSS(href, before, media, attributes) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = href;
-      if (media) link.media = media;
-      if (attributes) {
-        Object.keys(attributes).forEach(key => {
-          link.setAttribute(key, attributes[key]);
-        });
-      }
-      document.head.appendChild(link);
-    }
-    
-    // Load non-critical CSS after page load
-    window.addEventListener('load', function() {
-      // Load any additional stylesheets here
-    });
-  </script>
-  
-  <!-- Service Worker Registration -->
-  <script>
-    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js').then(
-          function(registration) {
-            console.log('ServiceWorker registration successful');
-          },
-          function(err) {
-            console.log('ServiceWorker registration failed: ', err);
-          }
-        );
-      });
-    }
-  </script>
 </body>
 </html>

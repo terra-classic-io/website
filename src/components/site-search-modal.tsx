@@ -7,6 +7,7 @@ import { docSections } from "../data/docs";
 import { projects } from "../data/projects";
 import type { DocPage } from "../types/doc-page";
 import type { DocSection } from "../types/doc-section";
+import ResilientImage from "./resilient-image";
 
 type SearchResultKind = "page" | "documentation" | "project";
 
@@ -363,8 +364,20 @@ function SiteSearchModal({ homeHref, docsHref, onClose }: SiteSearchModalProps):
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-white text-blue-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-blue-400">
                       {result.logo ? (
                         <>
-                          <img src={result.logo} alt="" className={`h-7 w-7 object-contain ${result.darkLogo ? "dark:hidden" : ""}`} />
-                          {result.darkLogo ? <img src={result.darkLogo} alt="" className="hidden h-7 w-7 object-contain dark:block" /> : null}
+                          <ResilientImage
+                            src={result.logo}
+                            alt=""
+                            className={`h-7 w-7 object-contain ${result.darkLogo ? "dark:hidden" : ""}`}
+                            fallback={<LayoutGrid size={18} />}
+                          />
+                          {result.darkLogo ? (
+                            <ResilientImage
+                              src={result.darkLogo}
+                              alt=""
+                              className="hidden h-7 w-7 object-contain dark:block"
+                              fallback={<LayoutGrid size={18} />}
+                            />
+                          ) : null}
                         </>
                       ) : result.kind === "project" ? (
                         <LayoutGrid size={18} />

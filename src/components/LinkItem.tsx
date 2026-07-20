@@ -15,6 +15,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { ProjectIndicator } from "../data/projects";
+import ResilientImage from "./resilient-image";
 
 type LinkItemProps = {
   readonly name: string;
@@ -178,25 +179,28 @@ function LinkItem({
           {resolvedLogo ? (
               resolvedDarkLogo ? (
                 <>
-                  <img
+                  <ResilientImage
                     src={resolvedLogo}
                     alt={name}
                     loading="lazy"
                     className="h-full w-full object-contain dark:hidden"
+                    fallback={iconRenderer[iconKey] ?? iconRenderer.default}
                   />
-                  <img
+                  <ResilientImage
                     src={resolvedDarkLogo}
                     alt={name}
                     loading="lazy"
                     className="hidden h-full w-full object-contain dark:block"
+                    fallback={iconRenderer[iconKey] ?? iconRenderer.default}
                   />
                 </>
               ) : (
-                <img
+                <ResilientImage
                   src={resolvedLogo}
                   alt={name}
                   loading="lazy"
                   className="h-full w-full object-contain"
+                  fallback={iconRenderer[iconKey] ?? iconRenderer.default}
                 />
               )
           ) : (

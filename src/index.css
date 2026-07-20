@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -48,7 +46,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background-color: var(--color-bg-primary);
   transition: background-color 0.2s ease, color 0.2s ease;
   background-image: linear-gradient(180deg, rgba(37, 99, 235, 0.035), transparent 32%);
@@ -196,19 +194,19 @@ body {
 }
 
 .stablecoins-feature-card {
-  background-image: url("/images/stablecoins-card-light.png");
+  background-image: url("/images/stablecoins-card-light.avif");
 }
 
 .treasury-feature-card {
-  background-image: url("/images/treasury-card-light.png");
+  background-image: url("/images/treasury-card-light.avif");
 }
 
 .developers-feature-card {
-  background-image: url("/images/developers-card-light.png");
+  background-image: url("/images/developers-card-light.avif");
 }
 
 .governance-feature-card {
-  background-image: url("/images/governance-card-light.png");
+  background-image: url("/images/governance-card-light.avif");
 }
 
 .dark .stablecoins-feature-card,
@@ -220,11 +218,11 @@ body {
 }
 
 .dark .stablecoins-feature-card {
-  background-image: url("/images/stablecoins-card-dark.png");
+  background-image: url("/images/stablecoins-card-dark.avif");
 }
 
 .dark .treasury-feature-card {
-  background-image: url("/images/treasury-card-dark.png");
+  background-image: url("/images/treasury-card-dark.avif");
   border-bottom-color: rgba(59, 130, 246, 0.22) !important;
 }
 
@@ -242,11 +240,11 @@ body {
 }
 
 .dark .developers-feature-card {
-  background-image: url("/images/developers-card-dark.png");
+  background-image: url("/images/developers-card-dark.avif");
 }
 
 .dark .governance-feature-card {
-  background-image: url("/images/governance-card-dark.png");
+  background-image: url("/images/governance-card-dark.avif");
 }
 
 .dark .stablecoins-feature-card::before,

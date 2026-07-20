@@ -1,7 +1,9 @@
 {
   "name": "Terra Classic Ecosystem",
   "short_name": "Terra Classic",
-  "description": "Explore the Terra Classic ecosystem and documentation.",
+  "description": "Explore Terra Classic native assets, validators, governance, ecosystem projects, and documentation.",
+  "id": "/",
+  "lang": "en",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
@@ -21,7 +23,7 @@
     },
     {
       "src": "/apple-touch-icon.png",
-      "sizes": "256x256",
+      "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     }

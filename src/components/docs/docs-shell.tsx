@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { ArrowRight, ChevronRight, Github, Menu, X } from "lucide-react";
 import type { DocPage } from "../../types/doc-page";
 import type { DocSection } from "../../types/doc-section";
@@ -82,14 +81,6 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain, assetUsdPrices }:
   const { section, page, trail, path } = useMemo(() => resolveActiveTarget(docSegments), [docSegments]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const homeHref: string = isDocsSubdomain ? "https://terra-classic.io" : "/";
-  const docsBaseUrl: string = isDocsSubdomain ? "https://docs.terra-classic.io" : "https://terra-classic.io/docs";
-  const pageUrl: string = path.length > 0
-    ? `${docsBaseUrl}/${section.slug}/${path.join("/")}`
-    : `${docsBaseUrl}/${section.slug}`;
-  const siteName: string = "Terra Classic Documentation";
-  const pageTitle: string = `${page.title} · Terra Classic Docs`;
-  const pageDescription: string = page.summary
-    || "Terra Classic documentation covering full node operations, network endpoints, wallets, and governance.";
   const pageSourcePath: string | undefined = getDocSourcePath(page);
   const editPageUrl: string = pageSourcePath
     ? `https://github.com/terra-classic-io/website/edit/main/${pageSourcePath}`
@@ -107,22 +98,6 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain, assetUsdPrices }:
       ...contentOutline,
     ];
   }, [page.livePanel, page.markdown, page.sections]);
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: siteName,
-    alternateName: "Terra Classic Docs",
-    url: docsBaseUrl,
-    publisher: {
-      "@type": "Organization",
-      name: "Terra Classic",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://terra-classic.io/favicon-512.png",
-      },
-    },
-  };
-
   const { previousPage, nextPage } = useMemo<{ previousPage?: DocPageWithPath; nextPage?: DocPageWithPath }>(() => {
     if (orderedDocPages.length === 0) {
       return { previousPage: undefined, nextPage: undefined };
@@ -209,31 +184,6 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain, assetUsdPrices }:
 
   return (
     <div className="relative min-h-screen bg-[#f8fafc] text-slate-900 transition-colors duration-300 dark:bg-[#020b19] dark:text-slate-50">
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta name="application-name" content={siteName} />
-        <meta name="apple-mobile-web-app-title" content={siteName} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
-        <meta property="og:site_name" content={siteName} />
-        <meta property="og:url" content={pageUrl} />
-        <meta property="og:image" content="https://terra-classic.io/og.png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-        <meta name="twitter:image" content="https://terra-classic.io/og.png" />
-        <link rel="canonical" href={pageUrl} />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/site.webmanifest" />
-        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
-      </Helmet>
-
       <SiteHeader
         homeHref={homeHref}
         docsHref={isDocsSubdomain ? "/" : "/docs"}

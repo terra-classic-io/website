@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { Helmet } from "react-helmet-async";
 import { ArrowLeft, BookOpen, Network } from "lucide-react";
 import ProjectMap from "./project-map";
 import { projects } from "../../data/projects";
@@ -11,15 +10,6 @@ const ProjectMapPage: React.FC = () => {
 
   return (
     <div className="relative min-h-screen bg-[#f8fafc] text-slate-900 transition-colors duration-300 dark:bg-[#020b19] dark:text-slate-50">
-      <Helmet>
-        <title>Terra Classic Ecosystem Directory | Projects &amp; Tools</title>
-        <meta
-          name="description"
-          content="Browse the Terra Classic ecosystem directory by category, search projects and tools, or explore the network through an interactive project map."
-        />
-        <link rel="canonical" href="https://terra-classic.io/ecosystem" />
-      </Helmet>
-
       <div className="relative z-20 mx-auto flex min-h-screen max-w-[1480px] flex-col gap-6 px-4 pb-16 pt-5 sm:px-8 lg:px-10">
         <header className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col gap-4">

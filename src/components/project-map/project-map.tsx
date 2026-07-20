@@ -479,16 +479,24 @@ const ProjectMap: React.FC = () => {
       node.logoImage = cached;
       return;
     }
-    const image = new Image();
-    image.onload = () => {
-      cache.set(node.logoSrc as string, image);
-      node.logoImage = image;
-      renderRef.current();
+    const originalSrc = node.logoSrc;
+    const requestLogo = (src: string, allowRetry: boolean): void => {
+      const image = new Image();
+      image.onload = () => {
+        cache.set(originalSrc, image);
+        node.logoImage = image;
+        renderRef.current();
+      };
+      image.onerror = () => {
+        cache.delete(originalSrc);
+        if (allowRetry) {
+          const separator = originalSrc.includes("?") ? "&" : "?";
+          requestLogo(`${originalSrc}${separator}image-retry=${Date.now()}`, false);
+        }
+      };
+      image.src = src;
     };
-    image.onerror = () => {
-      cache.delete(node.logoSrc as string);
-    };
-    image.src = node.logoSrc;
+    requestLogo(originalSrc, true);
   }, []);
 
   useEffect(() => {

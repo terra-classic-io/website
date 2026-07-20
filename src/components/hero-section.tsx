@@ -4,6 +4,7 @@ import terraClassicLogoUrl from "../assets/terra-classic.svg";
 import { projects } from "../data/projects";
 import { stablecoinAssets } from "../data/stablecoins";
 import CoreReleaseBanner from "./core-release-banner";
+import ResilientImage from "./resilient-image";
 
 type HeroSectionProps = {
   readonly onExploreCategories: () => void;
@@ -170,7 +171,12 @@ function HeroSection({
                   <div className="network-asset-orbit__radial">
                     <div className="network-asset-orbit__badge z-10 flex min-w-[140px] items-center gap-2.5 rounded-xl border border-slate-200 bg-white/90 p-2 pr-3 shadow-lg backdrop-blur dark:border-white/15 dark:bg-[#071426]/90 xl:min-w-[150px]">
                       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-blue-500/30 bg-slate-50 dark:bg-white/5">
-                        <img src={badge.logo} alt="" className="h-7 w-7 object-contain" />
+                        <ResilientImage
+                          src={badge.logo}
+                          alt=""
+                          className="h-7 w-7 object-contain"
+                          fallback={<span className="text-[9px] font-bold text-blue-600 dark:text-blue-300">{badge.symbol.slice(0, 2)}</span>}
+                        />
                       </span>
                       <span className="min-w-0">
                         <strong className="block text-xs text-slate-950 dark:text-white">{badge.symbol}</strong>
@@ -203,11 +209,11 @@ function HeroSection({
                 {logo ? (
                   darkLogo ? (
                     <>
-                      <img src={logo} alt="" className="h-full w-full rounded-full object-contain dark:hidden" />
-                      <img src={darkLogo} alt="" className="hidden h-full w-full rounded-full object-contain dark:block" />
+                      <ResilientImage src={logo} fallbackSrc={terraClassicLogoUrl} alt="" className="h-full w-full rounded-full object-contain dark:hidden" />
+                      <ResilientImage src={darkLogo} fallbackSrc={terraClassicLogoUrl} alt="" className="hidden h-full w-full rounded-full object-contain dark:block" />
                     </>
                   ) : (
-                    <img src={logo} alt="" className="h-full w-full rounded-full object-contain" />
+                    <ResilientImage src={logo} fallbackSrc={terraClassicLogoUrl} alt="" className="h-full w-full rounded-full object-contain" />
                   )
                 ) : (
                   <img src={terraClassicLogoUrl} alt="" className="h-full w-full rounded-full object-contain" />

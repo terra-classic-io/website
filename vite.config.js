@@ -50,7 +50,7 @@ export default defineConfig(({ command, mode }) => {
   const pagesSsrConfig = {
     ...base,
     ssr: {
-      // Avoid bundling DOM-heavy markdown libs; React.lazy ensures they aren't needed during SSR
+      // Avoid bundling DOM-heavy markdown libs; route metadata remains server-rendered in App.
       noExternal: true,
       external: [
         'react-markdown',

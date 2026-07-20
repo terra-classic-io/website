@@ -12,9 +12,13 @@ import HeroSection from "./components/hero-section";
 import MetricsShowcase, { TokenMetric } from "./components/metrics-showcase";
 import SiteHeader from "./components/site-header";
 import SiteFooter from "./components/site-footer";
+import SeoHead, { OG_IMAGE_URL, SITE_URL } from "./components/seo-head";
 import { stablecoinAssets } from "./data/stablecoins";
+import { siteLinks } from "./data/site-links";
+import { docSeoSections } from "./generated/doc-seo";
 import { useTheme } from "./contexts/ThemeContext";
 import type { DocNavigationOptions } from "./types/doc-navigation";
+import type { DocSeoPage, DocSeoSection } from "./types/doc-seo";
 import { LAST_UPDATE } from "./generated/build-info";
 const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
 const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
@@ -70,6 +74,87 @@ const CONFIGURED_VYNTREX_API_KEY = import.meta.env.VITE_VYNTREX_API_KEY?.trim();
 const VYNTREX_API_KEY = CONFIGURED_VYNTREX_API_KEY || DEFAULT_VYNTREX_API_KEY;
 const VYNTREX_MARKET_CAP_API_KEY = import.meta.env.VITE_VYNTREX_MARKET_CAP_API_KEY?.trim() || CONFIGURED_VYNTREX_API_KEY;
 const VYNTREX_REFERER = "https://terra-classic.io";
+
+const HOME_TITLE = "Terra Classic (LUNC) | Ecosystem, Docs & Governance";
+const HOME_DESCRIPTION = "Explore Terra Classic (LUNC): native assets, live network data, validators, governance, developer guides, wallets, DeFi projects, and documentation.";
+const ECOSYSTEM_TITLE = "Terra Classic Ecosystem Directory | LUNC Projects";
+const ECOSYSTEM_DESCRIPTION = "Browse Terra Classic ecosystem projects, wallets, validators, infrastructure, DeFi applications, bridges, and developer tools in one searchable directory.";
+const ORGANIZATION_ID = `${SITE_URL}/#organization`;
+const WEBSITE_ID = `${SITE_URL}/#website`;
+
+const organizationStructuredData = {
+  "@type": "Organization",
+  "@id": ORGANIZATION_ID,
+  name: "Terra Classic Community",
+  alternateName: ["Terra Classic", "Luna Classic"],
+  url: SITE_URL,
+  logo: {
+    "@type": "ImageObject",
+    url: `${SITE_URL}/favicon-512.png`,
+    width: 512,
+    height: 512,
+  },
+  image: OG_IMAGE_URL,
+  sameAs: [
+    siteLinks.github,
+    siteLinks.communityForum,
+    siteLinks.communityTelegram,
+  ],
+};
+
+const websiteStructuredData = {
+  "@type": "WebSite",
+  "@id": WEBSITE_ID,
+  url: SITE_URL,
+  name: "Terra Classic",
+  alternateName: "Luna Classic",
+  description: HOME_DESCRIPTION,
+  inLanguage: "en",
+  publisher: { "@id": ORGANIZATION_ID },
+};
+
+type DocSeoTarget = {
+  readonly section: DocSeoSection;
+  readonly page: DocSeoPage;
+  readonly trail: readonly DocSeoPage[];
+  readonly path: readonly string[];
+  readonly isValid: boolean;
+};
+
+const resolveDocSeoTarget = (segments: readonly string[]): DocSeoTarget => {
+  const seoSections: readonly DocSeoSection[] = docSeoSections;
+  const fallbackSection = seoSections[0];
+  const fallbackPage = fallbackSection.pages[0];
+  const [sectionSlug, ...pageSegments] = segments;
+  const matchingSection = seoSections.find((candidate) => candidate.slug === sectionSlug);
+  const section = matchingSection ?? fallbackSection;
+  let isValid = segments.length === 0 || Boolean(matchingSection);
+  let pages = section.pages;
+  const trail: DocSeoPage[] = [];
+
+  if (pageSegments.length === 0) {
+    trail.push(pages[0] ?? fallbackPage);
+  } else {
+    pageSegments.forEach((pageSlug) => {
+      const page = pages.find((candidate) => candidate.slug === pageSlug);
+      if (!page) {
+        isValid = false;
+        return;
+      }
+      trail.push(page);
+      pages = page.children ?? [];
+    });
+  }
+
+  const page = trail[trail.length - 1] ?? fallbackPage;
+  return {
+    section,
+    page,
+    trail: trail.length > 0 ? trail : [fallbackPage],
+    path: (trail.length > 0 ? trail : [fallbackPage]).map((entry) => entry.slug),
+    isValid,
+  };
+};
 
 const formatApr = (value: number): string => `${value.toFixed(2)}%`;
 const formatUsdPrice = (value: number): string => {
@@ -466,17 +551,134 @@ const App: React.FC<{
   }, [navigate]);
 
   if (isDocsMode) {
+    const docSeoTarget = resolveDocSeoTarget(docSegments);
+    const docPageUrl = `${SITE_URL}/docs/${docSeoTarget.section.slug}/${docSeoTarget.path.join("/")}`;
+    const docPageTitle = `${docSeoTarget.page.title} | Terra Classic Docs`;
+    const docPageDescription = docSeoTarget.page.summary
+      || "Terra Classic documentation covering network operations, native assets, wallets, governance, and development.";
+    const docBreadcrumbItems = [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+      { "@type": "ListItem", position: 2, name: "Documentation", item: `${SITE_URL}/docs` },
+      ...docSeoTarget.trail.map((entry, index) => ({
+        "@type": "ListItem",
+        position: index + 3,
+        name: entry.title,
+        item: `${SITE_URL}/docs/${docSeoTarget.section.slug}/${docSeoTarget.trail.slice(0, index + 1).map((target) => target.slug).join("/")}`,
+      })),
+    ];
+    const docStructuredData = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": docSeoTarget.section.slug === "develop" || docSeoTarget.section.slug === "full-node" ? "TechArticle" : "Article",
+          "@id": `${docPageUrl}#article`,
+          headline: docSeoTarget.page.title,
+          description: docPageDescription,
+          url: docPageUrl,
+          mainEntityOfPage: { "@type": "WebPage", "@id": docPageUrl },
+          image: OG_IMAGE_URL,
+          dateModified: LAST_UPDATE,
+          inLanguage: "en",
+          author: { "@type": "Organization", "@id": ORGANIZATION_ID, name: "Terra Classic Community" },
+          publisher: { "@type": "Organization", "@id": ORGANIZATION_ID, name: "Terra Classic Community" },
+        },
+        {
+          "@type": "BreadcrumbList",
+          itemListElement: docBreadcrumbItems,
+        },
+      ],
+    };
+
     return (
-      <Suspense fallback={<div style={{ minHeight: 200 }} />}> 
-        <DocsShell
-          docSegments={docSegments}
-          onNavigate={handleDocsNavigate}
-          isDocsSubdomain={isDocsSubdomain}
-          assetUsdPrices={assetUsdPrices}
+      <>
+        <SeoHead
+          title={docPageTitle}
+          description={docPageDescription}
+          canonicalPath={docPageUrl}
+          type="article"
+          noIndex={!docSeoTarget.isValid}
+          modifiedTime={LAST_UPDATE}
+          structuredData={docStructuredData}
         />
-      </Suspense>
+        <Suspense fallback={<div style={{ minHeight: 200 }}>
+          <a href={docPageUrl}>{docSeoTarget.page.title}</a>
+        </div>}>
+          <DocsShell
+            docSegments={docSegments}
+            onNavigate={handleDocsNavigate}
+            isDocsSubdomain={isDocsSubdomain}
+            assetUsdPrices={assetUsdPrices}
+          />
+        </Suspense>
+      </>
     );
   }
+
+  const isHomeRoute = location.pathname === "/";
+  const isEcosystemRoute = location.pathname === "/ecosystem" || location.pathname === "/bubbles";
+  const pageSeo = isHomeRoute
+    ? {
+        title: HOME_TITLE,
+        description: HOME_DESCRIPTION,
+        canonicalPath: "/",
+        noIndex: false,
+        structuredData: {
+          "@context": "https://schema.org",
+          "@graph": [
+            organizationStructuredData,
+            websiteStructuredData,
+            {
+              "@type": "WebPage",
+              "@id": `${SITE_URL}/#webpage`,
+              url: `${SITE_URL}/`,
+              name: HOME_TITLE,
+              description: HOME_DESCRIPTION,
+              isPartOf: { "@id": WEBSITE_ID },
+              about: { "@id": ORGANIZATION_ID },
+              primaryImageOfPage: { "@type": "ImageObject", url: OG_IMAGE_URL },
+              inLanguage: "en",
+            },
+          ],
+        },
+      }
+    : isEcosystemRoute
+    ? {
+        title: ECOSYSTEM_TITLE,
+        description: ECOSYSTEM_DESCRIPTION,
+        canonicalPath: "/ecosystem",
+        noIndex: false,
+        structuredData: {
+          "@context": "https://schema.org",
+          "@graph": [
+            organizationStructuredData,
+            websiteStructuredData,
+            {
+              "@type": "CollectionPage",
+              "@id": `${SITE_URL}/ecosystem#webpage`,
+              url: `${SITE_URL}/ecosystem`,
+              name: ECOSYSTEM_TITLE,
+              description: ECOSYSTEM_DESCRIPTION,
+              isPartOf: { "@id": WEBSITE_ID },
+              about: { "@id": ORGANIZATION_ID },
+              inLanguage: "en",
+            },
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+                { "@type": "ListItem", position: 2, name: "Ecosystem Directory", item: `${SITE_URL}/ecosystem` },
+              ],
+            },
+          ],
+        },
+      }
+    : {
+        title: "Page not found | Terra Classic",
+        description: "The requested Terra Classic page could not be found.",
+        canonicalPath: location.pathname,
+        noIndex: true,
+        structuredData: undefined,
+      };
 
   const homeContent = (
     <div className="relative z-30">
@@ -536,6 +738,13 @@ const App: React.FC<{
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-[#f8fafc] text-slate-900 transition-colors duration-300 dark:bg-[#020b19] dark:text-slate-50">
+      <SeoHead
+        title={pageSeo.title}
+        description={pageSeo.description}
+        canonicalPath={pageSeo.canonicalPath}
+        noIndex={pageSeo.noIndex}
+        structuredData={pageSeo.structuredData}
+      />
       <Helmet>
         <meta
           name="theme-color"

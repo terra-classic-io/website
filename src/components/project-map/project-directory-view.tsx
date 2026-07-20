@@ -22,6 +22,7 @@ import { categories as sourceCategories } from "../../data/categories";
 import { projects, type ProjectIndicator, type ProjectLink } from "../../data/projects";
 import { getOrCreateDailySeed, shuffleWithSeed } from "../../utils/random";
 import type { ProjectMapCategory } from "./types";
+import ResilientImage from "../resilient-image";
 
 type DirectorySortMode = "random" | "alpha";
 
@@ -127,11 +128,11 @@ function ProjectRow({ project, selected = false, onSelect }: ProjectRowProps): J
         {logo ? (
           darkLogo ? (
             <>
-              <img src={logo} alt="" loading="lazy" className="h-8 w-8 object-contain dark:hidden" />
-              <img src={darkLogo} alt="" loading="lazy" className="hidden h-8 w-8 object-contain dark:block" />
+              <ResilientImage src={logo} alt="" loading="lazy" className="h-8 w-8 object-contain dark:hidden" fallback={<Box size={20} className="text-slate-400" />} />
+              <ResilientImage src={darkLogo} alt="" loading="lazy" className="hidden h-8 w-8 object-contain dark:block" fallback={<Box size={20} className="text-slate-400" />} />
             </>
           ) : (
-            <img src={logo} alt="" loading="lazy" className="h-8 w-8 object-contain" />
+            <ResilientImage src={logo} alt="" loading="lazy" className="h-8 w-8 object-contain" fallback={<Box size={20} className="text-slate-400" />} />
           )
         ) : (
           <Box size={20} className="text-slate-400" />
@@ -400,11 +401,11 @@ function ProjectDirectoryView({
                       {selectedLogo ? (
                         selectedDarkLogo ? (
                           <>
-                            <img src={selectedLogo} alt="" className="h-12 w-12 object-contain dark:hidden" />
-                            <img src={selectedDarkLogo} alt="" className="hidden h-12 w-12 object-contain dark:block" />
+                            <ResilientImage src={selectedLogo} alt="" className="h-12 w-12 object-contain dark:hidden" fallback={<Box size={26} className="text-blue-600 dark:text-blue-400" />} />
+                            <ResilientImage src={selectedDarkLogo} alt="" className="hidden h-12 w-12 object-contain dark:block" fallback={<Box size={26} className="text-blue-600 dark:text-blue-400" />} />
                           </>
                         ) : (
-                          <img src={selectedLogo} alt="" className="h-12 w-12 object-contain" />
+                          <ResilientImage src={selectedLogo} alt="" className="h-12 w-12 object-contain" fallback={<Box size={26} className="text-blue-600 dark:text-blue-400" />} />
                         )
                       ) : (
                         <Box size={26} className="text-blue-600 dark:text-blue-400" />
