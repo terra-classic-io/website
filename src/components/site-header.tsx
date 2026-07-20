@@ -29,7 +29,7 @@ function SiteHeader({
   const docsBase = docsHref.endsWith("/") ? docsHref.slice(0, -1) : docsHref;
   const navigation: readonly NavigationItem[] = [
     { label: "Learn", href: `${docsBase}/learn/overview` },
-    { label: "Stablecoins", href: `${docsBase}/learn/stablecoins` },
+    { label: "Assets", href: `${docsBase}/learn/stablecoins` },
     { label: "Validators", href: `${homeBase}/ecosystem?cat=validators` },
     { label: "Governance", href: `${docsBase}/learn/governance` },
     { label: "Developers", href: `${docsBase}/develop/overview` },

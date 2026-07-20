@@ -81,7 +81,7 @@ const FAQAccordion: React.FC = () => {
       answer: (
         <>
           <p>
-            USTC is no longer a collateral-backed stablecoin. Price fluctuates with speculation on repeg plans and treasury strategies. Always check the current market price and liquidity depth before trading.
+            USTC no longer maintains its historical USD peg and should be treated as a volatile crypto-asset. Its price can fluctuate with market conditions, liquidity, and speculation around recovery initiatives. Always check the current market price and liquidity depth before trading.
           </p>
           <p>
             The community is exploring partial collateralization and treasury programs, but none guarantee a $1 peg. Treat USTC as a volatile asset and diversify risk. Use reputable exchanges listed in the `Markets` section and enable two-factor authentication for your accounts.

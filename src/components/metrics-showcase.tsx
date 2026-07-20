@@ -136,7 +136,7 @@ function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, on
       <section id="stablecoins" className="scroll-mt-28 rounded-2xl border border-slate-200 bg-white/72 p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.02] sm:p-5">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-4 px-1">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400">Stablecoins powering the economy</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400">Assets powering the economy</p>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">{tokens.length} assets · live prices from Vyntrex</p>
         </div>
@@ -144,7 +144,7 @@ function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, on
           <button
             type="button"
             onClick={() => scrollStablecoins(-1)}
-            aria-label="Show previous stablecoins"
+            aria-label="Show previous assets"
             className="absolute -left-3 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-lg transition hover:border-blue-300 hover:text-blue-600 sm:inline-flex dark:border-white/10 dark:bg-[#071426] dark:text-slate-300 dark:hover:border-blue-500/40 dark:hover:text-blue-400"
           >
             <ChevronLeft size={17} />
@@ -188,15 +188,15 @@ function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, on
               className="group flex min-h-[220px] min-w-[210px] snap-start flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50/70 p-5 text-center transition hover:border-blue-300 hover:bg-blue-50 dark:border-white/10 dark:bg-white/[0.025] dark:hover:border-blue-500/40 dark:hover:bg-blue-500/[0.06]"
             >
               <CircleDollarSign size={30} className="text-blue-600 transition group-hover:scale-110 dark:text-blue-400" />
-              <strong className="mt-3 text-sm text-slate-950 dark:text-white">All stablecoins listed</strong>
-              <span className="mt-1 text-[10px] text-slate-500 dark:text-slate-400">LUNC + {Math.max(tokens.length - 1, 0)} denominations</span>
+              <strong className="mt-3 text-sm text-slate-950 dark:text-white">All native assets listed</strong>
+              <span className="mt-1 text-[10px] text-slate-500 dark:text-slate-400">LUNC + {Math.max(tokens.length - 1, 0)} historical denominations</span>
               <span className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400">Learn more <ArrowRight size={14} /></span>
             </button>
           </div>
           <button
             type="button"
             onClick={() => scrollStablecoins(1)}
-            aria-label="Show next stablecoins"
+            aria-label="Show next assets"
             className="absolute -right-3 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-lg transition hover:border-blue-300 hover:text-blue-600 sm:inline-flex dark:border-white/10 dark:bg-[#071426] dark:text-slate-300 dark:hover:border-blue-500/40 dark:hover:text-blue-400"
           >
             <ChevronRight size={17} />
@@ -302,7 +302,7 @@ function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, on
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[
-          { id: "stablecoin-card", title: "Stablecoins", subtitle: "The foundation of digital finance.", body: "Discover assets, payment rails, trading venues, and DeFi applications across Terra Classic.", icon: CircleDollarSign, action: onOpenStablecoins, accent: "from-blue-600/18" },
+          { id: "stablecoin-card", title: "Terra Classic Assets", subtitle: "LUNC and historical fiat-denominated assets.", body: "Discover native assets, payment rails, trading venues, and DeFi applications across Terra Classic.", icon: CircleDollarSign, action: onOpenStablecoins, accent: "from-blue-600/18" },
           { id: "treasury", title: "Treasury", subtitle: "Sustainable growth. Secured for the future.", body: "Understand community governance, shared funds, and the proposals shaping long-term network development.", icon: Landmark, action: onOpenTreasury, accent: "from-sky-600/16" },
           { id: "developers", title: "Developers", subtitle: "Build. Innovate. Disrupt.", body: "Use guides, endpoints, modules, and open-source tooling to ship the next generation of applications.", icon: Code2, action: onOpenDevelopers, accent: "from-violet-600/16" },
           { id: "governance", title: "Governance", subtitle: "Community-led. Future-focused.", body: "Review the resources that help delegators, validators, and contributors participate in on-chain decisions.", icon: Users, action: onOpenGovernance, accent: "from-indigo-600/16" },

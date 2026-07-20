@@ -207,14 +207,14 @@ const learnOverview: DocPage = {
 const learnProtocol: DocPage = {
   slug: "protocol",
   title: "Terra Classic protocol",
-  summary: "How Terra Classic stablecoins, LUNC, staking, and governance interconnect.",
+  summary: "How Terra Classic's native and historical fiat-denominated assets, staking, and governance interconnect.",
   markdown: learnProtocolGuide,
 };
 
 const learnStablecoins: DocPage = {
   slug: "stablecoins",
-  title: "Stablecoins",
-  summary: "Understand Terra Classic's fiat-denominated assets, their network denominations, uses, and risks.",
+  title: "Assets & denominations",
+  summary: "Understand LUNC and Terra Classic's historical fiat-denominated assets, their network denominations, uses, and risks.",
   markdown: learnStablecoinsGuide,
 };
 

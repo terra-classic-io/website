@@ -109,7 +109,7 @@ function HeroSection({
               Powering the future of <span className="text-blue-600 dark:text-blue-500">digital money.</span>
             </h1>
             <p className="mt-7 max-w-lg text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-[17px]">
-              Terra Classic is decentralized infrastructure for stablecoins, payments, digital assets, and programmable finance—maintained by a global community for a global economy.
+              Terra Classic is decentralized infrastructure for native assets, payments, and programmable finance—maintained by a global community for a global economy.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">

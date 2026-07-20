@@ -215,9 +215,9 @@ Golang reference implementation of the Terra Classic protocol.
 
 Live network where all Terra Classic transactions occur.
 
-## Terra Classic stablecoins
+## Terra Classic fiat-denominated assets
 
-Stable assets that historically tracked fiat currencies via algorithmic supply changes. Names mirror underlying currency codes (e.g., TerraUSD `UST`, TerraKRW `KRT`).
+Native assets that were originally designed to track fiat currencies through algorithmic supply changes. Their names mirror reference currency codes (for example TerraUSD `UST` and TerraKRW `KRT`), but they are not currently guaranteed to maintain those historical pegs.
 
 ## `terrad`
 

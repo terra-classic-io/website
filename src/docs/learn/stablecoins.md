@@ -2,7 +2,7 @@ Terra Classic includes a native network asset, **LUNC**, and a set of historical
 
 > The word “stablecoin” describes the original design of these fiat-denominated assets. It is not a guarantee that an asset currently tracks its reference currency. Always verify live market data, liquidity, and counterparty risk before using or trading an asset.
 
-## Why stablecoins matter
+## Why these assets matter
 
 - **Multiple denominations.** Applications can represent value in familiar currency units while settling on Terra Classic.
 - **Global access.** On-chain assets can be transferred without relying on banking hours.
@@ -11,7 +11,7 @@ Terra Classic includes a native network asset, **LUNC**, and a set of historical
 
 ## Assets and network denominations
 
-The directory below reflects the denominations exposed by Terra Classic. **LUNC appears first because it is the network's native staking and gas asset; it is not a stablecoin.**
+The directory below reflects the native denominations exposed by Terra Classic. **LUNC appears first because it is the network's native staking, governance, and gas asset. The other entries are historical fiat-denominated assets; their names do not imply a current price peg.**
 
 | Asset | Network denom | Reference | Role |
 | --- | --- | --- | --- |
@@ -83,7 +83,7 @@ Availability is not uniform. A denomination can exist on-chain while having litt
 
 No. LUNC is the native Terra Classic asset used for staking, governance, transaction fees, and network security. The fiat-denominated assets are separate native coins on the same blockchain.
 
-### Are Terra Classic stablecoins still pegged to fiat currencies?
+### Are Terra Classic's historical fiat-denominated assets still pegged?
 
 No protocol-level peg is currently guaranteed. The tickers and reference currencies describe the assets' historical design, while their executable prices are determined by available market liquidity.
 
@@ -91,7 +91,7 @@ No protocol-level peg is currently guaranteed. The tickers and reference currenc
 
 The `u` prefix identifies the micro base denomination used on-chain. For example, `uusd` is the base denomination for USTC and `uluna` is the base denomination for LUNC. User interfaces normally convert these integer base units into decimal display units.
 
-### Can I use the Terra Classic market module to swap stablecoins?
+### Can I use the Terra Classic market module to swap these assets?
 
 No. The native market-swap messages were disabled after May 2022. Swaps rely on active centralized markets or decentralized liquidity pools.
 
