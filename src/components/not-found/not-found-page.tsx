@@ -48,14 +48,14 @@ const NotFoundPage: React.FC = () => {
           </h2>
           <div className="grid gap-3 sm:grid-cols-3">
             <Link
-              to="/bubbles"
+              to="/ecosystem"
               className="flex flex-col gap-1 rounded-2xl border border-slate-200/70 bg-white/70 p-4 text-left text-sm shadow-sm transition hover:-translate-y-1 hover:border-sky-400/60 hover:text-sky-600 dark:border-slate-800/70 dark:bg-slate-900/60"
             >
               <span className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">
-                Visual explorer
+                Ecosystem
               </span>
               <span className="text-base font-medium text-slate-900 dark:text-slate-50">
-                Project map bubbles
+                Project directory
               </span>
             </Link>
             <Link

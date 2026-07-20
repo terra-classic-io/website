@@ -1,4 +1,5 @@
 import { categories } from "./categories";
+import { siteLinks } from "./site-links";
 
 export type ProjectIndicator = 'onchain' | 'hybrid' | 'support';
 
@@ -823,7 +824,7 @@ export const projects: ProjectLink[] = [
   },
   { 
     name: 'Validators Discord group',
-    url: 'https://discord.com/invite/ARW627EU4P',
+    url: siteLinks.validatorsDiscord,
     description: 'Community Chat',
     indicator: 'support',
     logo: '/public/logos/validators/discord.svg',
@@ -832,7 +833,7 @@ export const projects: ProjectLink[] = [
   },
   { 
     name: 'Validators Telegram group',
-    url: 'https://t.me/transparentvalidatorchat',
+    url: siteLinks.validatorsTelegram,
     description: 'Community Chat',
     indicator: 'support',
     logo: '/public/logos/validators/telegram.svg',

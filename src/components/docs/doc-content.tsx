@@ -21,6 +21,8 @@ import type { DocNavigationHandler } from "../../types/doc-navigation";
 import type { DocPageWithPath } from "../../types/doc-page-with-path";
 import { slugifyDocHeading } from "../../lib/docs-markdown";
 import DocNavigationFooter from "./doc-navigation-footer";
+import GovernanceLiveDashboard from "./governance-live-dashboard";
+import TreasuryLiveDashboard from "./treasury-live-dashboard";
 
 const CALLOUT_STYLE: Record<DocCalloutBlock["variant"], string> = {
   info: "border-sky-200/60 bg-sky-50/60 text-slate-700 dark:border-sky-900/60 dark:bg-sky-900/30 dark:text-slate-200",
@@ -44,6 +46,7 @@ type DocContentProps = {
   readonly onNavigate: DocNavigationHandler;
   readonly previousPage?: DocPageWithPath;
   readonly nextPage?: DocPageWithPath;
+  readonly assetUsdPrices: Readonly<Record<string, number>>;
 };
 
 const CODE_COPY_FEEDBACK_DURATION_MS = 1600 as const;
@@ -714,7 +717,7 @@ function renderMarkdown(content: string, components: Components): JSX.Element {
   );
 }
 
-function DocContent({ page, section, currentPath, onNavigate, previousPage, nextPage }: DocContentProps): JSX.Element {
+function DocContent({ page, section, currentPath, onNavigate, previousPage, nextPage, assetUsdPrices }: DocContentProps): JSX.Element {
   const childPages = useMemo<readonly DocPage[]>(() => page.children ?? [], [page.children]);
   const hasStructuredSections = Boolean(page.sections && page.sections.length > 0);
   const markdownContent = useMemo<string>(() => (page.markdown ?? "").trim(), [page.markdown]);
@@ -726,6 +729,8 @@ function DocContent({ page, section, currentPath, onNavigate, previousPage, next
 
   return (
     <div className="space-y-10">
+      {page.livePanel === "treasury" ? <TreasuryLiveDashboard assetUsdPrices={assetUsdPrices} /> : null}
+      {page.livePanel === "governance" ? <GovernanceLiveDashboard /> : null}
       {hasStructuredSections ? page.sections?.map((sectionBlock) => renderSection(sectionBlock)) : null}
       {!hasStructuredSections && hasMarkdown ? renderMarkdown(markdownContent, markdownComponents) : null}
       {!hasStructuredSections && !hasMarkdown ? (

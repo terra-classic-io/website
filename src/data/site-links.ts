@@ -1,0 +1,12 @@
+/**
+ * Shared external destinations used across the site.
+ * Update a URL here to keep navigation, documentation, and directory entries aligned.
+ */
+export const siteLinks = {
+  github: "https://github.com/terra-classic-io/website",
+  communityForum: "https://discourse.luncgoblins.com",
+  validatorsDiscord: "https://discord.gg/gSU46tg6hY",
+  communityDiscord: "https://discord.gg/2bnBrnrUEG",
+  communityTelegram: "https://t.me/classicluna",
+  validatorsTelegram: "https://t.me/transparentvalidatorchat",
+} as const;

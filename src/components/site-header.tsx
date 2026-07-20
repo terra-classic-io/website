@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { ArrowRight, Menu, Search, X } from "lucide-react";
 import terraClassicLogoUrl from "../assets/terra-classic.svg";
 import ThemeToggle from "./ThemeToggle";
+
+const SiteSearchModal = lazy(() => import("./site-search-modal"));
 
 type SiteHeaderProps = {
   readonly homeHref?: string;
   readonly docsHref?: string;
   readonly searchLabel?: string;
-  readonly onSearch?: () => void;
   readonly onExplore?: () => void;
 };
 
@@ -20,21 +21,34 @@ function SiteHeader({
   homeHref = "/",
   docsHref = "/docs",
   searchLabel = "Search ecosystem...",
-  onSearch,
   onExplore,
 }: SiteHeaderProps): JSX.Element {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const homeBase = homeHref.endsWith("/") ? homeHref.slice(0, -1) : homeHref;
+  const docsBase = docsHref.endsWith("/") ? docsHref.slice(0, -1) : docsHref;
   const navigation: readonly NavigationItem[] = [
-    { label: "Ecosystem", href: `${homeBase}/#ecosystem` },
-    { label: "Stablecoins", href: `${homeBase}/#stablecoins` },
-    { label: "Validators", href: "/bubbles?cat=validators" },
-    { label: "Governance", href: `${homeBase}/#governance` },
-    { label: "Developers", href: docsHref },
-    { label: "Resources", href: "/bubbles" },
+    { label: "Learn", href: `${docsBase}/learn/overview` },
+    { label: "Stablecoins", href: `${docsBase}/learn/stablecoins` },
+    { label: "Validators", href: `${homeBase}/ecosystem?cat=validators` },
+    { label: "Governance", href: `${docsBase}/learn/governance` },
+    { label: "Developers", href: `${docsBase}/develop/overview` },
+    { label: "Documentation", href: docsHref },
   ];
 
   const closeMenu = (): void => setIsMenuOpen(false);
+  const closeSearch = useCallback((): void => setIsSearchOpen(false), []);
+
+  useEffect(() => {
+    const handleSearchShortcut = (event: KeyboardEvent): void => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setIsSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleSearchShortcut);
+    return () => window.removeEventListener("keydown", handleSearchShortcut);
+  }, []);
 
   return (
     <header className="sticky top-0 z-[70] border-b border-slate-200/70 bg-white/95 backdrop-blur-2xl dark:border-white/10 dark:bg-[#020b19]">
@@ -63,12 +77,13 @@ function SiteHeader({
         <div className="ml-auto hidden items-center gap-3 xl:ml-4 xl:flex">
           <button
             type="button"
-            onClick={onSearch}
+            onClick={() => setIsSearchOpen(true)}
             className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs text-slate-500 shadow-sm transition hover:border-blue-300 hover:text-slate-900 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-400 dark:hover:border-blue-500/40 dark:hover:text-white"
             aria-label={searchLabel}
           >
             <Search size={16} />
             <span className="hidden 2xl:inline">{searchLabel}</span>
+            <kbd className="ml-1 hidden items-center rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-500 2xl:inline-flex">⌘ K</kbd>
           </button>
           <ThemeToggle variant="minimal" size="sm" />
           <button
@@ -82,6 +97,14 @@ function SiteHeader({
         </div>
 
         <div className="ml-auto flex items-center gap-2 xl:hidden">
+          <button
+            type="button"
+            onClick={() => setIsSearchOpen(true)}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-300"
+            aria-label={searchLabel}
+          >
+            <Search size={18} />
+          </button>
           <ThemeToggle variant="minimal" size="sm" />
           <button
             type="button"
@@ -121,6 +144,12 @@ function SiteHeader({
             </button>
           </nav>
         </div>
+      ) : null}
+
+      {isSearchOpen ? (
+        <Suspense fallback={null}>
+          <SiteSearchModal homeHref={homeHref} docsHref={docsHref} onClose={closeSearch} />
+        </Suspense>
       ) : null}
     </header>
   );

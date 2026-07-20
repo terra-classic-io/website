@@ -4,7 +4,9 @@ import startGuide from "../docs/start.md?raw";
 import buildTerraCoreGuide from "../docs/full-node/run-a-full-terra-node/build-terra-core.md?raw";
 import configureGeneralSettingsGuide from "../docs/full-node/run-a-full-terra-node/configure-general-settings.md?raw";
 import classicTransactionBehaviorGuide from "../docs/develop/classic-transaction-behavior.md?raw";
+import developersOverviewGuide from "../docs/develop/overview.md?raw";
 import endpointsGuide from "../docs/develop/endpoints.md?raw";
+import hyperlaneValidatorGuide from "../docs/develop/hyperlane-validator.md?raw";
 import joinNetworkGuide from "../docs/full-node/run-a-full-terra-node/join-a-network.md?raw";
 import setUpProductionGuide from "../docs/full-node/run-a-full-terra-node/set-up-production.md?raw";
 import syncGuide from "../docs/full-node/run-a-full-terra-node/sync.md?raw";
@@ -29,6 +31,8 @@ import galaxyStationStakingGuide from "../docs/learn/galaxy-station/galaxy-stati
 import galaxyStationGovernanceGuide from "../docs/learn/galaxy-station/galaxy-station-governance.md?raw";
 import learnProtocolGuide from "../docs/learn/protocol.md?raw";
 import learnStablecoinsGuide from "../docs/learn/stablecoins.md?raw";
+import learnTreasuryGuide from "../docs/learn/treasury.md?raw";
+import learnGovernanceGuide from "../docs/learn/governance.md?raw";
 import learnFeesGuide from "../docs/learn/fees.md?raw";
 import learnGlossaryGuide from "../docs/learn/glossary.md?raw";
 import learnAssetsGuide from "../docs/learn/assets.md?raw";
@@ -211,12 +215,23 @@ const learnStablecoins: DocPage = {
   slug: "stablecoins",
   title: "Stablecoins",
   summary: "Understand Terra Classic's fiat-denominated assets, their network denominations, uses, and risks.",
-  heroImage: {
-    light: "/images/stablecoins-card-light.png",
-    dark: "/images/stablecoins-card-dark.png",
-    alt: "Blue digital coins representing Terra Classic fiat-denominated assets",
-  },
   markdown: learnStablecoinsGuide,
+};
+
+const learnTreasury: DocPage = {
+  slug: "treasury",
+  title: "Community Pool & Treasury",
+  summary: "Follow Terra Classic's governed on-chain reserves, recent proposals, and the rules that control community spending.",
+  livePanel: "treasury",
+  markdown: learnTreasuryGuide,
+};
+
+const learnGovernance: DocPage = {
+  slug: "governance",
+  title: "Governance",
+  summary: "Follow active proposals, current voting parameters, and the rules that shape Terra Classic on-chain decisions.",
+  livePanel: "governance",
+  markdown: learnGovernanceGuide,
 };
 
 const learnFees: DocPage = {
@@ -344,6 +359,20 @@ const developTxBestPractices: DocPage = {
   title: "Tx best practices",
   summary: "Practical guidance for burn tax, Tax2Gas, tax-free contract funding, and safe Terra Classic transaction flows.",
   markdown: classicTransactionBehaviorGuide,
+};
+
+const developOverview: DocPage = {
+  slug: "overview",
+  title: "Developers",
+  summary: "Build, innovate, and contribute to the Terra Classic ecosystem with guides, endpoints, modules, and open-source tooling.",
+  markdown: developersOverviewGuide,
+};
+
+const developHyperlaneValidator: DocPage = {
+  slug: "hyperlane-validator",
+  title: "Run Hyperlane validator",
+  summary: "Operate a Terra Classic Hyperlane validator with Docker, AWS S3 checkpoint storage, and VPS monitoring.",
+  markdown: hyperlaneValidatorGuide,
 };
 
 const developBuilderTooling: DocPage = {
@@ -634,7 +663,7 @@ export const docSections: readonly DocSection[] = [
     slug: "develop",
     title: "Develop",
     description: "Build Terra Classic dApps, run localnets, and reference Terra Core modules.",
-    pages: [developLocalnet, developTxBestPractices, developBuilderTooling, developSmartContracts, developModuleSpecifications],
+    pages: [developOverview, developLocalnet, developTxBestPractices, developHyperlaneValidator, developBuilderTooling, developSmartContracts, developModuleSpecifications],
   },
   {
     slug: "learn",
@@ -644,6 +673,8 @@ export const docSections: readonly DocSection[] = [
       learnOverview,
       learnProtocol,
       learnStablecoins,
+      learnTreasury,
+      learnGovernance,
       learnWallets,
       learnStaking,
       learnFees,

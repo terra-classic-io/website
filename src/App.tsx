@@ -6,7 +6,7 @@ import React, {
   Suspense,
 } from "react";
 import { Helmet } from "react-helmet-async";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import FAQAccordion from "./components/FAQAccordion";
 import HeroSection from "./components/hero-section";
 import MetricsShowcase, { TokenMetric } from "./components/metrics-showcase";
@@ -433,6 +433,14 @@ const App: React.FC<{
     });
   }, [appState.tokens, stablecoinPrices]);
 
+  const assetUsdPrices = useMemo<Readonly<Record<string, number>>>(() => tokenMetrics.reduce<Record<string, number>>((prices, metric) => {
+    const numericPrice = Number(metric.price.replace(/[$,]/g, ""));
+    if (Number.isFinite(numericPrice) && numericPrice > 0) {
+      prices[metric.symbol] = numericPrice;
+    }
+    return prices;
+  }, {}), [tokenMetrics]);
+
   const handleOpenDocs = useCallback(() => {
     handleDocsNavigate("", []);
   }, [handleDocsNavigate]);
@@ -441,8 +449,20 @@ const App: React.FC<{
     handleDocsNavigate("learn", ["stablecoins"]);
   }, [handleDocsNavigate]);
 
+  const handleOpenTreasury = useCallback(() => {
+    handleDocsNavigate("learn", ["treasury"]);
+  }, [handleDocsNavigate]);
+
+  const handleOpenDevelopers = useCallback(() => {
+    handleDocsNavigate("develop", ["overview"]);
+  }, [handleDocsNavigate]);
+
+  const handleOpenGovernance = useCallback(() => {
+    handleDocsNavigate("learn", ["governance"]);
+  }, [handleDocsNavigate]);
+
   const handleOpenMap = useCallback(() => {
-    navigate("/bubbles");
+    navigate("/ecosystem");
   }, [navigate]);
 
   if (isDocsMode) {
@@ -452,6 +472,7 @@ const App: React.FC<{
           docSegments={docSegments}
           onNavigate={handleDocsNavigate}
           isDocsSubdomain={isDocsSubdomain}
+          assetUsdPrices={assetUsdPrices}
         />
       </Suspense>
     );
@@ -470,6 +491,9 @@ const App: React.FC<{
           stakingApr={appState.staking.apr}
           onOpenDocs={handleOpenDocs}
           onOpenStablecoins={handleOpenStablecoins}
+          onOpenTreasury={handleOpenTreasury}
+          onOpenDevelopers={handleOpenDevelopers}
+          onOpenGovernance={handleOpenGovernance}
           onOpenMap={handleOpenMap}
         />
       </div>
@@ -519,17 +543,21 @@ const App: React.FC<{
         />
       </Helmet>
 
-      <SiteHeader onExplore={handleOpenMap} onSearch={handleOpenMap} />
+      <SiteHeader onExplore={handleOpenMap} />
 
       <Routes>
         <Route path="/" element={homeContent} />
         <Route
-          path="/bubbles"
+          path="/ecosystem"
           element={
             <Suspense fallback={<div style={{ minHeight: 200 }} />}>
               <ProjectMapPage />
             </Suspense>
           }
+        />
+        <Route
+          path="/bubbles"
+          element={<Navigate to={{ pathname: "/ecosystem", search: location.search }} replace />}
         />
         <Route
           path="*"

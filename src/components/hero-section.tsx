@@ -1,8 +1,9 @@
 import { useEffect, useState, type CSSProperties } from "react";
-import { ArrowRight, Bell, BookOpen, ExternalLink } from "lucide-react";
+import { ArrowRight, BookOpen, ExternalLink } from "lucide-react";
 import terraClassicLogoUrl from "../assets/terra-classic.svg";
 import { projects } from "../data/projects";
 import { stablecoinAssets } from "../data/stablecoins";
+import CoreReleaseBanner from "./core-release-banner";
 
 type HeroSectionProps = {
   readonly onExploreCategories: () => void;
@@ -95,23 +96,7 @@ function HeroSection({
 
   return (
     <div className="space-y-4">
-      <aside className="flex min-h-11 items-center gap-3 rounded-xl border border-slate-200 bg-white/75 px-4 py-2 text-xs text-slate-600 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/[0.025] dark:text-slate-300 sm:px-5">
-        <Bell size={16} className="shrink-0 text-blue-600 dark:text-blue-400" />
-        <strong className="hidden font-semibold text-slate-900 dark:text-white sm:inline">Terra Classic network</strong>
-        <span className="rounded-full bg-blue-600/10 px-2.5 py-1 font-semibold text-blue-600 dark:bg-blue-500/15 dark:text-blue-300">
-          Community-led
-        </span>
-        <span className="hidden h-4 w-px bg-slate-200 dark:bg-white/10 md:block" />
-        <span className="line-clamp-1">Open infrastructure, shared knowledge, and an ecosystem built by its community.</span>
-        <button
-          type="button"
-          onClick={onOpenDocs}
-          className="ml-auto hidden shrink-0 items-center gap-2 font-semibold text-blue-600 transition hover:text-blue-500 sm:inline-flex dark:text-blue-400"
-        >
-          View docs
-          <ArrowRight size={15} />
-        </button>
-      </aside>
+      <CoreReleaseBanner />
 
       <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white/70 px-6 py-12 shadow-[0_30px_90px_-55px_rgba(15,23,42,0.28)] dark:border-white/10 dark:bg-white/[0.015] sm:px-10 lg:min-h-[570px] lg:px-12 lg:py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_48%,rgba(37,99,235,0.12),transparent_35%)] dark:bg-[radial-gradient(circle_at_72%_48%,rgba(37,99,235,0.2),transparent_38%)]" />
@@ -214,18 +199,18 @@ function HeroSection({
               className={`${responsiveVisibility} group min-h-[96px] items-center gap-4 border-b border-slate-200 px-5 transition hover:bg-blue-50/70 dark:border-white/10 dark:hover:bg-blue-500/[0.06] sm:border-b-0 sm:border-r`}
               title={project.name}
             >
-              <span className="project-logo-tint flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-blue-50 p-1 dark:bg-blue-500/10">
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 p-1 dark:bg-white/[0.06]">
                 {logo ? (
                   darkLogo ? (
                     <>
-                      <img src={logo} alt="" className="project-logo-tint__image h-full w-full rounded-full object-contain dark:hidden" />
-                      <img src={darkLogo} alt="" className="project-logo-tint__image hidden h-full w-full rounded-full object-contain dark:block" />
+                      <img src={logo} alt="" className="h-full w-full rounded-full object-contain dark:hidden" />
+                      <img src={darkLogo} alt="" className="hidden h-full w-full rounded-full object-contain dark:block" />
                     </>
                   ) : (
-                    <img src={logo} alt="" className="project-logo-tint__image h-full w-full rounded-full object-contain" />
+                    <img src={logo} alt="" className="h-full w-full rounded-full object-contain" />
                   )
                 ) : (
-                  <img src={terraClassicLogoUrl} alt="" className="project-logo-tint__image h-full w-full rounded-full object-contain" />
+                  <img src={terraClassicLogoUrl} alt="" className="h-full w-full rounded-full object-contain" />
                 )}
               </span>
               <span className="min-w-0">

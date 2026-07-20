@@ -51,6 +51,11 @@ const handleRequest = async (
   const userAgent = request.headers.get("user-agent") ?? "";
   const pathname = url.pathname;
 
+  if (pathname === "/bubbles") {
+    url.pathname = "/ecosystem";
+    return Response.redirect(url.toString(), 301) as unknown as CfResponse;
+  }
+
   if (env.ASSETS && (pathname.startsWith("/assets/") || pathname.startsWith("/favicon") || pathname.startsWith("/robots") || pathname.startsWith("/manifest"))) {
     const directAssetResponse = await env.ASSETS.fetch(request);
     if (!directAssetResponse.ok) {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { ArrowRight, ChevronRight, Github, Menu, ThumbsDown, ThumbsUp, X } from "lucide-react";
+import { ArrowRight, ChevronRight, Github, Menu, X } from "lucide-react";
 import type { DocPage } from "../../types/doc-page";
 import type { DocSection } from "../../types/doc-section";
 import DocContent from "./doc-content";
@@ -16,6 +16,7 @@ type DocsShellProps = {
   readonly docSegments: readonly string[];
   readonly onNavigate: (sectionSlug: string, pagePath?: readonly string[], options?: DocNavigationOptions) => void;
   readonly isDocsSubdomain: boolean;
+  readonly assetUsdPrices: Readonly<Record<string, number>>;
 };
 
 type ActiveDocTarget = {
@@ -77,7 +78,7 @@ function resolveActiveTarget(segments: readonly string[]): ActiveDocTarget {
   };
 }
 
-function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps): JSX.Element {
+function DocsShell({ docSegments, onNavigate, isDocsSubdomain, assetUsdPrices }: DocsShellProps): JSX.Element {
   const { section, page, trail, path } = useMemo(() => resolveActiveTarget(docSegments), [docSegments]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const homeHref: string = isDocsSubdomain ? "https://terra-classic.io" : "/";
@@ -93,11 +94,19 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
   const editPageUrl: string = pageSourcePath
     ? `https://github.com/terra-classic-io/website/edit/main/${pageSourcePath}`
     : "https://github.com/terra-classic-io/website";
-  const pageOutline = useMemo(
-    () => page.sections?.map((contentSection) => ({ title: contentSection.title, id: "" }))
-      ?? extractDocMarkdownHeadings(page.markdown ?? ""),
-    [page.markdown, page.sections],
-  );
+  const pageOutline = useMemo(() => {
+    const contentOutline = page.sections?.map((contentSection) => ({ title: contentSection.title, id: "" }))
+      ?? extractDocMarkdownHeadings(page.markdown ?? "");
+    if (page.livePanel !== "treasury") {
+      return contentOutline;
+    }
+    return [
+      { title: "On-chain Treasury snapshot", id: "on-chain-treasury" },
+      { title: "Community Pool holdings", id: "treasury-holdings" },
+      { title: "Recent governance proposals", id: "recent-proposals" },
+      ...contentOutline,
+    ];
+  }, [page.livePanel, page.markdown, page.sections]);
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -160,18 +169,6 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
     },
     [handleNavigate],
   );
-
-  const handleHeaderSearch = useCallback(() => {
-    if (typeof document === "undefined") {
-      return;
-    }
-    const searchInput = document.getElementById("docs-search-default") as HTMLInputElement | null;
-    if (searchInput) {
-      searchInput.focus();
-      return;
-    }
-    setIsSidebarOpen(true);
-  }, []);
 
   useEffect(() => {
     if (!isSidebarOpen) {
@@ -241,10 +238,9 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
         homeHref={homeHref}
         docsHref={isDocsSubdomain ? "/" : "/docs"}
         searchLabel="Search docs..."
-        onSearch={handleHeaderSearch}
         onExplore={() => {
           if (typeof window !== "undefined") {
-            window.location.assign(`${homeHref}#resource-directory`);
+            window.location.assign(`${homeHref.replace(/\/$/, "")}/ecosystem`);
           }
         }}
       />
@@ -380,6 +376,7 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
               onNavigate={handleNavigate}
               previousPage={previousPage}
               nextPage={nextPage}
+              assetUsdPrices={assetUsdPrices}
             />
           </div>
         </main>
@@ -400,13 +397,6 @@ function DocsShell({ docSegments, onNavigate, isDocsSubdomain }: DocsShellProps)
                   </li>
                 ))}
               </ul>
-            </div>
-            <div className="rounded-2xl border border-slate-200 bg-white/75 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.02]">
-              <h2 className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Was this helpful?</h2>
-              <div className="mt-4 flex gap-3">
-                <button type="button" aria-label="This page was helpful" className="inline-flex h-10 w-14 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:border-blue-300 hover:text-blue-600 dark:border-white/10 dark:text-slate-300"><ThumbsUp size={16} /></button>
-                <button type="button" aria-label="This page was not helpful" className="inline-flex h-10 w-14 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:border-blue-300 hover:text-blue-600 dark:border-white/10 dark:text-slate-300"><ThumbsDown size={16} /></button>
-              </div>
             </div>
             <a href={editPageUrl} target="_blank" rel="noopener noreferrer" className="group block rounded-2xl border border-slate-200 bg-white/75 p-5 shadow-sm transition hover:border-blue-300 dark:border-white/10 dark:bg-white/[0.02] dark:hover:border-blue-500/40">
               <h2 className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Edit this page</h2>

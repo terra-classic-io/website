@@ -4,6 +4,29 @@
 @tailwind components;
 @tailwind utilities;
 
+.search-kbd {
+  display: inline-flex;
+  min-width: 1.5rem;
+  height: 1.35rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(203 213 225 / 0.9);
+  border-radius: 0.35rem;
+  background: rgb(255 255 255 / 0.9);
+  padding: 0 0.35rem;
+  color: rgb(71 85 105);
+  font: inherit;
+  font-weight: 700;
+  box-shadow: 0 1px 0 rgb(148 163 184 / 0.25);
+}
+
+.dark .search-kbd {
+  border-color: rgb(255 255 255 / 0.12);
+  background: rgb(255 255 255 / 0.05);
+  color: rgb(148 163 184);
+  box-shadow: none;
+}
+
 :root {
   /* Light theme colors */
   --color-bg-primary: #ffffff;
@@ -59,32 +82,6 @@ body {
   transform: translateY(-1px);
   border-color: rgba(37, 99, 235, 0.5);
   color: rgb(37 99 235);
-}
-
-.project-logo-tint {
-  position: relative;
-  isolation: isolate;
-}
-
-.project-logo-tint__image {
-  filter: saturate(0.72) contrast(1.06) brightness(0.98);
-  opacity: 1;
-}
-
-.project-logo-tint::after {
-  position: absolute;
-  inset: 0.25rem;
-  border-radius: inherit;
-  background: rgb(37 99 235);
-  content: "";
-  mix-blend-mode: soft-light;
-  opacity: 0.32;
-  pointer-events: none;
-}
-
-.dark .project-logo-tint::after {
-  background: rgb(96 165 250);
-  opacity: 0.26;
 }
 
 .dark .footer-social {
@@ -228,6 +225,20 @@ body {
 
 .dark .treasury-feature-card {
   background-image: url("/images/treasury-card-dark.png");
+  border-bottom-color: rgba(59, 130, 246, 0.22) !important;
+}
+
+.dark .treasury-feature-card::before {
+  background:
+    linear-gradient(
+      105deg,
+      rgba(2, 11, 25, 0.99) 0%,
+      rgba(2, 11, 25, 0.96) 42%,
+      rgba(2, 11, 25, 0.86) 62%,
+      rgba(2, 11, 25, 0.52) 82%,
+      rgba(2, 11, 25, 0.18) 100%
+    ),
+    linear-gradient(180deg, rgba(2, 11, 25, 0.08) 45%, rgba(2, 11, 25, 0.76) 100%);
 }
 
 .dark .developers-feature-card {

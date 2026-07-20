@@ -12,11 +12,12 @@ const ProjectMapPage: React.FC = () => {
   return (
     <div className="relative min-h-screen bg-[#f8fafc] text-slate-900 transition-colors duration-300 dark:bg-[#020b19] dark:text-slate-50">
       <Helmet>
-        <title>Terra Classic Project Map</title>
+        <title>Terra Classic Ecosystem Directory | Projects &amp; Tools</title>
         <meta
           name="description"
-          content="Explore Terra Classic ecosystem projects through an interactive bubble map or a classic category directory."
+          content="Browse the Terra Classic ecosystem directory by category, search projects and tools, or explore the network through an interactive project map."
         />
+        <link rel="canonical" href="https://terra-classic.io/ecosystem" />
       </Helmet>
 
       <div className="relative z-20 mx-auto flex min-h-screen max-w-[1480px] flex-col gap-6 px-4 pb-16 pt-5 sm:px-8 lg:px-10">
@@ -31,10 +32,10 @@ const ProjectMapPage: React.FC = () => {
             </a>
             <div className="space-y-2">
               <h1 className="text-4xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white">
-                Terra Classic Project Map
+                Terra Classic Ecosystem Directory
               </h1>
               <p className="max-w-3xl text-base leading-relaxed text-slate-600 dark:text-slate-300">
-                Explore {totalProjects}+ projects through the interactive bubble map or a classic category directory. Use filters and search to navigate the ecosystem at your own pace.
+                Browse {totalProjects}+ Terra Classic projects by category, or switch to the interactive bubble map. Use filters and search to navigate the ecosystem at your own pace.
               </p>
             </div>
           </div>

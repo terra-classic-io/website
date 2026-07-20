@@ -1,6 +1,7 @@
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
-import { ChevronRight, Search, X } from "lucide-react";
+import { ArrowRight, BookOpen, ChevronRight, Search, X } from "lucide-react";
+import { siteLinks } from "../../data/site-links";
 import type { DocPage } from "../../types/doc-page";
 import type { DocSection } from "../../types/doc-section";
 
@@ -136,16 +137,21 @@ function DocSidebar(props: DocSidebarProps): JSX.Element {
     variant = "default",
   } = props;
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [expandedSectionSlug, setExpandedSectionSlug] = useState<string>(activeSection.slug);
   const trailSlugSet = useMemo<Set<string>>(() => new Set(activeTrail.map((page) => page.slug)), [activeTrail]);
   const containerClassName: string =
     variant === "drawer"
-      ? "flex h-full flex-col gap-10 overflow-y-auto pr-4"
-      : "sticky top-[96px] flex max-h-[calc(100vh-116px)] flex-col gap-7 overflow-y-auto pr-1";
+      ? "flex flex-col gap-5 pr-2"
+      : "sticky top-[96px] flex flex-col gap-5";
   const normalizedQuery: string = searchQuery.trim().toLowerCase();
   const flattenedSearchResults = useMemo<SearchResult[]>(
     () => sections.flatMap((section) => collectSearchResults(section, section.pages)),
     [sections],
   );
+
+  useEffect(() => {
+    setExpandedSectionSlug(activeSection.slug);
+  }, [activeSection.slug]);
 
   const searchResults = useMemo<SearchResult[]>(() => {
     if (!normalizedQuery) {
@@ -401,28 +407,50 @@ function DocSidebar(props: DocSidebarProps): JSX.Element {
         <>
           {sections.map((section) => {
             const isActiveSection = section.slug === activeSection.slug;
+            const isExpanded = section.slug === expandedSectionSlug;
+            const sectionPanelId = `docs-section-${variant}-${section.slug}`;
             return (
-              <div key={section.slug}>
+              <div key={section.slug} className="space-y-1">
                 <button
                   type="button"
-                  onClick={() => {
-                    const firstPage = section.pages[0];
-                    if (firstPage) {
-                      onNavigate(section.slug, [firstPage.slug]);
-                    }
-                  }}
-                  className={`${SECTION_BUTTON_CLASSES} ${isActiveSection ? SECTION_BUTTON_ACTIVE_CLASSES : ""}`}
+                  onClick={() => setExpandedSectionSlug((current) => current === section.slug ? "" : section.slug)}
+                  className={`${SECTION_BUTTON_CLASSES} ${isActiveSection ? SECTION_BUTTON_ACTIVE_CLASSES : ""} flex items-center justify-between gap-3`}
+                  aria-expanded={isExpanded}
+                  aria-controls={sectionPanelId}
                 >
-                  {section.title}
+                  <span>{section.title}</span>
+                  <ChevronRight
+                    size={15}
+                    className={`shrink-0 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
+                    aria-hidden="true"
+                  />
                 </button>
-                <ul className="mt-1">
-                  {section.pages.map((page) => renderPageTree(page, section, 0, []))}
-                </ul>
+                {isExpanded ? (
+                  <ul id={sectionPanelId} className="mt-1 space-y-0.5">
+                    {section.pages.map((page) => renderPageTree(page, section, 0, []))}
+                  </ul>
+                ) : null}
               </div>
             );
           })}
         </>
       )}
+
+      <a
+        href={siteLinks.communityDiscord}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group mt-2 block rounded-2xl border border-blue-200/80 bg-blue-50/60 p-4 shadow-sm transition hover:border-blue-400 hover:bg-blue-50 dark:border-blue-500/30 dark:bg-blue-500/[0.06] dark:hover:border-blue-400/60 dark:hover:bg-blue-500/10"
+      >
+        <BookOpen size={23} className="text-blue-600 dark:text-blue-400" aria-hidden="true" />
+        <p className="mt-4 text-xs font-medium leading-5 text-slate-700 dark:text-slate-200">
+          Can&apos;t find what you&apos;re looking for?
+        </p>
+        <span className="mt-1 flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400">
+          Join our Discord community
+          <ArrowRight size={14} className="ml-auto transition-transform group-hover:translate-x-1" aria-hidden="true" />
+        </span>
+      </a>
     </nav>
   );
 }

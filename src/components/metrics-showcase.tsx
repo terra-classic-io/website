@@ -33,6 +33,9 @@ type MetricsShowcaseProps = {
   readonly stakingApr: string;
   readonly onOpenDocs: () => void;
   readonly onOpenStablecoins: () => void;
+  readonly onOpenTreasury: () => void;
+  readonly onOpenDevelopers: () => void;
+  readonly onOpenGovernance: () => void;
   readonly onOpenMap: () => void;
 };
 
@@ -48,8 +51,11 @@ const ecosystemFeatures = [
 ] as const;
 
 const constellationNodes = [
+  { category: "validators", position: "left-1/2 top-[2%] -translate-x-1/2", tone: "border-sky-400/50 text-sky-600 dark:text-sky-400", fallbackIcon: ShieldCheck },
   { category: "entertainment", position: "left-[12%] top-[28%]", tone: "border-violet-400/50 text-violet-600 dark:text-violet-400", fallbackIcon: Gamepad2 },
   { category: "infrastructure", position: "right-[10%] top-[21%]", tone: "border-blue-400/50 text-blue-600 dark:text-blue-400", fallbackIcon: Network },
+  { category: "dex", position: "left-[1%] top-[53%]", tone: "border-cyan-400/50 text-cyan-600 dark:text-cyan-400", fallbackIcon: CircleDollarSign },
+  { category: "tools", position: "right-[2%] top-[54%]", tone: "border-fuchsia-400/50 text-fuchsia-600 dark:text-fuchsia-400", fallbackIcon: BarChart3 },
   { category: "applications", position: "bottom-[12%] left-[27%]", tone: "border-orange-400/50 text-orange-500", fallbackIcon: CircleDollarSign },
   { category: "wallets", position: "bottom-[18%] right-[14%]", tone: "border-emerald-400/50 text-emerald-500", fallbackIcon: WalletCards },
 ] as const;
@@ -92,7 +98,7 @@ function pickConstellationProjects(
   return selection;
 }
 
-function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, onOpenMap }: MetricsShowcaseProps): JSX.Element {
+function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, onOpenTreasury, onOpenDevelopers, onOpenGovernance, onOpenMap }: MetricsShowcaseProps): JSX.Element {
   const onchainProjects = projects.filter((project) => project.indicator === "onchain").length;
   const stablecoinCarouselRef = useRef<HTMLDivElement | null>(null);
   const [constellationProjects, setConstellationProjects] = useState<ConstellationProjects>(() => pickConstellationProjects(false));
@@ -297,9 +303,9 @@ function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, on
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[
           { id: "stablecoin-card", title: "Stablecoins", subtitle: "The foundation of digital finance.", body: "Discover assets, payment rails, trading venues, and DeFi applications across Terra Classic.", icon: CircleDollarSign, action: onOpenStablecoins, accent: "from-blue-600/18" },
-          { id: "treasury", title: "Treasury", subtitle: "Sustainable growth. Secured for the future.", body: "Understand community governance, shared funds, and the proposals shaping long-term network development.", icon: Landmark, action: onOpenDocs, accent: "from-sky-600/16" },
-          { id: "developers", title: "Developers", subtitle: "Build. Innovate. Disrupt.", body: "Use guides, endpoints, modules, and open-source tooling to ship the next generation of applications.", icon: Code2, action: onOpenDocs, accent: "from-violet-600/16" },
-          { id: "governance", title: "Governance", subtitle: "Community-led. Future-focused.", body: "Review the resources that help delegators, validators, and contributors participate in on-chain decisions.", icon: Users, action: onOpenDocs, accent: "from-indigo-600/16" },
+          { id: "treasury", title: "Treasury", subtitle: "Sustainable growth. Secured for the future.", body: "Understand community governance, shared funds, and the proposals shaping long-term network development.", icon: Landmark, action: onOpenTreasury, accent: "from-sky-600/16" },
+          { id: "developers", title: "Developers", subtitle: "Build. Innovate. Disrupt.", body: "Use guides, endpoints, modules, and open-source tooling to ship the next generation of applications.", icon: Code2, action: onOpenDevelopers, accent: "from-violet-600/16" },
+          { id: "governance", title: "Governance", subtitle: "Community-led. Future-focused.", body: "Review the resources that help delegators, validators, and contributors participate in on-chain decisions.", icon: Users, action: onOpenGovernance, accent: "from-indigo-600/16" },
         ].map((card) => {
           const artworkClass = card.id === "stablecoin-card"
             ? "stablecoins-feature-card"
