@@ -21,9 +21,11 @@ import type { DocNavigationHandler } from "../../types/doc-navigation";
 import type { DocPageWithPath } from "../../types/doc-page-with-path";
 import { slugifyDocHeading } from "../../lib/docs-markdown";
 import DocNavigationFooter from "./doc-navigation-footer";
+import AssetsSupplyTable from "./assets-supply-table";
 import GovernanceLiveDashboard from "./governance-live-dashboard";
 import TreasuryLiveDashboard from "./treasury-live-dashboard";
 
+const ASSET_SUPPLY_MARKER = "<!-- ASSET_SUPPLY_TABLE -->";
 const CALLOUT_STYLE: Record<DocCalloutBlock["variant"], string> = {
   info: "border-sky-200/60 bg-sky-50/60 text-slate-700 dark:border-sky-900/60 dark:bg-sky-900/30 dark:text-slate-200",
   warning:
@@ -726,13 +728,25 @@ function DocContent({ page, section, currentPath, onNavigate, previousPage, next
     [onNavigate, section.slug, currentPath],
   );
   const hasMarkdown = markdownContent.length > 0;
+  const assetMarkdownParts = useMemo<readonly string[] | undefined>(
+    () => page.livePanel === "assets" ? markdownContent.split(ASSET_SUPPLY_MARKER) : undefined,
+    [markdownContent, page.livePanel],
+  );
+  const hasAssetSupplyMarker = assetMarkdownParts?.length === 2;
 
   return (
     <div className="space-y-10">
       {page.livePanel === "treasury" ? <TreasuryLiveDashboard assetUsdPrices={assetUsdPrices} /> : null}
       {page.livePanel === "governance" ? <GovernanceLiveDashboard /> : null}
       {hasStructuredSections ? page.sections?.map((sectionBlock) => renderSection(sectionBlock)) : null}
-      {!hasStructuredSections && hasMarkdown ? renderMarkdown(markdownContent, markdownComponents) : null}
+      {!hasStructuredSections && hasMarkdown && hasAssetSupplyMarker && assetMarkdownParts ? (
+        <>
+          {renderMarkdown(assetMarkdownParts[0], markdownComponents)}
+          <AssetsSupplyTable assetUsdPrices={assetUsdPrices} />
+          {renderMarkdown(assetMarkdownParts[1], markdownComponents)}
+        </>
+      ) : null}
+      {!hasStructuredSections && hasMarkdown && !hasAssetSupplyMarker ? renderMarkdown(markdownContent, markdownComponents) : null}
       {!hasStructuredSections && !hasMarkdown ? (
         <div className="rounded-3xl border border-dashed border-slate-300/70 bg-white/60 p-10 text-sm text-slate-600 dark:border-slate-700/70 dark:bg-slate-950/40 dark:text-slate-300">
           <p>This chapter acts as a directory. Select a subpage from the menu to continue.</p>

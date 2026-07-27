@@ -13,31 +13,7 @@ Terra Classic includes a native network asset, **LUNC**, and a set of historical
 
 The directory below reflects the native denominations exposed by Terra Classic. **LUNC appears first because it is the network's native staking, governance, and gas asset. The other entries are historical fiat-denominated assets; their names do not imply a current price peg.**
 
-| Asset | Network denom | Reference | Role |
-| --- | --- | --- | --- |
-| LUNC | `uluna` | LUNA | Native staking, governance, and gas asset |
-| USTC | `uusd` | USD | Historical fiat-denominated asset |
-| EUTC | `ueur` | EUR | Historical fiat-denominated asset |
-| JPTC | `ujpy` | JPY | Historical fiat-denominated asset |
-| KRTC | `ukrw` | KRW | Historical fiat-denominated asset |
-| CHTC | `ucny` | CNH | Historical fiat-denominated asset |
-| SDTC | `usdr` | SDR | Historical fiat-denominated asset |
-| MNTC | `umnt` | MNT | Historical fiat-denominated asset |
-| GBTC | `ugbp` | GBP | Historical fiat-denominated asset |
-| INTC | `uinr` | INR | Historical fiat-denominated asset |
-| CATC | `ucad` | CAD | Historical fiat-denominated asset |
-| CHFC | `uchf` | CHF | Historical fiat-denominated asset |
-| AUTC | `uaud` | AUD | Historical fiat-denominated asset |
-| SGTC | `usgd` | SGD | Historical fiat-denominated asset |
-| THTC | `uthb` | THB | Historical fiat-denominated asset |
-| SETC | `usek` | SEK | Historical fiat-denominated asset |
-| NOTC | `unok` | NOK | Historical fiat-denominated asset |
-| DKTC | `udkk` | DKK | Historical fiat-denominated asset |
-| IDTC | `uidr` | IDR | Historical fiat-denominated asset |
-| PHTC | `uphp` | PHP | Historical fiat-denominated asset |
-| HKTC | `uhkd` | HKD | Historical fiat-denominated asset |
-| MYTC | `umyr` | MYR | Historical fiat-denominated asset |
-| TWTC | `utwd` | TWD | Historical fiat-denominated asset |
+<!-- ASSET_SUPPLY_TABLE -->
 
 ## How denominations work
 

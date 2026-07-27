@@ -15,6 +15,7 @@ import troubleshootGuide from "../docs/full-node/run-a-full-terra-node/troublesh
 import validatorColumbus5Guide from "../docs/full-node/run-a-full-terra-node/validator-columbus-5.md?raw";
 import validatorRebel2Guide from "../docs/full-node/run-a-full-terra-node/validator-rebel-2.md?raw";
 import fullNodeOverviewGuide from "../docs/full-node/overview.md?raw";
+import validatorsOverviewGuide from "../docs/full-node/validators.md?raw";
 import localnetGuide from "../docs/develop/how-to/localnet/terra-core-localnet.md?raw";
 import keplrOverviewGuide from "../docs/learn/keplr/keplr.md?raw";
 import keplrInstallGuide from "../docs/learn/keplr/keplr-install.md?raw";
@@ -197,6 +198,13 @@ const fullNodeEndpoints: DocPage = {
   markdown: endpointsGuide,
 };
 
+const validatorsOverview: DocPage = {
+  slug: "validators",
+  title: "Validators",
+  summary: "Plan, launch, secure, and operate a Terra Classic validator with production-grade infrastructure and monitoring.",
+  markdown: validatorsOverviewGuide,
+};
+
 const learnOverview: DocPage = {
   slug: "overview",
   title: "Start here",
@@ -215,6 +223,7 @@ const learnStablecoins: DocPage = {
   slug: "stablecoins",
   title: "Assets & denominations",
   summary: "Understand LUNC and Terra Classic's historical fiat-denominated assets, their network denominations, uses, and risks.",
+  livePanel: "assets",
   markdown: learnStablecoinsGuide,
 };
 
@@ -657,7 +666,7 @@ export const docSections: readonly DocSection[] = [
     title: "Run a full node",
     description:
       "Provision, sync, and operate Terra Classic full nodes with production-grade observability and security.",
-    pages: [fullNodeOverview, fullNodeEndpoints],
+    pages: [fullNodeOverview, validatorsOverview, fullNodeEndpoints],
   },
   {
     slug: "develop",

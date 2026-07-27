@@ -1,0 +1,26 @@
+# Terra Classic
+
+> Terra Classic is the community-owned continuation of the original Terra blockchain. This website provides network documentation, native asset information, governance resources, developer guides, and a curated ecosystem directory.
+
+## Main pages
+
+- [Terra Classic homepage](https://terra-classic.io/): Network overview, native assets, releases, and community resources.
+- [Ecosystem directory](https://terra-classic.io/ecosystem): Searchable directory and interactive map of Terra Classic projects.
+- [Documentation](https://terra-classic.io/docs/start/start): Guides for users, validators, node operators, and developers.
+
+## Key documentation
+
+- [Terra Classic protocol](https://terra-classic.io/docs/learn/protocol): Introduction to the Terra Classic protocol.
+- [Native assets](https://terra-classic.io/docs/learn/stablecoins): LUNC and historical fiat-denominated Terra Classic assets.
+- [Community Pool and Treasury](https://terra-classic.io/docs/learn/treasury): Governed on-chain reserves and proposal activity.
+- [Governance](https://terra-classic.io/docs/learn/governance): Governance mechanics, parameters, and live proposals.
+- [Validators](https://terra-classic.io/docs/full-node/validators): Validator responsibilities, infrastructure, security, and operating guides.
+- [Developer overview](https://terra-classic.io/docs/develop/overview): Developer quick start, tools, APIs, and resources.
+- [Run a full node](https://terra-classic.io/docs/full-node/overview): Node deployment and operation documentation.
+
+## Project information
+
+- [Website source](https://github.com/terra-classic-io/website): Source code and documentation contributions.
+- [Terra Core](https://github.com/classic-terra/core): Terra Classic core protocol implementation and releases.
+
+Content is community-maintained. Verify live network, governance, and market data against the linked primary sources before relying on it.

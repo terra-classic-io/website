@@ -138,7 +138,7 @@ function CoreReleaseBanner(): JSX.Element {
       <strong className="hidden font-semibold text-slate-900 dark:text-white sm:inline">
         {release ? "Latest Terra Core release" : "Terra Core releases"}
       </strong>
-      <span className="rounded-full bg-blue-600/10 px-2.5 py-1 font-semibold text-blue-600 dark:bg-blue-500/15 dark:text-blue-300">
+      <span className="rounded-full bg-blue-600/10 px-2.5 py-1 font-semibold text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">
         {release?.tag ?? "Official builds"}
       </span>
       <span className="hidden h-4 w-px bg-slate-200 dark:bg-white/10 md:block" />

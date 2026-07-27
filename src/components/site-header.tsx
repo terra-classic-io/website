@@ -25,12 +25,11 @@ function SiteHeader({
 }: SiteHeaderProps): JSX.Element {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
-  const homeBase = homeHref.endsWith("/") ? homeHref.slice(0, -1) : homeHref;
   const docsBase = docsHref.endsWith("/") ? docsHref.slice(0, -1) : docsHref;
   const navigation: readonly NavigationItem[] = [
     { label: "Learn", href: `${docsBase}/learn/overview` },
     { label: "Assets", href: `${docsBase}/learn/stablecoins` },
-    { label: "Validators", href: `${homeBase}/ecosystem?cat=validators` },
+    { label: "Validators", href: `${docsBase}/full-node/validators` },
     { label: "Governance", href: `${docsBase}/learn/governance` },
     { label: "Developers", href: `${docsBase}/develop/overview` },
     { label: "Documentation", href: docsHref },

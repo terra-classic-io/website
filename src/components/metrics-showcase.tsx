@@ -32,7 +32,6 @@ export type TokenMetric = {
 type MetricsShowcaseProps = {
   readonly tokens: readonly TokenMetric[];
   readonly stakingApr: string;
-  readonly onOpenDocs: () => void;
   readonly onOpenStablecoins: () => void;
   readonly onOpenTreasury: () => void;
   readonly onOpenDevelopers: () => void;
@@ -99,7 +98,7 @@ function pickConstellationProjects(
   return selection;
 }
 
-function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, onOpenTreasury, onOpenDevelopers, onOpenGovernance, onOpenMap }: MetricsShowcaseProps): JSX.Element {
+function MetricsShowcase({ tokens, stakingApr, onOpenStablecoins, onOpenTreasury, onOpenDevelopers, onOpenGovernance, onOpenMap }: MetricsShowcaseProps): JSX.Element {
   const onchainProjects = projects.filter((project) => project.indicator === "onchain").length;
   const stablecoinCarouselRef = useRef<HTMLDivElement | null>(null);
   const [constellationProjects, setConstellationProjects] = useState<ConstellationProjects>(() => pickConstellationProjects(false));
@@ -179,7 +178,7 @@ function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, on
                     <span className={`text-xs font-semibold ${metric.isPositive ? "text-emerald-500" : "text-rose-500"}`}>{metric.change}</span>
                   </div>
                   <div className="mt-4">
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500">Market cap</p>
+                    <p className="text-[10px] font-medium text-slate-600 dark:text-slate-400">Market cap</p>
                     <p className="mt-0.5 text-xs font-medium text-slate-700 dark:text-slate-300">{metric.marketCap}</p>
                   </div>
                   <div
@@ -192,7 +191,7 @@ function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, on
             })}
             <button
               type="button"
-              onClick={onOpenDocs}
+              onClick={onOpenStablecoins}
               className="group flex min-h-[220px] min-w-[210px] snap-start flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50/70 p-5 text-center transition hover:border-blue-300 hover:bg-blue-50 dark:border-white/10 dark:bg-white/[0.025] dark:hover:border-blue-500/40 dark:hover:bg-blue-500/[0.06]"
             >
               <CircleDollarSign size={30} className="text-blue-600 transition group-hover:scale-110 dark:text-blue-400" />
@@ -222,24 +221,24 @@ function MetricsShowcase({ tokens, stakingApr, onOpenDocs, onOpenStablecoins, on
             <ArrowRight size={14} />
           </button>
         </div>
-        <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Live network metrics">
           {[
             { label: "Curated projects", value: `${projects.length}+`, icon: Network },
             { label: "On-chain projects", value: `${onchainProjects}`, icon: Blocks },
             { label: "Ecosystem categories", value: `${Object.keys(categories).length}`, icon: Box },
             { label: "Staking APR", value: stakingApr, icon: ShieldCheck },
           ].map((metric) => (
-            <div key={metric.label} className="flex items-center gap-3 border-slate-200 lg:border-r lg:last:border-0 dark:border-white/10">
+            <li key={metric.label} className="flex items-center gap-3 border-slate-200 lg:border-r lg:last:border-0 dark:border-white/10">
               <span className="flex h-10 w-10 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400">
                 <metric.icon size={18} />
               </span>
               <div>
-                <dt className="text-[10px] text-slate-500 dark:text-slate-400">{metric.label}</dt>
-                <dd className="text-lg font-semibold text-slate-950 dark:text-white">{metric.value}</dd>
+                <p className="text-[10px] font-medium text-slate-600 dark:text-slate-400">{metric.label}</p>
+                <p className="text-lg font-semibold text-slate-950 dark:text-white">{metric.value}</p>
               </div>
-            </div>
+            </li>
           ))}
-        </dl>
+        </ul>
       </section>
 
       <section id="ecosystem" className="scroll-mt-28 rounded-2xl border border-slate-200 bg-white/72 p-6 shadow-sm dark:border-white/10 dark:bg-white/[0.02] sm:p-8">

@@ -12,6 +12,7 @@ import { LAST_UPDATE } from "./generated/build-info";
 // On Pages client build (CF_PAGES_BUILD), we emit to dist/ root.
 const TEMPLATE_PATH = "/index.html";
 const PRODUCTION_URL = "https://terra-classic.io";
+const PUBLIC_PREVIEW_HOSTNAME = "terra-classic-v2-preview.pages.dev";
 
 const normalizePathname = (pathname: string): string => {
   if (pathname === "/") {
@@ -55,8 +56,8 @@ const subdomainDocRedirects = new Map<string, string>([
   ] as const),
 ]);
 
-const isPreviewHostname = (hostname: string): boolean => (
-  hostname.endsWith(".pages.dev")
+const isNonIndexableHostname = (hostname: string): boolean => (
+  (hostname.endsWith(".pages.dev") && hostname !== PUBLIC_PREVIEW_HOSTNAME)
   || hostname === "localhost"
   || hostname === "127.0.0.1"
 );
@@ -128,10 +129,10 @@ const handleRequest = async (
   const userAgent = request.headers.get("user-agent") ?? "";
   const pathname = normalizePathname(url.pathname);
   const hostname = url.hostname.toLowerCase();
-  const previewHostname = isPreviewHostname(hostname);
+  const nonIndexableHostname = isNonIndexableHostname(hostname);
 
   if (pathname === "/robots.txt") {
-    const body = previewHostname
+    const body = nonIndexableHostname
       ? "User-agent: *\nDisallow: /\n"
       : `User-agent: *\nAllow: /\n\nSitemap: ${PRODUCTION_URL}/sitemap.xml\n`;
     return new Response(body, {
@@ -176,6 +177,7 @@ const handleRequest = async (
     || pathname.startsWith("/apple-touch-icon")
     || pathname.startsWith("/og-")
     || pathname === "/site.webmanifest"
+    || pathname === "/llms.txt"
   )) {
     const directAssetResponse = await env.ASSETS.fetch(request);
     if (!directAssetResponse.ok) {
@@ -217,7 +219,7 @@ const handleRequest = async (
     headers: {
       "Content-Type": "text/html; charset=utf-8",
       "Cache-Control": "public, max-age=0, must-revalidate",
-      ...(previewHostname || status === 404 ? { "X-Robots-Tag": "noindex, nofollow" } : {}),
+      ...(nonIndexableHostname || status === 404 ? { "X-Robots-Tag": "noindex, nofollow" } : {}),
       ...securityHeaders,
     },
   }) as unknown as CfResponse;

@@ -69,6 +69,11 @@ export const docSeoSections = [
         ]
       },
       {
+        "slug": "validators",
+        "title": "Validators",
+        "summary": "Plan, launch, secure, and operate a Terra Classic validator with production-grade infrastructure and monitoring."
+      },
+      {
         "slug": "network-endpoints",
         "title": "Public Network Endpoints",
         "summary": "Public endpoints for Terra Classic infrastructure."

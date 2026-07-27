@@ -691,7 +691,6 @@ const App: React.FC<{
         <MetricsShowcase
           tokens={tokenMetrics}
           stakingApr={appState.staking.apr}
-          onOpenDocs={handleOpenDocs}
           onOpenStablecoins={handleOpenStablecoins}
           onOpenTreasury={handleOpenTreasury}
           onOpenDevelopers={handleOpenDevelopers}
@@ -754,31 +753,33 @@ const App: React.FC<{
 
       <SiteHeader onExplore={handleOpenMap} />
 
-      <Routes>
-        <Route path="/" element={homeContent} />
-        <Route
-          path="/ecosystem"
-          element={
-            <Suspense fallback={<div style={{ minHeight: 200 }} />}>
-              <ProjectMapPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/bubbles"
-          element={<Navigate to={{ pathname: "/ecosystem", search: location.search }} replace />}
-        />
-        <Route
-          path="*"
-          element={
-            <Suspense
-              fallback={<div style={{ minHeight: 200 }} />}
-            >
-              <NotFoundPage />
-            </Suspense>
-          }
-        />
-      </Routes>
+      <main id="main-content">
+        <Routes>
+          <Route path="/" element={homeContent} />
+          <Route
+            path="/ecosystem"
+            element={
+              <Suspense fallback={<div style={{ minHeight: 200 }} />}>
+                <ProjectMapPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/bubbles"
+            element={<Navigate to={{ pathname: "/ecosystem", search: location.search }} replace />}
+          />
+          <Route
+            path="*"
+            element={
+              <Suspense
+                fallback={<div style={{ minHeight: 200 }} />}
+              >
+                <NotFoundPage />
+              </Suspense>
+            }
+          />
+        </Routes>
+      </main>
 
       <SiteFooter lastUpdated={formattedUpdate} />
     </div>

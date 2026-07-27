@@ -21,7 +21,7 @@ const footerGroups = [
     links: [
       { label: "Forum", href: siteLinks.communityForum },
       { label: "Validator resources", href: "/ecosystem?cat=validators" },
-      { label: "Information", href: "/ecosystem?cat=blockchain-information" },
+      { label: "Blockchain information", href: "/ecosystem?cat=blockchain-information" },
       { label: "Wallets", href: "/ecosystem?cat=wallets" },
     ],
   },
