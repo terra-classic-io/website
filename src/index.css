@@ -469,6 +469,11 @@ body {
 .ecosystem-constellation__line--two { transform: translate(-50%, -50%) rotate(92deg); }
 .ecosystem-constellation__line--three { transform: translate(-50%, -50%) rotate(-42deg); }
 
+.deferred-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 640px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .network-globe::before {
     animation: globe-drift 72s linear infinite;

@@ -20,6 +20,7 @@ import { useTheme } from "./contexts/ThemeContext";
 import type { DocNavigationOptions } from "./types/doc-navigation";
 import type { DocSeoPage, DocSeoSection } from "./types/doc-seo";
 import { LAST_UPDATE } from "./generated/build-info";
+import { scheduleNonCriticalTask } from "./utils/schedule-non-critical-task";
 const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
 const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
 const NotFoundPage = React.lazy(() => import("./components/not-found/not-found-page"));
@@ -373,10 +374,13 @@ const App: React.FC<{
       }
     };
 
-    fetchStakingApr();
+    const cancelScheduledFetch = scheduleNonCriticalTask(() => {
+      void fetchStakingApr();
+    });
 
     return () => {
       isCancelled = true;
+      cancelScheduledFetch();
     };
   }, []);
 
@@ -440,11 +444,16 @@ const App: React.FC<{
       }
     };
 
-    fetchTokenPrices();
-    intervalId = window.setInterval(fetchTokenPrices, 300_000);
+    const cancelScheduledFetch = scheduleNonCriticalTask(() => {
+      void fetchTokenPrices();
+      intervalId = window.setInterval(() => {
+        void fetchTokenPrices();
+      }, 300_000);
+    });
 
     return () => {
       isCancelled = true;
+      cancelScheduledFetch();
       if (typeof intervalId === "number") {
         window.clearInterval(intervalId);
       }
@@ -699,7 +708,7 @@ const App: React.FC<{
         />
       </div>
 
-      <div className="mx-auto max-w-[1480px] px-5 py-10 sm:px-8 lg:px-10">
+      <div className="deferred-section mx-auto max-w-[1480px] px-5 py-10 sm:px-8 lg:px-10">
         <FAQAccordion />
       </div>
     </div>

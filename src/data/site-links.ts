@@ -4,7 +4,7 @@
  */
 export const siteLinks = {
   github: "https://github.com/terra-classic-io/website",
-  communityForum: "https://discourse.luncgoblins.com",
+  communityForum: "https://agora.terra-classic.io",
   validatorsDiscord: "https://discord.gg/gSU46tg6hY",
   communityDiscord: "https://discord.gg/2bnBrnrUEG",
   communityTelegram: "https://t.me/classicluna",

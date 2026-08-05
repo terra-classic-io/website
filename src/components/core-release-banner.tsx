@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, Github } from "lucide-react";
+import { scheduleNonCriticalTask } from "../utils/schedule-non-critical-task";
 
 const CORE_RELEASE_API_URL = "https://api.github.com/repos/classic-terra/core/releases/latest";
 const CORE_RELEASES_URL = "https://github.com/classic-terra/core/releases";
@@ -123,8 +124,14 @@ function CoreReleaseBanner(): JSX.Element {
       }
     }
 
-    void loadLatestRelease();
-    return () => controller.abort();
+    const cancelScheduledFetch = scheduleNonCriticalTask(() => {
+      void loadLatestRelease();
+    });
+
+    return () => {
+      cancelScheduledFetch();
+      controller.abort();
+    };
   }, []);
 
   const releaseUrl = release?.url ?? CORE_RELEASES_URL;
