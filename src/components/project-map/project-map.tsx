@@ -798,21 +798,21 @@ const ProjectMap: React.FC = () => {
         <div className="inline-flex w-fit rounded-lg border border-slate-200 bg-slate-50 p-1 dark:border-white/10 dark:bg-white/[0.03]" role="group" aria-label="Project view mode">
           <button
             type="button"
-            onClick={() => selectViewMode("bubble")}
-            aria-pressed={viewMode === "bubble"}
-            className={`inline-flex h-9 items-center gap-2 rounded-md px-3 text-xs font-semibold transition ${viewMode === "bubble" ? "bg-white text-blue-600 shadow-sm dark:bg-blue-500/15 dark:text-blue-300" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
-          >
-            <Network size={15} />
-            Bubble map
-          </button>
-          <button
-            type="button"
             onClick={() => selectViewMode("directory")}
             aria-pressed={viewMode === "directory"}
             className={`inline-flex h-9 items-center gap-2 rounded-md px-3 text-xs font-semibold transition ${viewMode === "directory" ? "bg-white text-blue-600 shadow-sm dark:bg-blue-500/15 dark:text-blue-300" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
           >
             <LayoutGrid size={15} />
             Directory
+          </button>
+          <button
+            type="button"
+            onClick={() => selectViewMode("bubble")}
+            aria-pressed={viewMode === "bubble"}
+            className={`inline-flex h-9 items-center gap-2 rounded-md px-3 text-xs font-semibold transition ${viewMode === "bubble" ? "bg-white text-blue-600 shadow-sm dark:bg-blue-500/15 dark:text-blue-300" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
+          >
+            <Network size={15} />
+            Bubble map
           </button>
         </div>
       </div>
