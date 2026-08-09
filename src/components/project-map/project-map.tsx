@@ -31,7 +31,7 @@ import { ProjectMapSimulation } from "./simulator";
 import { clampNodeToCategory, clampNodeToViewport, pointInPolygon } from "./geometry";
 import ProjectDirectoryView from "./project-directory-view";
 import styles from "./project-map.module.css";
-import { ArrowUpRight, ExternalLink, LayoutGrid, Network, RefreshCcw } from "lucide-react";
+import { ArrowUpRight, LayoutGrid, Network, RefreshCcw } from "lucide-react";
 
 interface TooltipState {
   readonly nodeId: string;
@@ -986,10 +986,14 @@ const ProjectMap: React.FC = () => {
                 View project details
                 <ArrowUpRight size={16} />
               </button>
-              <a href="/#resource-directory" className="mt-4 flex items-center justify-center gap-2 text-xs font-semibold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400">
+              <button
+                type="button"
+                onClick={() => selectViewMode("directory")}
+                className="mt-4 flex w-full items-center justify-center gap-2 text-xs font-semibold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
+              >
                 Browse directory
-                <ExternalLink size={13} />
-              </a>
+                <LayoutGrid size={13} />
+              </button>
             </>
           ) : (
             <p className="text-sm text-slate-500 dark:text-slate-400">Select a project to view its details.</p>

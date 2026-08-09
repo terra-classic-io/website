@@ -3,6 +3,7 @@
  * Update a URL here to keep navigation, documentation, and directory entries aligned.
  */
 export const siteLinks = {
+  website: "https://terra-classic.io",
   github: "https://github.com/terra-classic-io/website",
   communityForum: "https://agora.terra-classic.io",
   validatorsDiscord: "https://discord.gg/gSU46tg6hY",

@@ -39,7 +39,14 @@ const orbitLayouts: readonly OrbitLayout[] = [
   { denom: "ugbp", orbitAngle: 70, orbitRadius: "clamp(172px, 15vw, 198px)", orbitDuration: "138s", orbitDirection: -1, orbitScaleY: 1, orbitTilt: 0 },
 ];
 
+// Add a denomination from orbitLayouts here to make its badge visible again.
+const ACTIVE_HERO_ASSET_DENOMS = new Set(["uluna", "uusd"]);
+
 const orbitBadges: readonly OrbitBadge[] = orbitLayouts.flatMap((layout) => {
+  if (!ACTIVE_HERO_ASSET_DENOMS.has(layout.denom)) {
+    return [];
+  }
+
   const asset = stablecoinAssets.find((candidate) => candidate.denom === layout.denom);
   if (!asset) {
     return [];
@@ -66,7 +73,7 @@ type OrbitStyle = CSSProperties & {
   readonly "--orbit-counter-tilt": string;
 };
 
-const MAX_FEATURED_PROJECTS = 5;
+const MAX_RANDOM_PROJECTS = 5;
 
 function pickRandomProjects(): (typeof projects)[number][] {
   const shuffledProjects = [...projects];
@@ -74,7 +81,7 @@ function pickRandomProjects(): (typeof projects)[number][] {
     const randomIndex = Math.floor(Math.random() * (index + 1));
     [shuffledProjects[index], shuffledProjects[randomIndex]] = [shuffledProjects[randomIndex], shuffledProjects[index]];
   }
-  return shuffledProjects.slice(0, MAX_FEATURED_PROJECTS);
+  return shuffledProjects.slice(0, MAX_RANDOM_PROJECTS);
 }
 
 function normalizeLogoPath(logo?: string): string | undefined {
@@ -89,10 +96,10 @@ function HeroSection({
   onOpenDocs,
   onOpenMap,
 }: HeroSectionProps): JSX.Element {
-  const [featuredProjects, setFeaturedProjects] = useState<(typeof projects)[number][]>(() => projects.slice(0, MAX_FEATURED_PROJECTS));
+  const [randomProjects, setRandomProjects] = useState<(typeof projects)[number][]>(() => projects.slice(0, MAX_RANDOM_PROJECTS));
 
   useEffect(() => {
-    setFeaturedProjects(pickRandomProjects());
+    setRandomProjects(pickRandomProjects());
   }, []);
 
   return (
@@ -107,10 +114,10 @@ function HeroSection({
               Community-owned. Built for everyone.
             </p>
             <h1 className="text-[clamp(3rem,6vw,5.5rem)] font-semibold leading-[0.98] tracking-[-0.065em] text-slate-950 dark:text-white">
-              Powering the future of <span className="text-blue-600 dark:text-blue-500">digital money.</span>
+              Powering the future of <span className="font-bold text-blue-600 dark:text-blue-500">digital money.</span>
             </h1>
             <p className="mt-7 max-w-lg text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-[17px]">
-              Terra Classic is decentralized infrastructure for native assets, payments, and programmable finance—maintained by a global community for a global economy.
+              Terra Classic is decentralized infrastructure for native assets and programmable finance, maintained by a global community for a global economy.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -191,49 +198,55 @@ function HeroSection({
         </div>
       </section>
 
-      <section className="grid grid-cols-1 overflow-hidden rounded-xl border border-slate-200 bg-white/75 shadow-sm dark:border-white/10 dark:bg-white/[0.025] sm:grid-cols-[repeat(3,minmax(0,1fr))_1.15fr] lg:grid-cols-[repeat(4,minmax(0,1fr))_1.15fr] 2xl:grid-cols-[repeat(5,minmax(0,1fr))_1.15fr]">
-        {featuredProjects.map((project, index) => {
-          const logo = normalizeLogoPath(project.logo);
-          const darkLogo = normalizeLogoPath(project.darkLogo);
-          const responsiveVisibility = index === 4 ? "hidden 2xl:flex" : index === 3 ? "hidden lg:flex" : index === 2 ? "hidden sm:flex" : "flex";
-          return (
-            <a
-              key={project.name}
-              href={project.url}
-              target={project.url.startsWith("http") ? "_blank" : undefined}
-              rel={project.url.startsWith("http") ? "noopener noreferrer" : undefined}
-              className={`${responsiveVisibility} group min-h-[96px] items-center gap-4 border-b border-slate-200 px-5 transition hover:bg-blue-50/70 dark:border-white/10 dark:hover:bg-blue-500/[0.06] sm:border-b-0 sm:border-r`}
-              title={project.name}
-            >
-              <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 p-1 dark:bg-white/[0.06]">
-                {logo ? (
-                  darkLogo ? (
-                    <>
-                      <ResilientImage src={logo} fallbackSrc={terraClassicLogoUrl} alt="" className="h-full w-full rounded-full object-contain dark:hidden" />
-                      <ResilientImage src={darkLogo} fallbackSrc={terraClassicLogoUrl} alt="" className="hidden h-full w-full rounded-full object-contain dark:block" />
-                    </>
+      <section className="overflow-hidden rounded-xl border border-slate-200 bg-white/75 shadow-sm dark:border-white/10 dark:bg-white/[0.025]">
+        <div className="flex flex-col gap-1 border-b border-slate-200 px-5 py-3 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+          <h2 className="text-xs font-semibold text-slate-950 dark:text-white">Random community projects</h2>
+          <p className="text-[10px] text-slate-500 dark:text-slate-400">Randomized on every visit · No ranking</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-[repeat(3,minmax(0,1fr))_1.15fr] lg:grid-cols-[repeat(4,minmax(0,1fr))_1.15fr] 2xl:grid-cols-[repeat(5,minmax(0,1fr))_1.15fr]">
+          {randomProjects.map((project, index) => {
+            const logo = normalizeLogoPath(project.logo);
+            const darkLogo = normalizeLogoPath(project.darkLogo);
+            const responsiveVisibility = index === 4 ? "hidden 2xl:flex" : index === 3 ? "hidden lg:flex" : index === 2 ? "hidden sm:flex" : "flex";
+            return (
+              <a
+                key={project.name}
+                href={project.url}
+                target={project.url.startsWith("http") ? "_blank" : undefined}
+                rel={project.url.startsWith("http") ? "noopener noreferrer" : undefined}
+                className={`${responsiveVisibility} group min-h-[96px] items-center gap-4 border-b border-slate-200 px-5 transition hover:bg-blue-50/70 dark:border-white/10 dark:hover:bg-blue-500/[0.06] sm:border-b-0 sm:border-r`}
+                title={project.name}
+              >
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 p-1 dark:bg-white/[0.06]">
+                  {logo ? (
+                    darkLogo ? (
+                      <>
+                        <ResilientImage src={logo} fallbackSrc={terraClassicLogoUrl} alt="" className="h-full w-full rounded-full object-contain dark:hidden" />
+                        <ResilientImage src={darkLogo} fallbackSrc={terraClassicLogoUrl} alt="" className="hidden h-full w-full rounded-full object-contain dark:block" />
+                      </>
+                    ) : (
+                      <ResilientImage src={logo} fallbackSrc={terraClassicLogoUrl} alt="" className="h-full w-full rounded-full object-contain" />
+                    )
                   ) : (
-                    <ResilientImage src={logo} fallbackSrc={terraClassicLogoUrl} alt="" className="h-full w-full rounded-full object-contain" />
-                  )
-                ) : (
-                  <img src={terraClassicLogoUrl} alt="" className="h-full w-full rounded-full object-contain" />
-                )}
-              </span>
-              <span className="min-w-0">
-                <strong className="line-clamp-2 text-sm leading-5 text-slate-950 dark:text-white">{project.name}</strong>
-                <span className="mt-0.5 block truncate text-[11px] text-slate-500 dark:text-slate-400">{project.description ?? "Ecosystem project"}</span>
-              </span>
-            </a>
-          );
-        })}
-        <button
-          type="button"
-          onClick={onOpenMap}
-          className="flex min-h-[72px] items-center justify-center gap-2 px-5 text-sm font-semibold text-blue-600 transition hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/[0.06] sm:min-h-[96px]"
-        >
-          View project map
-          <ExternalLink size={15} />
-        </button>
+                    <img src={terraClassicLogoUrl} alt="" className="h-full w-full rounded-full object-contain" />
+                  )}
+                </span>
+                <span className="min-w-0">
+                  <strong className="line-clamp-2 text-sm leading-5 text-slate-950 dark:text-white">{project.name}</strong>
+                  <span className="mt-0.5 block truncate text-[11px] text-slate-500 dark:text-slate-400">{project.description ?? "Ecosystem project"}</span>
+                </span>
+              </a>
+            );
+          })}
+          <button
+            type="button"
+            onClick={onOpenMap}
+            className="flex min-h-[72px] items-center justify-center gap-2 px-5 text-sm font-semibold text-blue-600 transition hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/[0.06] sm:min-h-[96px]"
+          >
+            View project map
+            <ExternalLink size={15} />
+          </button>
+        </div>
       </section>
     </div>
   );

@@ -1,6 +1,7 @@
 import { Delaunay } from "d3-delaunay";
 import { ProjectLink, projects } from "../../data/projects";
 import { categories as sourceCategories } from "../../data/categories";
+import { siteLinks } from "../../data/site-links";
 import { clampNodeToViewport } from "./geometry";
 import { createMulberry32, stringToSeed } from "../../utils/random";
 import terraClassicLogoUrl from "../../assets/terra-classic.svg";
@@ -277,7 +278,7 @@ const createHubNode = (centroid: PointTuple, polygon: Polygon): ProjectMapNode =
   shortLabel: HUB_NODE.name,
   description: HUB_NODE.description,
   indicator: "support",
-  url: "https://classic.terra.money",
+  url: siteLinks.website,
   categoryId: "terra-hub",
   categoryTitle: "Network Hub",
   radius: HUB_NODE.radius,

@@ -53,9 +53,7 @@ function SiteHeader({
     <header className="sticky top-0 z-[70] border-b border-slate-200/70 bg-white/95 backdrop-blur-2xl dark:border-white/10 dark:bg-[#020b19]">
       <div className="mx-auto flex h-[76px] max-w-[1480px] items-center gap-5 px-5 sm:px-8 lg:px-10">
         <a href={homeHref} className="flex shrink-0 items-center gap-3" aria-label="Terra Classic home">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600/10 ring-1 ring-blue-500/20">
-            <img src={terraClassicLogoUrl} alt="" className="h-9 w-9" aria-hidden="true" />
-          </span>
+          <img src={terraClassicLogoUrl} alt="" className="h-11 w-11 shrink-0 object-contain" aria-hidden="true" />
           <span className="hidden text-lg font-bold tracking-[-0.03em] text-slate-950 dark:text-white sm:inline sm:text-xl">
             Terra Classic
           </span>

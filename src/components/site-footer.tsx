@@ -37,6 +37,8 @@ const footerGroups = [
 ] as const;
 
 function SiteFooter({ lastUpdated }: SiteFooterProps): JSX.Element {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="border-t border-slate-200 bg-white/95 dark:border-white/10 dark:bg-[#020b19]">
       <div className="mx-auto grid max-w-[1480px] gap-10 px-5 py-12 sm:px-8 lg:grid-cols-[1.3fr_repeat(3,0.75fr)_1.2fr] lg:px-10">
@@ -90,7 +92,7 @@ function SiteFooter({ lastUpdated }: SiteFooterProps): JSX.Element {
       </div>
       <div className="border-t border-slate-200 dark:border-white/10">
         <div className="mx-auto flex max-w-[1480px] flex-col gap-2 px-5 py-5 text-[11px] text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
-          <p>© 2026 Terra Classic community. All rights reserved.</p>
+          <p>© {currentYear} Terra-Classic.io. All rights reserved.</p>
           <p>{lastUpdated ? `Content updated ${lastUpdated}` : "Community-curated content"}</p>
         </div>
       </div>

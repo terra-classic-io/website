@@ -12,6 +12,7 @@ import {
   Landmark,
   Network,
   ShieldCheck,
+  Shuffle,
   Users,
   WalletCards,
 } from "lucide-react";
@@ -40,6 +41,10 @@ type MetricsShowcaseProps = {
 };
 
 const stablecoinAssetMap = new Map(stablecoinAssets.map((asset) => [asset.symbol, asset]));
+
+// Add a symbol here to display its card in the homepage asset list again.
+// This setting is intentionally independent from the hero orbit configuration.
+const HOME_ASSET_LIST_SYMBOLS = new Set(["LUNC", "USTC"]);
 
 const ecosystemFeatures = [
   { title: "DeFi", body: "Open financial applications", icon: Box, tone: "text-blue-600 dark:text-blue-400" },
@@ -100,6 +105,8 @@ function pickConstellationProjects(
 
 function MetricsShowcase({ tokens, stakingApr, onOpenStablecoins, onOpenTreasury, onOpenDevelopers, onOpenGovernance, onOpenMap }: MetricsShowcaseProps): JSX.Element {
   const onchainProjects = projects.filter((project) => project.indicator === "onchain").length;
+  const displayedTokens = tokens.filter((token) => HOME_ASSET_LIST_SYMBOLS.has(token.symbol));
+  const usesCompactAssetList = displayedTokens.length <= 2;
   const stablecoinCarouselRef = useRef<HTMLDivElement | null>(null);
   const [constellationProjects, setConstellationProjects] = useState<ConstellationProjects>(() => pickConstellationProjects(false));
 
@@ -141,19 +148,27 @@ function MetricsShowcase({ tokens, stakingApr, onOpenStablecoins, onOpenTreasury
           <p className="text-xs text-slate-500 dark:text-slate-400">{tokens.length} assets · live prices from Vyntrex</p>
         </div>
         <div className="relative">
-          <button
-            type="button"
-            onClick={() => scrollStablecoins(-1)}
-            aria-label="Show previous assets"
-            className="absolute -left-3 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-lg transition hover:border-blue-300 hover:text-blue-600 sm:inline-flex dark:border-white/10 dark:bg-[#071426] dark:text-slate-300 dark:hover:border-blue-500/40 dark:hover:text-blue-400"
+          {!usesCompactAssetList && (
+            <button
+              type="button"
+              onClick={() => scrollStablecoins(-1)}
+              aria-label="Show previous assets"
+              className="absolute -left-3 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-lg transition hover:border-blue-300 hover:text-blue-600 sm:inline-flex dark:border-white/10 dark:bg-[#071426] dark:text-slate-300 dark:hover:border-blue-500/40 dark:hover:text-blue-400"
+            >
+              <ChevronLeft size={17} />
+            </button>
+          )}
+          <div
+            ref={stablecoinCarouselRef}
+            className={`stablecoin-carousel flex snap-x snap-mandatory gap-3 overflow-x-auto px-0.5 pb-1 ${usesCompactAssetList ? "sm:grid sm:grid-cols-3 sm:overflow-visible" : ""}`}
           >
-            <ChevronLeft size={17} />
-          </button>
-          <div ref={stablecoinCarouselRef} className="stablecoin-carousel flex snap-x snap-mandatory gap-3 overflow-x-auto px-0.5 pb-1">
-            {tokens.map((metric, index) => {
+            {displayedTokens.map((metric, index) => {
               const asset = stablecoinAssetMap.get(metric.symbol);
               return (
-                <article key={metric.symbol} className="relative min-h-[220px] min-w-[250px] snap-start overflow-hidden rounded-xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-[#061121] sm:min-w-[268px]">
+                <article
+                  key={metric.symbol}
+                  className={`relative min-h-[220px] min-w-[250px] snap-start overflow-hidden rounded-xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-[#061121] ${usesCompactAssetList ? "sm:min-w-0" : "sm:min-w-[268px]"}`}
+                >
                   <div className="flex items-center gap-3">
                     <span
                       className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-slate-50 text-[11px] font-bold dark:bg-white/5"
@@ -192,7 +207,7 @@ function MetricsShowcase({ tokens, stakingApr, onOpenStablecoins, onOpenTreasury
             <button
               type="button"
               onClick={onOpenStablecoins}
-              className="group flex min-h-[220px] min-w-[210px] snap-start flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50/70 p-5 text-center transition hover:border-blue-300 hover:bg-blue-50 dark:border-white/10 dark:bg-white/[0.025] dark:hover:border-blue-500/40 dark:hover:bg-blue-500/[0.06]"
+              className={`group flex min-h-[220px] min-w-[210px] snap-start flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50/70 p-5 text-center transition hover:border-blue-300 hover:bg-blue-50 dark:border-white/10 dark:bg-white/[0.025] dark:hover:border-blue-500/40 dark:hover:bg-blue-500/[0.06] ${usesCompactAssetList ? "sm:min-w-0" : ""}`}
             >
               <CircleDollarSign size={30} className="text-blue-600 transition group-hover:scale-110 dark:text-blue-400" />
               <strong className="mt-3 text-sm text-slate-950 dark:text-white">All native assets listed</strong>
@@ -200,14 +215,16 @@ function MetricsShowcase({ tokens, stakingApr, onOpenStablecoins, onOpenTreasury
               <span className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400">Learn more <ArrowRight size={14} /></span>
             </button>
           </div>
-          <button
-            type="button"
-            onClick={() => scrollStablecoins(1)}
-            aria-label="Show next assets"
-            className="absolute -right-3 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-lg transition hover:border-blue-300 hover:text-blue-600 sm:inline-flex dark:border-white/10 dark:bg-[#071426] dark:text-slate-300 dark:hover:border-blue-500/40 dark:hover:text-blue-400"
-          >
-            <ChevronRight size={17} />
-          </button>
+          {!usesCompactAssetList && (
+            <button
+              type="button"
+              onClick={() => scrollStablecoins(1)}
+              aria-label="Show next assets"
+              className="absolute -right-3 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-lg transition hover:border-blue-300 hover:text-blue-600 sm:inline-flex dark:border-white/10 dark:bg-[#071426] dark:text-slate-300 dark:hover:border-blue-500/40 dark:hover:text-blue-400"
+            >
+              <ChevronRight size={17} />
+            </button>
+          )}
         </div>
       </section>
 
@@ -255,42 +272,48 @@ function MetricsShowcase({ tokens, stakingApr, onOpenStablecoins, onOpenTreasury
             </button>
           </div>
 
-          <div className="ecosystem-constellation relative mx-auto aspect-square w-full max-w-[330px]" aria-hidden="true">
-            <span className="ecosystem-constellation__ring" />
-            <span className="ecosystem-constellation__ring ecosystem-constellation__ring--small" />
-            <span className="ecosystem-constellation__line ecosystem-constellation__line--one" />
-            <span className="ecosystem-constellation__line ecosystem-constellation__line--two" />
-            <span className="ecosystem-constellation__line ecosystem-constellation__line--three" />
-            <span className="absolute left-1/2 top-1/2 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-blue-300 bg-white p-2 shadow-[0_0_50px_rgba(37,99,235,0.28)] dark:border-blue-500/40 dark:bg-[#071426]">
-              <img src={terraClassicLogoUrl} alt="" className="h-16 w-16" />
-            </span>
-            {constellationNodes.map((node) => {
-              const project = constellationProjects[node.category];
-              const logo = normalizeLogoPath(project?.logo);
-              const darkLogo = normalizeLogoPath(project?.darkLogo);
-              const FallbackIcon = node.fallbackIcon;
+          <div className="mx-auto w-full max-w-[330px]">
+            <div className="ecosystem-constellation relative aspect-square w-full" aria-hidden="true">
+              <span className="ecosystem-constellation__ring" />
+              <span className="ecosystem-constellation__ring ecosystem-constellation__ring--small" />
+              <span className="ecosystem-constellation__line ecosystem-constellation__line--one" />
+              <span className="ecosystem-constellation__line ecosystem-constellation__line--two" />
+              <span className="ecosystem-constellation__line ecosystem-constellation__line--three" />
+              <span className="absolute left-1/2 top-1/2 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-blue-300 bg-white p-2 shadow-[0_0_50px_rgba(37,99,235,0.28)] dark:border-blue-500/40 dark:bg-[#071426]">
+                <img src={terraClassicLogoUrl} alt="" className="h-16 w-16" />
+              </span>
+              {constellationNodes.map((node) => {
+                const project = constellationProjects[node.category];
+                const logo = normalizeLogoPath(project?.logo);
+                const darkLogo = normalizeLogoPath(project?.darkLogo);
+                const FallbackIcon = node.fallbackIcon;
 
-              return (
-                <span
-                  key={node.category}
-                  className={`absolute ${node.position} ${node.tone} flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border bg-white p-1 shadow-lg dark:bg-[#071426]`}
-                  title={project?.name}
-                >
-                  {logo ? (
-                    darkLogo ? (
-                      <>
-                        <ResilientImage src={logo} alt="" className="h-full w-full rounded-full object-contain dark:hidden" fallback={<FallbackIcon size={20} />} />
-                        <ResilientImage src={darkLogo} alt="" className="hidden h-full w-full rounded-full object-contain dark:block" fallback={<FallbackIcon size={20} />} />
-                      </>
+                return (
+                  <span
+                    key={node.category}
+                    className={`absolute ${node.position} ${node.tone} flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border bg-white p-1 shadow-lg dark:bg-[#071426]`}
+                    title={project?.name}
+                  >
+                    {logo ? (
+                      darkLogo ? (
+                        <>
+                          <ResilientImage src={logo} alt="" className="h-full w-full rounded-full object-contain dark:hidden" fallback={<FallbackIcon size={20} />} />
+                          <ResilientImage src={darkLogo} alt="" className="hidden h-full w-full rounded-full object-contain dark:block" fallback={<FallbackIcon size={20} />} />
+                        </>
+                      ) : (
+                        <ResilientImage src={logo} alt="" className="h-full w-full rounded-full object-contain" fallback={<FallbackIcon size={20} />} />
+                      )
                     ) : (
-                      <ResilientImage src={logo} alt="" className="h-full w-full rounded-full object-contain" fallback={<FallbackIcon size={20} />} />
-                    )
-                  ) : (
-                    <FallbackIcon size={20} />
-                  )}
-                </span>
-              );
-            })}
+                      <FallbackIcon size={20} />
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+            <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-[10px] font-medium text-slate-500 dark:text-slate-400">
+              <Shuffle size={12} aria-hidden="true" />
+              Random community projects · New selection on each visit
+            </p>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
