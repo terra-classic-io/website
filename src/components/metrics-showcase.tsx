@@ -49,7 +49,7 @@ const HOME_ASSET_LIST_SYMBOLS = new Set(["LUNC", "USTC"]);
 const ecosystemFeatures = [
   { title: "DeFi", body: "Open financial applications", icon: Box, tone: "text-blue-600 dark:text-blue-400" },
   { title: "Infrastructure", body: "Services powering the network", icon: Network, tone: "text-violet-600 dark:text-violet-400" },
-  { title: "Payments", body: "Fast, global, borderless", icon: CircleDollarSign, tone: "text-emerald-600 dark:text-emerald-400" },
+  { title: "Applications", body: "Services built on Terra Classic", icon: Code2, tone: "text-emerald-600 dark:text-emerald-400" },
   { title: "Analytics", body: "Data for smarter decisions", icon: BarChart3, tone: "text-fuchsia-600 dark:text-fuchsia-400" },
   { title: "NFT & Gaming", body: "Digital ownership for all", icon: Gamepad2, tone: "text-indigo-600 dark:text-indigo-400" },
   { title: "And more", body: "Explore every listed project", icon: Blocks, tone: "text-blue-600 dark:text-blue-400" },
@@ -332,7 +332,7 @@ function MetricsShowcase({ tokens, stakingApr, onOpenStablecoins, onOpenTreasury
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[
-          { id: "stablecoin-card", title: "Terra Classic Assets", subtitle: "LUNC and historical fiat-denominated assets.", body: "Discover native assets, payment rails, trading venues, and DeFi applications across Terra Classic.", icon: CircleDollarSign, action: onOpenStablecoins, accent: "from-blue-600/18" },
+          { id: "stablecoin-card", title: "Terra Classic Assets", subtitle: "LUNC and historical fiat-denominated assets.", body: "Discover native assets, trading venues, and DeFi applications across Terra Classic.", icon: CircleDollarSign, action: onOpenStablecoins, accent: "from-blue-600/18" },
           { id: "treasury", title: "Treasury", subtitle: "Sustainable growth. Secured for the future.", body: "Understand community governance, shared funds, and the proposals shaping long-term network development.", icon: Landmark, action: onOpenTreasury, accent: "from-sky-600/16" },
           { id: "developers", title: "Developers", subtitle: "Build. Innovate. Disrupt.", body: "Use guides, endpoints, modules, and open-source tooling to ship the next generation of applications.", icon: Code2, action: onOpenDevelopers, accent: "from-violet-600/16" },
           { id: "governance", title: "Governance", subtitle: "Community-led. Future-focused.", body: "Review the resources that help delegators, validators, and contributors participate in on-chain decisions.", icon: Users, action: onOpenGovernance, accent: "from-indigo-600/16" },

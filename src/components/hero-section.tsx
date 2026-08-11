@@ -152,7 +152,11 @@ function HeroSection({
               <span className="network-globe__star network-globe__star--two" />
               <span className="network-globe__star network-globe__star--three" />
               <div className="absolute left-1/2 top-1/2 flex h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-blue-300/30 bg-[radial-gradient(circle,rgba(96,165,250,0.28),rgba(37,99,235,0.1)_62%,transparent_78%)] shadow-[0_0_180px_rgba(37,99,235,0.56)]">
-                <img src={terraClassicLogoUrl} alt="" className="h-[320px] w-[320px] max-w-none object-contain drop-shadow-[0_30px_54px_rgba(14,60,165,0.55)]" />
+                <img
+                  src={terraClassicLogoUrl}
+                  alt=""
+                  className="relative left-[6px] top-[6px] h-[320px] w-[320px] max-w-none object-contain drop-shadow-[0_30px_54px_rgba(14,60,165,0.55)]"
+                />
               </div>
             </div>
             <span className="network-orbit network-orbit--one" />
