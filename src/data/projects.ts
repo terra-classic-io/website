@@ -455,7 +455,7 @@ export const projects: ProjectLink[] = [
     description: 'Independent analytics dashboard',
     indicator: 'onchain',
     logo: '/public/logos/tools/lunc-community.png',
-    categories: ['tools', 'information']
+    categories: ['tools']
   },
   { 
     name: 'LuncDaily',
