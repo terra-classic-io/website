@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Database, RefreshCw } from "lucide-react";
 import { stablecoinAssets, type StablecoinAsset } from "../../data/stablecoins";
+import {
+  fetchTerraClassicSupply,
+  microAmountToDisplayNumber,
+  TERRA_CLASSIC_TOTAL_SUPPLY_PATH,
+} from "../../lib/terra-classic-supply";
 import ResilientImage from "../resilient-image";
-
-type SupplyCoin = {
-  readonly denom: string;
-  readonly amount: string;
-};
 
 type SupplySnapshot = {
   readonly supplies: ReadonlyMap<string, string>;
@@ -20,78 +20,14 @@ type AssetsSupplyTableProps = {
   readonly assetUsdPrices: Readonly<Record<string, number>>;
 };
 
-const LCD_ENDPOINTS = [
-  "https://terra-classic-lcd.publicnode.com",
-  "https://lcd.terra-classic.hexxagon.io",
-  "https://api-lunc-lcd.binodes.com",
-] as const;
-
-const TOTAL_SUPPLY_PATH = "/cosmos/bank/v1beta1/supply?pagination.limit=1000";
-const MICRO_UNITS_PER_DISPLAY_UNIT = 1_000_000;
 const REFRESH_INTERVAL_MS = 120_000;
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
-function readString(value: unknown): string | undefined {
-  return typeof value === "string" && value.trim().length > 0 ? value.trim() : undefined;
-}
-
-function parseSupply(payload: unknown): readonly SupplyCoin[] {
-  if (!isRecord(payload) || !Array.isArray(payload.supply)) {
-    throw new Error("The LCD returned an invalid total-supply response.");
-  }
-
-  return payload.supply.flatMap((entry) => {
-    if (!isRecord(entry)) {
-      return [];
-    }
-    const denom = readString(entry.denom);
-    const amount = readString(entry.amount);
-    return denom && amount ? [{ denom, amount }] : [];
-  });
-}
-
-async function fetchSupply(signal: AbortSignal): Promise<{
-  readonly coins: readonly SupplyCoin[];
-  readonly endpoint: string;
-}> {
-  let lastError: unknown;
-
-  for (const endpoint of LCD_ENDPOINTS) {
-    if (signal.aborted) {
-      throw new DOMException("The request was aborted.", "AbortError");
-    }
-
-    try {
-      const response = await fetch(`${endpoint}${TOTAL_SUPPLY_PATH}`, {
-        signal,
-        headers: { Accept: "application/json" },
-        cache: "no-store",
-      });
-      if (!response.ok) {
-        throw new Error(`LCD request failed with status ${response.status}.`);
-      }
-      const payload: unknown = await response.json();
-      return { coins: parseSupply(payload), endpoint };
-    } catch (error) {
-      if (signal.aborted) {
-        throw error;
-      }
-      lastError = error;
-    }
-  }
-
-  throw lastError instanceof Error ? lastError : new Error("Every configured LCD endpoint failed.");
-}
 
 function formatDisplayAmount(amount?: string): string {
   if (!amount) {
     return "Unavailable";
   }
-  const value = Number(amount) / MICRO_UNITS_PER_DISPLAY_UNIT;
-  if (!Number.isFinite(value)) {
+  const value = microAmountToDisplayNumber(amount);
+  if (value === undefined) {
     return "Unavailable";
   }
 
@@ -119,8 +55,11 @@ function calculateUsdValue(
   if (!amount) {
     return undefined;
   }
-  const displayAmount = Number(amount) / MICRO_UNITS_PER_DISPLAY_UNIT;
+  const displayAmount = microAmountToDisplayNumber(amount);
   const price = assetUsdPrices[asset.symbol];
+  if (displayAmount === undefined || typeof price !== "number") {
+    return undefined;
+  }
   const value = displayAmount * price;
   return Number.isFinite(value) && value >= 0 ? value : undefined;
 }
@@ -181,7 +120,7 @@ function AssetsSupplyTable({ assetUsdPrices }: AssetsSupplyTableProps): JSX.Elem
       setErrorMessage("");
 
       try {
-        const result = await fetchSupply(controller.signal);
+        const result = await fetchTerraClassicSupply(controller.signal);
         if (controller.signal.aborted) {
           return;
         }
@@ -330,7 +269,7 @@ function AssetsSupplyTable({ assetUsdPrices }: AssetsSupplyTableProps): JSX.Elem
         {snapshot ? <span>Refreshed {formatDateTime(snapshot.fetchedAt)}</span> : null}
         {snapshot ? (
           <a
-            href={`${snapshot.source}${TOTAL_SUPPLY_PATH}`}
+            href={`${snapshot.source}${TERRA_CLASSIC_TOTAL_SUPPLY_PATH}`}
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold text-blue-600 hover:underline dark:text-blue-400"

@@ -20,6 +20,7 @@ import { useTheme } from "./contexts/ThemeContext";
 import type { DocNavigationOptions } from "./types/doc-navigation";
 import type { DocSeoPage, DocSeoSection } from "./types/doc-seo";
 import { LAST_UPDATE } from "./generated/build-info";
+import { fetchTerraClassicSupply, microAmountToDisplayNumber } from "./lib/terra-classic-supply";
 import { scheduleNonCriticalTask } from "./utils/schedule-non-critical-task";
 const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
 const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
@@ -29,7 +30,7 @@ export type TokenInfo = {
   readonly price: string;
   readonly change: string;
   readonly isPositive: boolean;
-  readonly marketCap: string;
+  readonly supplyValue: string;
 };
 
 export type StakingInfo = {
@@ -61,19 +62,13 @@ type VyntrexPriceResponse = {
   readonly gain24h?: number;
   readonly gain7d?: number;
   readonly gain30d?: number;
-  readonly marketCap?: number;
-  readonly marketcap?: number;
-  readonly market_cap?: number;
-  readonly mcap?: number;
 };
 
 const STAKING_APR_ENDPOINT = "https://validator.info/api/terra-classic/blockchain/apr-info";
 const VYNTREX_API_BASE = "https://api.vyntrex.io/api/v1/prices";
-const VYNTREX_MARKET_CAP_API_BASE = "https://api.vyntrex.io/api/v1/marketcap";
 const DEFAULT_VYNTREX_API_KEY = "a7eb94aa-ff81-4a82-89e2-ca3665f70739";
 const CONFIGURED_VYNTREX_API_KEY = import.meta.env.VITE_VYNTREX_API_KEY?.trim();
 const VYNTREX_API_KEY = CONFIGURED_VYNTREX_API_KEY || DEFAULT_VYNTREX_API_KEY;
-const VYNTREX_MARKET_CAP_API_KEY = import.meta.env.VITE_VYNTREX_MARKET_CAP_API_KEY?.trim() || CONFIGURED_VYNTREX_API_KEY;
 const VYNTREX_REFERER = "https://terra-classic.io";
 
 const HOME_TITLE = "Terra Classic (LUNC) | Ecosystem, Docs & Governance";
@@ -164,7 +159,7 @@ const formatUsdPrice = (value: number): string => {
   return `$${value.toLocaleString("en-US", { minimumFractionDigits, maximumFractionDigits })}`;
 };
 
-const formatUsdMarketCap = (value?: number): string => {
+const formatUsdSupplyValue = (value?: number): string => {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
     return "$-.--";
   }
@@ -185,21 +180,6 @@ const formatUsdMarketCap = (value?: number): string => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}${unit.suffix}`;
-};
-
-const parseVyntrexMarketCap = (payload: unknown): number | undefined => {
-  if (typeof payload === "number" && Number.isFinite(payload)) {
-    return payload;
-  }
-  if (!payload || typeof payload !== "object") {
-    return undefined;
-  }
-
-  const response = payload as Record<string, unknown>;
-  const candidate = [response.marketCap, response.marketcap, response.market_cap, response.mcap, response.value]
-    .find((value) => typeof value === "number" || (typeof value === "string" && value.trim().length > 0));
-  const marketCap = typeof candidate === "string" ? Number(candidate) : candidate;
-  return typeof marketCap === "number" && Number.isFinite(marketCap) ? marketCap : undefined;
 };
 
 const formatChangePercentage = (value: number): { readonly label: string; readonly isPositive: boolean } => {
@@ -228,39 +208,19 @@ const fetchVyntrexPrice = async (denom: string): Promise<VyntrexPriceResponse> =
   return (await response.json()) as VyntrexPriceResponse;
 };
 
-const fetchVyntrexMarketCap = async (denom: string): Promise<number | undefined> => {
-  if (!VYNTREX_MARKET_CAP_API_KEY) {
-    return undefined;
-  }
-
-  const response = await fetch(`${VYNTREX_MARKET_CAP_API_BASE}/${denom}`, {
-    headers: {
-      Accept: "application/json",
-      "X-Api-Key": VYNTREX_MARKET_CAP_API_KEY,
-      Referer: VYNTREX_REFERER,
-    },
-  });
-
-  if (!response.ok) {
-    return undefined;
-  }
-
-  return parseVyntrexMarketCap(await response.json());
-};
-
 const getInitialState = (): AppState => ({
   tokens: {
     LUNC: {
       price: "$-.--",
       change: "+.---%",
       isPositive: true,
-      marketCap: "$-.--",
+      supplyValue: "$-.--",
     },
     USTC: {
       price: "$-.--",
       change: "+.---%",
       isPositive: true,
-      marketCap: "$-.--",
+      supplyValue: "$-.--",
     },
   },
   staking: {
@@ -400,22 +360,19 @@ const App: React.FC<{
     let intervalId: number | undefined;
 
     const fetchTokenPrices = async () => {
-      const results = await Promise.allSettled(
+      const supplyPromise = fetchTerraClassicSupply()
+        .then((result) => new Map(result.coins.map((coin) => [coin.denom, coin.amount])))
+        .catch((error: unknown) => {
+          console.warn("Unable to load Terra Classic total supply", error);
+          return undefined;
+        });
+      const priceResultsPromise = Promise.allSettled(
         stablecoinAssets.map(async (asset) => {
           const data = await fetchVyntrexPrice(asset.denom);
-          const change = formatChangePercentage(data.gain24h ?? 0);
-          const marketCap = parseVyntrexMarketCap(data) ?? await fetchVyntrexMarketCap(asset.denom);
-          return [
-            asset.symbol,
-            {
-              price: formatUsdPrice(data.price ?? 0),
-              change: change.label,
-              isPositive: change.isPositive,
-              marketCap: formatUsdMarketCap(marketCap),
-            } satisfies TokenInfo,
-          ] as const;
+          return [asset, data] as const;
         })
       );
+      const [supplies, results] = await Promise.all([supplyPromise, priceResultsPromise]);
 
       if (isCancelled) {
         return;
@@ -423,8 +380,16 @@ const App: React.FC<{
 
       const nextPrices = results.reduce<Record<string, TokenInfo>>((prices, result) => {
         if (result.status === "fulfilled") {
-          const [symbol, tokenInfo] = result.value;
-          prices[symbol] = tokenInfo;
+          const [asset, data] = result.value;
+          const change = formatChangePercentage(data.gain24h ?? 0);
+          const totalSupply = microAmountToDisplayNumber(supplies?.get(asset.denom));
+          const supplyValue = totalSupply === undefined ? undefined : totalSupply * data.price;
+          prices[asset.symbol] = {
+            price: formatUsdPrice(data.price ?? 0),
+            change: change.label,
+            isPositive: change.isPositive,
+            supplyValue: formatUsdSupplyValue(supplyValue),
+          } satisfies TokenInfo;
         }
         return prices;
       }, {});
@@ -521,7 +486,7 @@ const App: React.FC<{
         ? appState.tokens.LUNC
         : asset.symbol === "USTC"
         ? appState.tokens.USTC
-        : { price: "$-.--", change: "+.---%", isPositive: true, marketCap: "$-.--" };
+        : { price: "$-.--", change: "+.---%", isPositive: true, supplyValue: "$-.--" };
       const metric = stablecoinPrices[asset.symbol] ?? fallback;
       return { symbol: asset.symbol, ...metric };
     });

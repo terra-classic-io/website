@@ -27,7 +27,7 @@ export type TokenMetric = {
   readonly price: string;
   readonly change: string;
   readonly isPositive: boolean;
-  readonly marketCap: string;
+  readonly supplyValue: string;
 };
 
 type MetricsShowcaseProps = {
@@ -193,8 +193,13 @@ function MetricsShowcase({ tokens, stakingApr, onOpenStablecoins, onOpenTreasury
                     <span className={`text-xs font-semibold ${metric.isPositive ? "text-emerald-500" : "text-rose-500"}`}>{metric.change}</span>
                   </div>
                   <div className="mt-4">
-                    <p className="text-[10px] font-medium text-slate-600 dark:text-slate-400">Market cap</p>
-                    <p className="mt-0.5 text-xs font-medium text-slate-700 dark:text-slate-300">{metric.marketCap}</p>
+                    <p
+                      className="text-[10px] font-medium text-slate-600 dark:text-slate-400"
+                      title="Current Vyntrex price multiplied by total minted on-chain supply. This is not circulating market capitalization."
+                    >
+                      Total supply value
+                    </p>
+                    <p className="mt-0.5 text-xs font-medium text-slate-700 dark:text-slate-300">{metric.supplyValue}</p>
                   </div>
                   <div
                     className={`market-sparkline market-sparkline--${(index % 3) + 1}`}
