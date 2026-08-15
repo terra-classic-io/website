@@ -331,17 +331,17 @@ function GovernanceProposalCard({ proposal, showSummary = true }: { readonly pro
   const hasTally = tally.some((item) => item.value > 0);
 
   return (
-    <article className="rounded-2xl border border-slate-200/80 bg-white/75 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.025]">
-      <div className="flex items-start justify-between gap-4">
+    <article className="min-w-0 rounded-2xl border border-slate-200/80 bg-white/75 p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.025] sm:p-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div className="min-w-0">
           <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Proposal #{proposal.id}</span>
-          <h3 className="mt-1 text-base font-semibold leading-6 text-slate-950 dark:text-white">{proposal.title}</h3>
+          <h3 className="mt-1 break-words text-base font-semibold leading-6 text-slate-950 dark:text-white">{proposal.title}</h3>
         </div>
         <a
           href={`https://validator.info/terra-classic/governance/${proposal.id}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
+          className="inline-flex shrink-0 self-start items-center gap-1 text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
         >
           Details <ArrowUpRight size={14} aria-hidden="true" />
         </a>
@@ -524,7 +524,7 @@ function GovernanceLiveDashboard(): JSX.Element {
           <section id="active-governance-proposals" className="space-y-4" aria-labelledby="active-governance-proposals-title">
             <div><h2 id="active-governance-proposals-title" className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">Active proposals</h2><p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Proposals currently in a deposit or voting period.</p></div>
             {snapshot.activeProposals.length > 0 ? (
-              <div className="grid gap-4 lg:grid-cols-2">{snapshot.activeProposals.map((proposal) => <GovernanceProposalCard key={proposal.id} proposal={proposal} />)}</div>
+              <div className="space-y-4">{snapshot.activeProposals.map((proposal) => <GovernanceProposalCard key={proposal.id} proposal={proposal} />)}</div>
             ) : (
               <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-5 text-sm text-slate-600 dark:border-white/10 dark:bg-white/[0.025] dark:text-slate-300"><CheckCircle2 size={19} className="mt-0.5 shrink-0 text-emerald-500" aria-hidden="true" /><span>No proposal is currently in a deposit or voting period.</span></div>
             )}
