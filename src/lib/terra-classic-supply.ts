@@ -14,6 +14,18 @@ const LCD_ENDPOINTS = [
   "https://api-lunc-lcd.binodes.com",
 ] as const;
 
+const FCD_ENDPOINTS = [
+  "https://terra-classic-fcd.publicnode.com",
+  "https://fcd.terra-classic.hexxagon.io",
+] as const;
+
+export type TerraClassicCirculatingSupplyAsset = "luna" | "ust";
+
+export type TerraClassicCirculatingSupplyResponse = {
+  readonly amount: number;
+  readonly endpoint: string;
+};
+
 export const TERRA_CLASSIC_TOTAL_SUPPLY_PATH = "/cosmos/bank/v1beta1/supply?pagination.limit=1000";
 const MICRO_UNIT_DECIMALS = 6;
 
@@ -80,4 +92,42 @@ export async function fetchTerraClassicSupply(signal?: AbortSignal): Promise<Ter
   }
 
   throw lastError instanceof Error ? lastError : new Error("Every configured LCD endpoint failed.");
+}
+
+export async function fetchTerraClassicCirculatingSupply(
+  asset: TerraClassicCirculatingSupplyAsset,
+  signal?: AbortSignal
+): Promise<TerraClassicCirculatingSupplyResponse> {
+  let lastError: unknown;
+
+  for (const endpoint of FCD_ENDPOINTS) {
+    if (signal?.aborted) {
+      throw new DOMException("The request was aborted.", "AbortError");
+    }
+
+    try {
+      const response = await fetch(`${endpoint}/v1/circulatingsupply/${asset}`, {
+        signal,
+        headers: { Accept: "application/json" },
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        throw new Error(`FCD request failed with status ${response.status}.`);
+      }
+
+      const amount: unknown = await response.json();
+      if (typeof amount !== "number" || !Number.isFinite(amount) || amount < 0) {
+        throw new Error("FCD returned an invalid circulating-supply value.");
+      }
+
+      return { amount, endpoint };
+    } catch (error) {
+      if (signal?.aborted) {
+        throw error;
+      }
+      lastError = error;
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("Every configured FCD endpoint failed.");
 }

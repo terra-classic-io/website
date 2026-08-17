@@ -27,7 +27,7 @@ export type TokenMetric = {
   readonly price: string;
   readonly change: string;
   readonly isPositive: boolean;
-  readonly supplyValue: string;
+  readonly marketCap: string;
 };
 
 type MetricsShowcaseProps = {
@@ -195,11 +195,11 @@ function MetricsShowcase({ tokens, stakingApr, onOpenStablecoins, onOpenTreasury
                   <div className="mt-4">
                     <p
                       className="text-[10px] font-medium text-slate-600 dark:text-slate-400"
-                      title="Current Vyntrex price multiplied by total minted on-chain supply. This is not circulating market capitalization."
+                      title="Indicative market capitalization calculated from the current Vyntrex price and FCD circulating supply."
                     >
-                      Total supply value
+                      Market cap
                     </p>
-                    <p className="mt-0.5 text-xs font-medium text-slate-700 dark:text-slate-300">{metric.supplyValue}</p>
+                    <p className="mt-0.5 text-xs font-medium text-slate-700 dark:text-slate-300">{metric.marketCap}</p>
                   </div>
                   <div
                     className={`market-sparkline market-sparkline--${(index % 3) + 1}`}

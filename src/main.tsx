@@ -11,7 +11,7 @@ type TokenInfo = {
   price: string;
   change: string;
   isPositive: boolean;
-  supplyValue: string;
+  marketCap: string;
 };
 
 type AppState = {
@@ -40,13 +40,13 @@ const getInitialState = (): AppState => {
           price: '$0.00023',
           change: '+5.6%',
           isPositive: true,
-          supplyValue: '$-.--',
+          marketCap: '$-.--',
         },
         USTC: {
           price: '$0.016',
           change: '+2.3%',
           isPositive: true,
-          supplyValue: '$-.--',
+          marketCap: '$-.--',
         },
       },
       staking: {
@@ -63,13 +63,13 @@ const getInitialState = (): AppState => {
           price: '$0.00023',
           change: '+0.0%',
           isPositive: true,
-          supplyValue: '$-.--',
+          marketCap: '$-.--',
         },
         USTC: {
           price: '$0.016',
           change: '+0.0%',
           isPositive: true,
-          supplyValue: '$-.--',
+          marketCap: '$-.--',
         },
       },
       staking: {

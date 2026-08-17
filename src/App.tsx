@@ -20,7 +20,10 @@ import { useTheme } from "./contexts/ThemeContext";
 import type { DocNavigationOptions } from "./types/doc-navigation";
 import type { DocSeoPage, DocSeoSection } from "./types/doc-seo";
 import { LAST_UPDATE } from "./generated/build-info";
-import { fetchTerraClassicSupply, microAmountToDisplayNumber } from "./lib/terra-classic-supply";
+import {
+  fetchTerraClassicCirculatingSupply,
+  type TerraClassicCirculatingSupplyAsset,
+} from "./lib/terra-classic-supply";
 import { scheduleNonCriticalTask } from "./utils/schedule-non-critical-task";
 const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
 const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
@@ -30,7 +33,7 @@ export type TokenInfo = {
   readonly price: string;
   readonly change: string;
   readonly isPositive: boolean;
-  readonly supplyValue: string;
+  readonly marketCap: string;
 };
 
 export type StakingInfo = {
@@ -70,6 +73,10 @@ const DEFAULT_VYNTREX_API_KEY = "a7eb94aa-ff81-4a82-89e2-ca3665f70739";
 const CONFIGURED_VYNTREX_API_KEY = import.meta.env.VITE_VYNTREX_API_KEY?.trim();
 const VYNTREX_API_KEY = CONFIGURED_VYNTREX_API_KEY || DEFAULT_VYNTREX_API_KEY;
 const VYNTREX_REFERER = "https://terra-classic.io";
+const FCD_CIRCULATING_SUPPLY_ASSET_BY_SYMBOL = {
+  LUNC: "luna",
+  USTC: "ust",
+} as const satisfies Readonly<Record<string, TerraClassicCirculatingSupplyAsset>>;
 
 const HOME_TITLE = "Terra Classic (LUNC) | Ecosystem, Docs & Governance";
 const HOME_DESCRIPTION = "Explore Terra Classic (LUNC): native assets, live network data, validators, governance, developer guides, wallets, DeFi projects, and documentation.";
@@ -159,7 +166,7 @@ const formatUsdPrice = (value: number): string => {
   return `$${value.toLocaleString("en-US", { minimumFractionDigits, maximumFractionDigits })}`;
 };
 
-const formatUsdSupplyValue = (value?: number): string => {
+const formatUsdMarketCap = (value?: number): string => {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
     return "$-.--";
   }
@@ -214,13 +221,13 @@ const getInitialState = (): AppState => ({
       price: "$-.--",
       change: "+.---%",
       isPositive: true,
-      supplyValue: "$-.--",
+      marketCap: "$-.--",
     },
     USTC: {
       price: "$-.--",
       change: "+.---%",
       isPositive: true,
-      supplyValue: "$-.--",
+      marketCap: "$-.--",
     },
   },
   staking: {
@@ -360,35 +367,41 @@ const App: React.FC<{
     let intervalId: number | undefined;
 
     const fetchTokenPrices = async () => {
-      const supplyPromise = fetchTerraClassicSupply()
-        .then((result) => new Map(result.coins.map((coin) => [coin.denom, coin.amount])))
-        .catch((error: unknown) => {
-          console.warn("Unable to load Terra Classic total supply", error);
-          return undefined;
-        });
+      const circulatingSupplyPromise = Promise.allSettled(
+        Object.entries(FCD_CIRCULATING_SUPPLY_ASSET_BY_SYMBOL).map(async ([symbol, asset]) => {
+          const result = await fetchTerraClassicCirculatingSupply(asset);
+          return [symbol, result.amount] as const;
+        })
+      );
       const priceResultsPromise = Promise.allSettled(
         stablecoinAssets.map(async (asset) => {
           const data = await fetchVyntrexPrice(asset.denom);
           return [asset, data] as const;
         })
       );
-      const [supplies, results] = await Promise.all([supplyPromise, priceResultsPromise]);
+      const [circulatingSupplyResults, results] = await Promise.all([
+        circulatingSupplyPromise,
+        priceResultsPromise,
+      ]);
 
       if (isCancelled) {
         return;
       }
 
+      const circulatingSupplies = new Map(
+        circulatingSupplyResults.flatMap((result) => result.status === "fulfilled" ? [result.value] : [])
+      );
       const nextPrices = results.reduce<Record<string, TokenInfo>>((prices, result) => {
         if (result.status === "fulfilled") {
           const [asset, data] = result.value;
           const change = formatChangePercentage(data.gain24h ?? 0);
-          const totalSupply = microAmountToDisplayNumber(supplies?.get(asset.denom));
-          const supplyValue = totalSupply === undefined ? undefined : totalSupply * data.price;
+          const circulatingSupply = circulatingSupplies.get(asset.symbol);
+          const marketCap = circulatingSupply === undefined ? undefined : circulatingSupply * data.price;
           prices[asset.symbol] = {
             price: formatUsdPrice(data.price ?? 0),
             change: change.label,
             isPositive: change.isPositive,
-            supplyValue: formatUsdSupplyValue(supplyValue),
+            marketCap: formatUsdMarketCap(marketCap),
           } satisfies TokenInfo;
         }
         return prices;
@@ -406,6 +419,10 @@ const App: React.FC<{
       const failedRequests = results.filter((result) => result.status === "rejected").length;
       if (failedRequests > 0) {
         console.warn(`Unable to refresh ${failedRequests} Terra Classic asset price(s)`);
+      }
+      const failedSupplyRequests = circulatingSupplyResults.filter((result) => result.status === "rejected").length;
+      if (failedSupplyRequests > 0) {
+        console.warn(`Unable to refresh ${failedSupplyRequests} Terra Classic circulating supply value(s)`);
       }
     };
 
@@ -486,7 +503,7 @@ const App: React.FC<{
         ? appState.tokens.LUNC
         : asset.symbol === "USTC"
         ? appState.tokens.USTC
-        : { price: "$-.--", change: "+.---%", isPositive: true, supplyValue: "$-.--" };
+        : { price: "$-.--", change: "+.---%", isPositive: true, marketCap: "$-.--" };
       const metric = stablecoinPrices[asset.symbol] ?? fallback;
       return { symbol: asset.symbol, ...metric };
     });
