@@ -46,7 +46,7 @@ export const projects: ProjectLink[] = [
   },
   { 
     name: 'BigbangX',
-    url: 'https://bigbangx.io',
+    url: 'https://bigbangx.org',
     description: 'NFT marketplace',
     indicator: 'onchain',
     logo: '/public/logos/applications/bigbangx.png',
