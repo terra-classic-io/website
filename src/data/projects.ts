@@ -170,14 +170,6 @@ export const projects: ProjectLink[] = [
     categories: ['applications']
   },
   { 
-    name: 'Cosmostation',
-    url: 'https://www.cosmostation.io',
-    description: 'Extension Wallet',
-    indicator: 'support',
-    logo: '/public/logos/wallets/cosmostation.svg',
-    categories: ['wallets']
-  },
-  { 
     name: 'Crypto.com',
     url: 'https://crypto.com/exchange/trade/LUNC_USD',
     description: 'Exchange',
