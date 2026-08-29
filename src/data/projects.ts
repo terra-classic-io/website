@@ -562,6 +562,14 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/infrastructure/binodes.png',
     categories: ['for-developers', 'infrastructure']
   },
+  {
+  name: 'Oracle Draw',
+  url: 'https://draw.terraoracle.io/home',
+  description: 'On-chain game',
+  indicator: 'onchain',
+  logo: '/public/logos/entertainment/oracle-draw.png',
+  categories: ['entertainment']
+  },
   { 
     name: 'Osmosis',
     url: 'https://app.osmosis.zone/?from=LUNC&to=OSMO',
@@ -693,6 +701,14 @@ export const projects: ProjectLink[] = [
     indicator: 'hybrid',
     logo: '/public/logos/entertainment/terracasino.png',
     categories: ['entertainment']
+  },
+  {
+  name: 'Terra Oracle Classic',
+  url: 'https://terraoracle.io/home',
+  description: 'Community platform',
+  indicator: 'onchain',
+  logo: '/public/logos/applications/terra-oracle.png',
+  categories: ['applications', 'information']
   },
   { 
     name: 'Terraclassic.network',
