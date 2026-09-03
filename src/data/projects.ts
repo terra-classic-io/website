@@ -694,6 +694,14 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/entertainment/terracasino.png',
     categories: ['entertainment']
   },
+  {
+    name: 'Terra Classic Bridge',
+    url: 'https://terraclassic-bridge.xyz/',
+    description: 'Hyperlane bridge for LUNC and USTC',
+    indicator: 'hybrid',
+    categories: ['bridges'],
+    wip: true
+  },
   { 
     name: 'Terraclassic.network',
     url: 'https://terraclassic.network',
