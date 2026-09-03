@@ -13,7 +13,7 @@ This guide is based on the Terra Classic Hyperlane validator deployment work and
 - [terra-classic-hyperlane/hyperlane-validator](https://github.com/terra-classic-hyperlane/hyperlane-validator)
 - [S3 architecture notes](https://github.com/terra-classic-hyperlane/hyperlane-validator/blob/main/ARCHITECTURE-S3.md)
 
-Use the upstream repository as the reference source for current deployment-specific values, especially Hyperlane contract addresses.
+For current deployment-specific values, see [Hyperlane contracts and Warp routes](/docs/develop/hyperlane/contracts). Always verify production values against the linked Hyperlane Registry sources before using them.
 
 ## What is Hyperlane?
 

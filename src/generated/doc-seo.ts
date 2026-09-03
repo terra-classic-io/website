@@ -100,9 +100,21 @@ export const docSeoSections = [
         "summary": "Practical guidance for burn tax, Tax2Gas, tax-free contract funding, and safe Terra Classic transaction flows."
       },
       {
-        "slug": "hyperlane-validator",
-        "title": "Run Hyperlane validator",
-        "summary": "Operate a Terra Classic Hyperlane validator with Docker, AWS S3 checkpoint storage, and VPS monitoring."
+        "slug": "hyperlane",
+        "title": "Hyperlane",
+        "summary": "Explore Terra Classic's Hyperlane deployment, Warp routes, contract addresses, and validator operations.",
+        "children": [
+          {
+            "slug": "contracts",
+            "title": "Contracts & Warp routes",
+            "summary": "Verify Terra Classic Hyperlane core contracts and the LUNC and USTC Warp route addresses across supported networks."
+          },
+          {
+            "slug": "validator",
+            "title": "Run Hyperlane validator",
+            "summary": "Operate a Terra Classic Hyperlane validator with Docker, AWS S3 checkpoint storage, and VPS monitoring."
+          }
+        ]
       },
       {
         "slug": "builder-tooling",
