@@ -69,9 +69,7 @@ type VyntrexPriceResponse = {
 
 const STAKING_APR_ENDPOINT = "https://validator.info/api/terra-classic/blockchain/apr-info";
 const VYNTREX_API_BASE = "https://api.vyntrex.io/api/v1/prices";
-const DEFAULT_VYNTREX_API_KEY = "a7eb94aa-ff81-4a82-89e2-ca3665f70739";
-const CONFIGURED_VYNTREX_API_KEY = import.meta.env.VITE_VYNTREX_API_KEY?.trim();
-const VYNTREX_API_KEY = CONFIGURED_VYNTREX_API_KEY || DEFAULT_VYNTREX_API_KEY;
+const VYNTREX_API_KEY = import.meta.env.VITE_VYNTREX_API_KEY?.trim();
 const VYNTREX_REFERER = "https://terra-classic.io";
 const FCD_CIRCULATING_SUPPLY_ASSET_BY_SYMBOL = {
   LUNC: "luna",
@@ -200,6 +198,9 @@ const formatChangePercentage = (value: number): { readonly label: string; readon
 };
 
 const fetchVyntrexPrice = async (denom: string): Promise<VyntrexPriceResponse> => {
+  if (!VYNTREX_API_KEY) {
+    throw new Error(`VITE_VYNTREX_API_KEY is not configured; skipping ${denom} price fetch`);
+  }
   const response = await fetch(`${VYNTREX_API_BASE}/${denom}`, {
     headers: {
       Accept: "application/json",
