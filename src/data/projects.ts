@@ -212,6 +212,15 @@ export const projects: ProjectLink[] = [
     categories: ['for-developers', 'validators', 'information']
   },
   { 
+    name: 'EIDEX',
+    url: 'https://eidex.io/screener/btc-btc-to-lunc-lunc',
+    description: 'Swap route aggregator',
+    indicator: 'support',
+    logo: '/public/logos/cex/eidex.svg',
+    darkLogo: '/public/logos/cex/eidex-dark.svg',
+    categories: ['cex']
+  },
+  { 
     name: 'Endpoint (LCD) - BiNodes',
     url: 'https://api-lunc-lcd.binodes.com',
     description: 'LCD Endpoint',
