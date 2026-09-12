@@ -25,14 +25,20 @@ type AppState = {
   isMobile: boolean;
 };
 
-// Get the initial state from the server-rendered window object
+// Get the initial state injected by the server into the
+// <script id="__INITIAL_STATE__" type="application/json"> block
 const getInitialState = (): AppState => {
   try {
-    // Check for the state in the window object (set by the server)
+    const stateElement = document.getElementById("__INITIAL_STATE__");
+    if (stateElement instanceof HTMLScriptElement && stateElement.textContent) {
+      return JSON.parse(stateElement.textContent) as AppState;
+    }
+
+    // Legacy fallback for deployments that still set a window global
     if (window.__INITIAL_STATE__) {
       return window.__INITIAL_STATE__ as AppState;
     }
-    
+
     // Fallback to default state if not found
     return {
       tokens: {
