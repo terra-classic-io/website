@@ -23,6 +23,12 @@ Balances are stored as whole numbers in the base denomination. Terra Classic int
 
 These assets are native denominations, not CW20 token contracts. A CosmWasm contract receives them through the transaction's native funds, while wallets and explorers query them through the chain's bank module.
 
+## Cross-chain representations
+
+Hyperlane Warp routes connect native LUNC and USTC with synthetic representations on BNB Smart Chain, Ethereum, and Solana. Those external token contracts and mints are not additional Terra Classic native denominations.
+
+Before bridging, verify the destination network and address in the [Hyperlane contracts and Warp routes reference](/docs/develop/hyperlane/contracts).
+
 ## Oracle and legacy market mechanics
 
 The original Terra protocol combined two mechanisms:

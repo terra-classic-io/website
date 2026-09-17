@@ -43,6 +43,8 @@ const knownDocsSubdomainPaths = new Set<string>([
 ]);
 const mainDocRedirects = new Map<string, string>([
   ["/docs", "/docs/start/start"],
+  ["/docs/develop/hyperlane-contracts", "/docs/develop/hyperlane/contracts"],
+  ["/docs/develop/hyperlane-validator", "/docs/develop/hyperlane/validator"],
   ...docSeoSections.map((section) => [
     `/docs/${section.slug}`,
     `/docs/${section.slug}/${section.pages[0]?.slug ?? ""}`,
@@ -50,6 +52,8 @@ const mainDocRedirects = new Map<string, string>([
 ]);
 const subdomainDocRedirects = new Map<string, string>([
   ["/", "/start/start"],
+  ["/develop/hyperlane-contracts", "/develop/hyperlane/contracts"],
+  ["/develop/hyperlane-validator", "/develop/hyperlane/validator"],
   ...docSeoSections.map((section) => [
     `/${section.slug}`,
     `/${section.slug}/${section.pages[0]?.slug ?? ""}`,

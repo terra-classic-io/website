@@ -478,6 +478,19 @@ const App: React.FC<{
 
   const isDocsMode = isDocsSubdomain || isDocsPath;
 
+  const legacyDocRedirectPath = useMemo<string | null>(() => {
+    const legacyPath = `/${docSegments.join("/")}`;
+    const redirectByLegacyPath: Readonly<Record<string, string>> = {
+      "/develop/hyperlane-contracts": "/develop/hyperlane/contracts",
+      "/develop/hyperlane-validator": "/develop/hyperlane/validator",
+    };
+    const redirectPath = redirectByLegacyPath[legacyPath];
+    if (!redirectPath) {
+      return null;
+    }
+    return isDocsSubdomain ? redirectPath : `/docs${redirectPath}`;
+  }, [docSegments, isDocsSubdomain]);
+
   const handleDocsNavigate = useCallback(
     (sectionSlug: string, pagePath?: readonly string[], options?: DocNavigationOptions) => {
       const effectivePagePath: readonly string[] = pagePath ?? [];
@@ -540,6 +553,19 @@ const App: React.FC<{
   const handleOpenMap = useCallback(() => {
     navigate("/ecosystem");
   }, [navigate]);
+
+  if (legacyDocRedirectPath) {
+    return (
+      <Navigate
+        to={{
+          pathname: legacyDocRedirectPath,
+          search: location.search,
+          hash: location.hash,
+        }}
+        replace
+      />
+    );
+  }
 
   if (isDocsMode) {
     const docSeoTarget = resolveDocSeoTarget(docSegments);

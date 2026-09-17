@@ -6,6 +6,8 @@ import configureGeneralSettingsGuide from "../docs/full-node/run-a-full-terra-no
 import classicTransactionBehaviorGuide from "../docs/develop/classic-transaction-behavior.md?raw";
 import developersOverviewGuide from "../docs/develop/overview.md?raw";
 import endpointsGuide from "../docs/develop/endpoints.md?raw";
+import hyperlaneGuide from "../docs/develop/hyperlane.md?raw";
+import hyperlaneContractsGuide from "../docs/develop/hyperlane-contracts.md?raw";
 import hyperlaneValidatorGuide from "../docs/develop/hyperlane-validator.md?raw";
 import joinNetworkGuide from "../docs/full-node/run-a-full-terra-node/join-a-network.md?raw";
 import setUpProductionGuide from "../docs/full-node/run-a-full-terra-node/set-up-production.md?raw";
@@ -378,10 +380,25 @@ const developOverview: DocPage = {
 };
 
 const developHyperlaneValidator: DocPage = {
-  slug: "hyperlane-validator",
+  slug: "validator",
   title: "Run Hyperlane validator",
   summary: "Operate a Terra Classic Hyperlane validator with Docker, AWS S3 checkpoint storage, and VPS monitoring.",
   markdown: hyperlaneValidatorGuide,
+};
+
+const developHyperlaneContracts: DocPage = {
+  slug: "contracts",
+  title: "Contracts & Warp routes",
+  summary: "Verify Terra Classic Hyperlane core contracts and the LUNC and USTC Warp route addresses across supported networks.",
+  markdown: hyperlaneContractsGuide,
+};
+
+const developHyperlane: DocPage = {
+  slug: "hyperlane",
+  title: "Hyperlane",
+  summary: "Explore Terra Classic's Hyperlane deployment, Warp routes, contract addresses, and validator operations.",
+  markdown: hyperlaneGuide,
+  children: [developHyperlaneContracts, developHyperlaneValidator],
 };
 
 const developBuilderTooling: DocPage = {
@@ -672,7 +689,7 @@ export const docSections: readonly DocSection[] = [
     slug: "develop",
     title: "Develop",
     description: "Build Terra Classic dApps, run localnets, and reference Terra Core modules.",
-    pages: [developOverview, developLocalnet, developTxBestPractices, developHyperlaneValidator, developBuilderTooling, developSmartContracts, developModuleSpecifications],
+    pages: [developOverview, developLocalnet, developTxBestPractices, developHyperlane, developBuilderTooling, developSmartContracts, developModuleSpecifications],
   },
   {
     slug: "learn",
