@@ -562,14 +562,6 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/infrastructure/binodes.png',
     categories: ['for-developers', 'infrastructure']
   },
-  {
-  name: 'Oracle Draw',
-  url: 'https://draw.terraoracle.io/home',
-  description: 'On-chain game',
-  indicator: 'onchain',
-  logo: '/public/logos/entertainment/oracle-draw.png',
-  categories: ['entertainment']
-  },
   { 
     name: 'Osmosis',
     url: 'https://app.osmosis.zone/?from=LUNC&to=OSMO',
