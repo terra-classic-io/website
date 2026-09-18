@@ -216,9 +216,9 @@ export const projects: ProjectLink[] = [
     url: 'https://eidex.io/screener/btc-btc-to-lunc-lunc',
     description: 'Swap route aggregator',
     indicator: 'support',
-    logo: '/public/logos/cex/eidex.svg',
-    darkLogo: '/public/logos/cex/eidex-dark.svg',
-    categories: ['cex']
+    logo: '/public/logos/applications/eidex.svg',
+    darkLogo: '/public/logos/applications/eidex-dark.svg',
+    categories: ['applications']
   },
   { 
     name: 'Endpoint (LCD) - BiNodes',
