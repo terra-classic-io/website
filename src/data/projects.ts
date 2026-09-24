@@ -712,6 +712,14 @@ export const projects: ProjectLink[] = [
     wip: true
   },
   { 
+    name: 'Terra Classic Tech',
+    url: 'https://www.terra-classic.tech',
+    description: 'Analytics',
+    indicator: 'onchain',
+    logo: '/public/logos/tools/terra-classic-tech.png',
+    categories: ['tools']
+  },
+  { 
     name: 'Terraclassic.network',
     url: 'https://terraclassic.network',
     description: 'News website',
