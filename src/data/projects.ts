@@ -366,6 +366,14 @@ export const projects: ProjectLink[] = [
     darkLogo: '/public/logos/for-developers/github-dark.svg',
     categories: ['for-developers']
   },
+  {
+    name: "Guarda Wallet",
+    url: "https://guarda.com",
+    description: "Non-custodial multi-crypto wallet",
+    indicator: "support",
+    logo: "/public/logos/wallets/guarda.png",
+    categories: ["wallets"],
+  },
   { 
     name: 'Hexxagon',
     url: 'https://hexxagon.io',
