@@ -368,7 +368,7 @@ export const projects: ProjectLink[] = [
   },
   {
     name: "Guarda Wallet",
-    url: "https://guarda.com/",
+    url: "https://guarda.com",
     description: "Non-custodial multi-crypto wallet",
     indicator: "support",
     logo: "/public/logos/wallets/guarda.png",
