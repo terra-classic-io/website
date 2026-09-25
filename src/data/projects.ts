@@ -622,6 +622,14 @@ export const projects: ProjectLink[] = [
     categories: ['dex']
   },
   {
+    name: 'Repeg Club',
+    url: 'https://repegclub.com',
+    description: 'Games, raffles & tools',
+    indicator: 'onchain',
+    logo: '/public/logos/entertainment/repegclub.png',
+    categories: ['entertainment']
+  },
+  {
     name: 'Reputation',
     url: 'https://reputation.money',
     description: 'Reputation token launchpad',
