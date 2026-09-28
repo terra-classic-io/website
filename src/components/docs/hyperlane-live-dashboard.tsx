@@ -21,12 +21,14 @@ import type {
 } from "../../types/hyperlane";
 
 type LoadStatus = "loading" | "refreshing" | "ready" | "error";
-type RouteOperationalState = "operational" | "degraded" | "unavailable" | "unknown";
+type RouteCheckpointState = "all-current" | "quorum-observed" | "below-quorum" | "unknown";
 
 type RouteVisualState = {
   readonly route: HyperlaneRouteSnapshot;
-  readonly state: RouteOperationalState;
+  readonly state: RouteCheckpointState;
   readonly currentValidatorCount: number;
+  readonly behindValidatorCount: number;
+  readonly unverifiedValidatorCount: number;
 };
 
 const REFRESH_INTERVAL_MS = 120_000;
@@ -60,7 +62,7 @@ function getRouteVisualState(
   validatorAnnounceStatus: HyperlaneSecuritySnapshot["validatorAnnounceStatus"],
 ): RouteVisualState {
   if (route.status !== "ready" || route.threshold === undefined || validatorAnnounceStatus !== "ready") {
-    return { route, state: "unknown", currentValidatorCount: 0 };
+    return { route, state: "unknown", currentValidatorCount: 0, behindValidatorCount: 0, unverifiedValidatorCount: route.validators.length };
   }
 
   const validatorStates = route.validators.map((address) => (
@@ -69,42 +71,48 @@ function getRouteVisualState(
   const currentValidatorCount = validatorStates.filter((isCurrent) => isCurrent === true).length;
   const unknownValidatorCount = validatorStates.filter((isCurrent) => isCurrent === undefined).length;
 
+  const counts = {
+    currentValidatorCount,
+    behindValidatorCount: validatorStates.filter((isCurrent) => isCurrent === false).length,
+    unverifiedValidatorCount: unknownValidatorCount,
+  };
+
   if (currentValidatorCount === route.validators.length && route.validators.length > 0) {
-    return { route, state: "operational", currentValidatorCount };
+    return { route, state: "all-current", ...counts };
   }
   if (currentValidatorCount >= route.threshold) {
-    return { route, state: "degraded", currentValidatorCount };
+    return { route, state: "quorum-observed", ...counts };
   }
   if (currentValidatorCount + unknownValidatorCount < route.threshold || unknownValidatorCount === 0) {
-    return { route, state: "unavailable", currentValidatorCount };
+    return { route, state: "below-quorum", ...counts };
   }
-  return { route, state: "unknown", currentValidatorCount };
+  return { route, state: "unknown", ...counts };
 }
 
 const ROUTE_STATE_PRESENTATION = {
-  operational: {
-    label: "Operational",
+  "all-current": {
+    label: "All checkpoints current",
     icon: CheckCircle2,
     iconClass: "text-emerald-500",
     badgeClass: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
     cardClass: "border-emerald-300/70 bg-emerald-50/40 dark:border-emerald-500/25 dark:bg-emerald-500/[0.035]",
   },
-  degraded: {
-    label: "Degraded",
+  "quorum-observed": {
+    label: "Quorum observed",
     icon: AlertTriangle,
     iconClass: "text-amber-500",
     badgeClass: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
     cardClass: "border-amber-300/70 bg-amber-50/40 dark:border-amber-500/25 dark:bg-amber-500/[0.035]",
   },
-  unavailable: {
-    label: "Unavailable",
+  "below-quorum": {
+    label: "Below checkpoint quorum",
     icon: XCircle,
     iconClass: "text-rose-500",
     badgeClass: "bg-rose-500/10 text-rose-700 dark:text-rose-300",
     cardClass: "border-rose-300/70 bg-rose-50/40 dark:border-rose-500/25 dark:bg-rose-500/[0.035]",
   },
   unknown: {
-    label: "Unknown",
+    label: "Checkpoint status unknown",
     icon: HelpCircle,
     iconClass: "text-slate-400",
     badgeClass: "bg-slate-500/10 text-slate-600 dark:text-slate-300",
@@ -116,7 +124,14 @@ function routeCheckpointLabel(visualState: RouteVisualState): string {
   if (visualState.state === "unknown") {
     return "Checkpoint activity could not be verified";
   }
-  return `${visualState.currentValidatorCount} of ${visualState.route.validators.length} checkpoints current`;
+  const details = [`${visualState.currentValidatorCount} of ${visualState.route.validators.length} checkpoints current`];
+  if (visualState.behindValidatorCount > 0) {
+    details.push(`${visualState.behindValidatorCount} checkpoint${visualState.behindValidatorCount === 1 ? "" : "s"} behind`);
+  }
+  if (visualState.unverifiedValidatorCount > 0) {
+    details.push(`${visualState.unverifiedValidatorCount} checkpoint${visualState.unverifiedValidatorCount === 1 ? "" : "s"} unverified`);
+  }
+  return details.join(" · ");
 }
 
 function statusPillClass(isActive: boolean): string {
@@ -235,8 +250,8 @@ function HyperlaneLiveDashboard(): JSX.Element {
     snapshot.validators,
     snapshot.validatorAnnounceStatus,
   )) ?? [], [snapshot]);
-  const operationalRouteCount = useMemo(() => (
-    routeVisualStates.filter((route) => route.state === "operational").length
+  const allCurrentRouteCount = useMemo(() => (
+    routeVisualStates.filter((route) => route.state === "all-current").length
   ), [routeVisualStates]);
 
   return (
@@ -286,7 +301,7 @@ function HyperlaneLiveDashboard(): JSX.Element {
                 { label: "Securing routes", value: String(snapshot.summary.securingValidatorCount), icon: Users },
                 { label: "Current checkpoints", value: String(snapshot.summary.currentCheckpointCount), icon: Radio },
                 { label: "ISM signature threshold", value: thresholdLabel, icon: ShieldCheck },
-                { label: "Operational routes", value: `${operationalRouteCount} / ${snapshot.summary.totalRouteCount}`, icon: Network },
+                { label: "Routes with all checkpoints current", value: `${allCurrentRouteCount} / ${snapshot.summary.totalRouteCount}`, icon: Network },
               ].map((metric) => (
                 <div key={metric.label} className="min-h-32 rounded-2xl border border-slate-200/80 bg-white/80 p-4 dark:border-white/10 dark:bg-white/[0.035]">
                   <metric.icon size={18} className="text-violet-600 dark:text-violet-400" aria-hidden="true" />
@@ -309,7 +324,7 @@ function HyperlaneLiveDashboard(): JSX.Element {
           <section className="rounded-3xl border border-slate-200/80 bg-white/70 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.02] sm:p-6" aria-labelledby="hyperlane-route-isms-title">
             <div>
               <h2 id="hyperlane-route-isms-title" className="text-xl font-semibold text-slate-950 dark:text-white">Route ISMs</h2>
-              <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Each destination enforces its own validator set and signature threshold.</p>
+              <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Each destination enforces its own validator set and signature threshold. Status reflects published checkpoint indexes; it does not verify signatures or end-to-end bridge delivery.</p>
             </div>
             <div className="mt-5 grid gap-3 lg:grid-cols-3">
               {routeVisualStates.map((visualState) => {
