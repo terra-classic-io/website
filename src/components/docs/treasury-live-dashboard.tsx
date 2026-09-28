@@ -10,6 +10,7 @@ import {
   Vote,
 } from "lucide-react";
 import { stablecoinAssets, type StablecoinAsset } from "../../data/stablecoins";
+import { terraClassicEndpoints } from "../../data/terra-classic-endpoints";
 
 type DecCoin = {
   readonly denom: string;
@@ -45,12 +46,6 @@ type FetchResult<T> = {
   readonly data: T;
   readonly endpoint: string;
 };
-
-const LCD_ENDPOINTS = [
-  "https://terra-classic-lcd.publicnode.com",
-  "https://lcd.terra-classic.hexxagon.io",
-  "https://api-lunc-lcd.binodes.com",
-] as const;
 
 const COMMUNITY_POOL_PATH = "/cosmos/distribution/v1beta1/community_pool";
 const LATEST_BLOCK_PATH = "/cosmos/base/tendermint/v1beta1/blocks/latest";
@@ -148,7 +143,7 @@ async function fetchJsonWithFallback<T>(
 ): Promise<FetchResult<T>> {
   let lastError: unknown;
 
-  for (const endpoint of LCD_ENDPOINTS) {
+  for (const endpoint of terraClassicEndpoints.lcd) {
     if (signal.aborted) {
       throw new DOMException("The request was aborted.", "AbortError");
     }

@@ -390,6 +390,7 @@ const developHyperlaneContracts: DocPage = {
   slug: "contracts",
   title: "Contracts & Warp routes",
   summary: "Verify Terra Classic Hyperlane core contracts and the LUNC and USTC Warp route addresses across supported networks.",
+  livePanel: "hyperlane",
   markdown: hyperlaneContractsGuide,
 };
 

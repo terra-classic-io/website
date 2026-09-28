@@ -2,13 +2,58 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
+const hyperlaneValidatorApi = () => {
+  let snapshotCache;
+  const cacheDurationMs = 60_000;
+
+  return {
+    name: 'hyperlane-validator-api',
+    configureServer(server) {
+      server.middlewares.use(async (request, response, next) => {
+        const pathname = new URL(request.url || '/', 'http://localhost').pathname;
+        if (pathname !== '/api/hyperlane/validators') {
+          next();
+          return;
+        }
+        if (request.method !== 'GET') {
+          response.statusCode = 405;
+          response.setHeader('Allow', 'GET');
+          response.end('Method Not Allowed');
+          return;
+        }
+
+        try {
+          const now = Date.now();
+          if (!snapshotCache || now - snapshotCache.cachedAt >= cacheDurationMs) {
+            const { loadHyperlaneValidatorSnapshot } = await server.ssrLoadModule('/src/lib/hyperlane-validator-status.ts');
+            snapshotCache = {
+              cachedAt: now,
+              snapshot: await loadHyperlaneValidatorSnapshot(),
+            };
+          }
+
+          response.statusCode = 200;
+          response.setHeader('Content-Type', 'application/json; charset=utf-8');
+          response.setHeader('Cache-Control', 'public, max-age=30');
+          response.end(JSON.stringify(snapshotCache.snapshot));
+        } catch (error) {
+          server.config.logger.error(`Unable to load Hyperlane validator status: ${error instanceof Error ? error.message : String(error)}`);
+          response.statusCode = 502;
+          response.setHeader('Content-Type', 'application/json; charset=utf-8');
+          response.end(JSON.stringify({ error: 'Hyperlane validator status is temporarily unavailable.' }));
+        }
+      });
+    },
+  };
+};
+
 export default defineConfig(({ command, mode }) => {
   const isPages = process.env.CF_PAGES_BUILD === 'true';
   const ssrTarget = process.env.SSR_TARGET || 'node';
   const isSSRBuild = !!process.env.SSR_TARGET; // set by our scripts when running --ssr builds
 
   const base = {
-    plugins: [react()],
+    plugins: [react(), hyperlaneValidatorApi()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),

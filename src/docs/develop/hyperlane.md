@@ -9,6 +9,7 @@ The Terra Classic deployment currently connects LUNC and USTC with BNB Smart Cha
 | Goal | Guide |
 | --- | --- |
 | Verify core contracts, token addresses, mints, and Warp route programs | [Contracts and Warp routes](/docs/develop/hyperlane/contracts) |
+| Verify administrative accounts, approval thresholds, and ownership transfer status | [Governance and multisig administration](/docs/develop/hyperlane/contracts#governance-multisig-administration) |
 | Operate a Terra Classic Hyperlane validator | [Run a Hyperlane validator](/docs/develop/hyperlane/validator) |
 
 ## Before using the bridge

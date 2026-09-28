@@ -40,6 +40,28 @@ async function createServer() {
         logLevel: 'info',
       });
 
+      let hyperlaneSnapshotCache;
+      const hyperlaneSnapshotCacheDurationMs = 60_000;
+
+      app.get('/api/hyperlane/validators', async (req, res) => {
+        try {
+          const now = Date.now();
+          if (hyperlaneSnapshotCache && now - hyperlaneSnapshotCache.cachedAt < hyperlaneSnapshotCacheDurationMs) {
+            res.set({ 'Cache-Control': 'public, max-age=30' }).json(hyperlaneSnapshotCache.snapshot);
+            return;
+          }
+
+          const { loadHyperlaneValidatorSnapshot } = await vite.ssrLoadModule('/src/lib/hyperlane-validator-status.ts');
+          const snapshot = await loadHyperlaneValidatorSnapshot();
+          hyperlaneSnapshotCache = { cachedAt: now, snapshot };
+          res.set({ 'Cache-Control': 'public, max-age=30' }).json(snapshot);
+        } catch (error) {
+          logger.error('Unable to load Hyperlane validator status:');
+          console.error(error);
+          res.status(502).json({ error: 'Hyperlane validator status is temporarily unavailable.' });
+        }
+      });
+
       // Use vite's connect instance as middleware
       app.use(vite.middlewares);
       

@@ -1,3 +1,5 @@
+import { terraClassicEndpoints } from "../data/terra-classic-endpoints";
+
 export type TerraClassicSupplyCoin = {
   readonly denom: string;
   readonly amount: string;
@@ -7,17 +9,6 @@ export type TerraClassicSupplyResponse = {
   readonly coins: readonly TerraClassicSupplyCoin[];
   readonly endpoint: string;
 };
-
-const LCD_ENDPOINTS = [
-  "https://terra-classic-lcd.publicnode.com",
-  "https://lcd.terra-classic.hexxagon.io",
-  "https://api-lunc-lcd.binodes.com",
-] as const;
-
-const FCD_ENDPOINTS = [
-  "https://terra-classic-fcd.publicnode.com",
-  "https://fcd.terra-classic.hexxagon.io",
-] as const;
 
 export type TerraClassicCirculatingSupplyAsset = "luna" | "ust";
 
@@ -67,7 +58,7 @@ export function microAmountToDisplayNumber(amount?: string): number | undefined 
 export async function fetchTerraClassicSupply(signal?: AbortSignal): Promise<TerraClassicSupplyResponse> {
   let lastError: unknown;
 
-  for (const endpoint of LCD_ENDPOINTS) {
+  for (const endpoint of terraClassicEndpoints.lcd) {
     if (signal?.aborted) {
       throw new DOMException("The request was aborted.", "AbortError");
     }
@@ -100,7 +91,7 @@ export async function fetchTerraClassicCirculatingSupply(
 ): Promise<TerraClassicCirculatingSupplyResponse> {
   let lastError: unknown;
 
-  for (const endpoint of FCD_ENDPOINTS) {
+  for (const endpoint of terraClassicEndpoints.fcd) {
     if (signal?.aborted) {
       throw new DOMException("The request was aborted.", "AbortError");
     }
