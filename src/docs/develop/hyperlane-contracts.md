@@ -92,5 +92,6 @@ The USTC Solana mint is controlled through the Hyperlane Warp route program `7CU
 - [LUNC Warp route configuration](https://github.com/hyperlane-xyz/hyperlane-registry/blob/main/deployments/warp_routes/LUNC/bsc-ethereum-solanamainnet-terraclassic-config.yaml)
 - [USTC Warp route configuration](https://github.com/hyperlane-xyz/hyperlane-registry/blob/main/deployments/warp_routes/USTC/bsc-ethereum-solanamainnet-terraclassic-config.yaml)
 - [Terra Classic Bridge](https://terraclassic-bridge.xyz/)
+- [Terra Classic Bridge Monitor](https://monitor.terraclassic-bridge.xyz/) — operational monitoring of the relayer, operator balances, and validator checkpoints.
 
 For validator infrastructure and operations, continue with [Run a Hyperlane validator](/docs/develop/hyperlane/validator).

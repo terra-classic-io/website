@@ -72,4 +72,4 @@ For production, configure `SAFE_API_KEY` as a **server-side secret** in the Clou
 
 Maintain the contract inventory in `src/data/hyperlane-governance.ts`. Source failures, bounded history, and unsupported authority reads are explicitly displayed; the dashboard must not convert them into a clean bill of health. The implementation covers selected authority roles rather than a complete audit of the deployment.
 
-Run `yarn test:hyperlane-governance` for parser and degraded-source tests. Public fixtures in `scripts/fixtures/hyperlane-governance.json` were captured on September 29, 2026; they are test data, never a fallback for live state.
+Run `yarn test:hyperlane-governance` to verify that unavailable sources are reported explicitly instead of appearing as empty activity. This test does not use recorded blockchain data.

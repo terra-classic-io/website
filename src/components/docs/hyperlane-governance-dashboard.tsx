@@ -609,6 +609,9 @@ export default function HyperlaneGovernanceDashboard({
         <Link className={link} to="/docs/develop/hyperlane/contracts">
           Contracts &amp; Warp routes
         </Link>
+        <External href="https://monitor.terraclassic-bridge.xyz/">
+          Bridge monitoring
+        </External>
         <External href={deploymentSource}>Deployment inventory</External>
       </div>
     </section>
