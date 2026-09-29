@@ -10,6 +10,8 @@ The live security panel above reads validator announcements, checkpoint indexes,
 
 ## Governance & multisig administration
 
+For current proposals, administrative approvals, and selected live authority reads, open [Hyperlane Governance](/docs/develop/hyperlane/governance). The entries below preserve the original announcement context; consult the dashboard sources for current state.
+
 The maintainer update shared on **September 28, 2026** announced the following accounts for collective administration of the deployment's Interchain Gas Paymaster (IGP) and Interchain Security Module (ISM) contracts on connected networks. It stated that Terra Classic contracts would remain under Terra Classic governance.
 
 **Status: announced accounts; ownership and authority transfers not yet verified for this documentation.** Creating a multisig does not establish that it controls the intended contracts. The exact contracts and administrative powers assigned to each account still need to be confirmed on-chain.

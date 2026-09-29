@@ -22,6 +22,7 @@ import type { DocPageWithPath } from "../../types/doc-page-with-path";
 import { slugifyDocHeading } from "../../lib/docs-markdown";
 import DocNavigationFooter from "./doc-navigation-footer";
 import AssetsSupplyTable from "./assets-supply-table";
+import HyperlaneGovernanceDashboard from "./hyperlane-governance-dashboard";
 import GovernanceLiveDashboard from "./governance-live-dashboard";
 import HyperlaneLiveDashboard from "./hyperlane-live-dashboard";
 import TreasuryLiveDashboard from "./treasury-live-dashboard";
@@ -791,7 +792,8 @@ function DocContent({ page, section, currentPath, onNavigate, previousPage, next
   return (
     <div className="space-y-10">
       {page.livePanel === "treasury" ? <TreasuryLiveDashboard assetUsdPrices={assetUsdPrices} /> : null}
-      {page.livePanel === "governance" ? <GovernanceLiveDashboard /> : null}
+      {page.livePanel === "governance" ? <><GovernanceLiveDashboard /><HyperlaneGovernanceDashboard compact /></> : null}
+      {page.livePanel === "hyperlane-governance" ? <HyperlaneGovernanceDashboard /> : null}
       {page.livePanel === "hyperlane" ? <HyperlaneLiveDashboard /> : null}
       {hasStructuredSections ? page.sections?.map((sectionBlock) => renderSection(sectionBlock)) : null}
       {!hasStructuredSections && hasMarkdown && hasAssetSupplyMarker && assetMarkdownParts ? (

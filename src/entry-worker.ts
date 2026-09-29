@@ -8,6 +8,7 @@ import { render } from "./ssr";
 import { docSeoSections } from "./generated/doc-seo";
 import type { DocSeoPage } from "./types/doc-seo";
 import { LAST_UPDATE } from "./generated/build-info";
+import { getHyperlaneGovernanceSnapshot } from "./lib/hyperlane-governance-status";
 import { loadHyperlaneValidatorSnapshot } from "./lib/hyperlane-validator-status";
 
 // On Pages client build (CF_PAGES_BUILD), we emit to dist/ root.
@@ -128,13 +129,22 @@ const resolveAssetUrl = (request: CfRequest): string | null => {
  */
 const handleRequest = async (
   request: CfRequest,
-  env: { ASSETS?: Fetcher }
+  env: { ASSETS?: Fetcher; SAFE_API_KEY?: string }
 ): Promise<CfResponse> => {
   const url = new URL(request.url);
   const userAgent = request.headers.get("user-agent") ?? "";
   const pathname = normalizePathname(url.pathname);
   const hostname = url.hostname.toLowerCase();
   const nonIndexableHostname = isNonIndexableHostname(hostname);
+
+  if (pathname === "/api/hyperlane/governance") {
+    if (request.method !== "GET") {
+      return new Response("Method Not Allowed", { status: 405, headers: { Allow: "GET", ...securityHeaders } }) as unknown as CfResponse;
+    }
+    return new Response(JSON.stringify(await getHyperlaneGovernanceSnapshot({ safeApiKey: env.SAFE_API_KEY })), {
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=30", ...securityHeaders },
+    }) as unknown as CfResponse;
+  }
 
   if (pathname === "/api/hyperlane/validators") {
     if (request.method !== "GET") {
@@ -249,7 +259,7 @@ const handleRequest = async (
   }) as unknown as CfResponse;
 };
 
-const worker: ExportedHandler<{ ASSETS: Fetcher }> = {
+const worker: ExportedHandler<{ ASSETS: Fetcher; SAFE_API_KEY?: string }> = {
   /**
    * Cloudflare Pages single worker entry.
    */

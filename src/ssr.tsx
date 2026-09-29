@@ -1,4 +1,5 @@
 import React from "react";
+export { getHyperlaneGovernanceSnapshot } from "./lib/hyperlane-governance-status";
 import type { AppState } from "./App";
 import App, { DEFAULT_STATE } from "./App";
 import { HelmetProvider } from "react-helmet-async";

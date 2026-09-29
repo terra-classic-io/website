@@ -9,7 +9,7 @@ export type DocPage = {
     readonly dark: string;
     readonly alt: string;
   };
-  readonly livePanel?: "assets" | "treasury" | "governance" | "hyperlane";
+  readonly livePanel?: "assets" | "treasury" | "governance" | "hyperlane" | "hyperlane-governance";
   readonly sections?: readonly DocContentSection[];
   readonly markdown?: string;
   readonly children?: readonly DocPage[];

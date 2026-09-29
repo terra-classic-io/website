@@ -63,3 +63,13 @@ This project thrives on community collaboration. Documentation and site improvem
 ## License
 
 This repository is maintained by the Terra Classic community. Submit questions via issues if clarification is needed.
+
+## Hyperlane governance dashboard
+
+The read-only dashboard is available at `/docs/develop/hyperlane/governance`, with an overview on the general Governance page. Its GET-only API (`/api/hyperlane/governance`) runs in Vite, the Node server, and the Cloudflare Pages worker. The server coalesces concurrent reads and caches a snapshot for one minute per running instance; the browser refreshes every two minutes.
+
+For production, configure `SAFE_API_KEY` as a **server-side secret** in the Cloudflare Pages project (or as a process environment variable for Vite/Node). Do not use a `VITE_` prefix or commit the key. Safe's unauthenticated service is intended for exploration and has much lower quotas; see [Safe API authentication](https://docs.safe.global/core-api/how-to-use-api-keys). Public RPC membership and owner reads continue independently when the Safe indexer is unavailable. Cache instances and quotas are not shared between distributed workers.
+
+Maintain the contract inventory in `src/data/hyperlane-governance.ts`. Source failures, bounded history, and unsupported authority reads are explicitly displayed; the dashboard must not convert them into a clean bill of health. The implementation covers selected authority roles rather than a complete audit of the deployment.
+
+Run `yarn test:hyperlane-governance` for parser and degraded-source tests. Public fixtures in `scripts/fixtures/hyperlane-governance.json` were captured on September 29, 2026; they are test data, never a fallback for live state.

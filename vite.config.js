@@ -11,6 +11,26 @@ const hyperlaneValidatorApi = () => {
     configureServer(server) {
       server.middlewares.use(async (request, response, next) => {
         const pathname = new URL(request.url || '/', 'http://localhost').pathname;
+        if (pathname === '/api/hyperlane/governance') {
+          if (request.method !== 'GET') {
+            response.statusCode = 405;
+            response.setHeader('Allow', 'GET');
+            response.end('Method Not Allowed');
+            return;
+          }
+          try {
+            const { getHyperlaneGovernanceSnapshot } = await server.ssrLoadModule('/src/lib/hyperlane-governance-status.ts');
+            const snapshot = await getHyperlaneGovernanceSnapshot({ safeApiKey: process.env.SAFE_API_KEY });
+            response.setHeader('Content-Type', 'application/json; charset=utf-8');
+            response.setHeader('Cache-Control', 'public, max-age=30');
+            response.end(JSON.stringify(snapshot));
+          } catch {
+            response.statusCode = 502;
+            response.setHeader('Content-Type', 'application/json; charset=utf-8');
+            response.end(JSON.stringify({ error: 'Hyperlane governance sources are unavailable.' }));
+          }
+          return;
+        }
         if (pathname !== '/api/hyperlane/validators') {
           next();
           return;
