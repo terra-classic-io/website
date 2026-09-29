@@ -211,6 +211,15 @@ export const projects: ProjectLink[] = [
     indicator: 'onchain',
     categories: ['for-developers', 'validators', 'information']
   },
+  {
+    name: 'EIDEX',
+    url: 'https://eidex.io/screener/btc-btc-to-lunc-lunc',
+    description: 'Swap route aggregator',
+    indicator: 'support',
+    logo: '/public/logos/applications/eidex.svg',
+    darkLogo: '/public/logos/applications/eidex-dark.svg',
+    categories: ['applications']
+  },
   { 
     name: 'Endpoint (LCD) - BiNodes',
     url: 'https://api-lunc-lcd.binodes.com',
@@ -701,6 +710,14 @@ export const projects: ProjectLink[] = [
     indicator: 'hybrid',
     categories: ['bridges'],
     wip: true
+  },
+  {
+    name: 'Terra Classic Tech',
+    url: 'https://www.terra-classic.tech',
+    description: 'Analytics',
+    indicator: 'onchain',
+    logo: '/public/logos/tools/terra-classic-tech.png',
+    categories: ['tools']
   },
   { 
     name: 'Terraclassic.network',
