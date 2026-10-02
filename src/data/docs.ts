@@ -6,6 +6,7 @@ import configureGeneralSettingsGuide from "../docs/full-node/run-a-full-terra-no
 import classicTransactionBehaviorGuide from "../docs/develop/classic-transaction-behavior.md?raw";
 import developersOverviewGuide from "../docs/develop/overview.md?raw";
 import endpointsGuide from "../docs/develop/endpoints.md?raw";
+import hyperlaneGovernanceGuide from "../docs/develop/hyperlane-governance.md?raw";
 import hyperlaneGuide from "../docs/develop/hyperlane.md?raw";
 import hyperlaneContractsGuide from "../docs/develop/hyperlane-contracts.md?raw";
 import hyperlaneValidatorGuide from "../docs/develop/hyperlane-validator.md?raw";
@@ -390,7 +391,16 @@ const developHyperlaneContracts: DocPage = {
   slug: "contracts",
   title: "Contracts & Warp routes",
   summary: "Verify Terra Classic Hyperlane core contracts and the LUNC and USTC Warp route addresses across supported networks.",
+  livePanel: "hyperlane",
   markdown: hyperlaneContractsGuide,
+};
+
+const developHyperlaneGovernance: DocPage = {
+  slug: "governance",
+  title: "Hyperlane Governance",
+  summary: "Track community proposals, multisig approvals, and administrative authorities across the Terra Classic Hyperlane deployment.",
+  livePanel: "hyperlane-governance",
+  markdown: hyperlaneGovernanceGuide,
 };
 
 const developHyperlane: DocPage = {
@@ -398,7 +408,7 @@ const developHyperlane: DocPage = {
   title: "Hyperlane",
   summary: "Explore Terra Classic's Hyperlane deployment, Warp routes, contract addresses, and validator operations.",
   markdown: hyperlaneGuide,
-  children: [developHyperlaneContracts, developHyperlaneValidator],
+  children: [developHyperlaneContracts, developHyperlaneGovernance, developHyperlaneValidator],
 };
 
 const developBuilderTooling: DocPage = {

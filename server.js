@@ -29,6 +29,20 @@ async function createServer() {
   app.use(compression());
   
   let vite;
+  app.all('/api/hyperlane/governance', async (req, res) => {
+    if (req.method !== 'GET') {
+      res.set('Allow', 'GET').status(405).end('Method Not Allowed');
+      return;
+    }
+    try {
+      const { getHyperlaneGovernanceSnapshot } = isProduction
+        ? await import('./dist/server/ssr.js')
+        : await vite.ssrLoadModule('/src/lib/hyperlane-governance-status.ts');
+      res.set('Cache-Control', 'public, max-age=30').json(await getHyperlaneGovernanceSnapshot({ safeApiKey: process.env.SAFE_API_KEY }));
+    } catch {
+      res.status(502).json({ error: 'Hyperlane governance sources are unavailable.' });
+    }
+  });
   if (!isProduction) {
     logger.info('Starting development server...');
     
@@ -38,6 +52,18 @@ async function createServer() {
         server: { middlewareMode: 'ssr' },
         appType: 'custom',
         logLevel: 'info',
+      });
+
+      app.get('/api/hyperlane/validators', async (req, res) => {
+        try {
+          const { getHyperlaneValidatorSnapshot } = await vite.ssrLoadModule('/src/lib/hyperlane-validator-status.ts');
+          const snapshot = await getHyperlaneValidatorSnapshot();
+          res.set({ 'Cache-Control': 'public, max-age=30' }).json(snapshot);
+        } catch (error) {
+          logger.error('Unable to load Hyperlane validator status:');
+          console.error(error);
+          res.status(502).json({ error: 'Hyperlane validator status is temporarily unavailable.' });
+        }
       });
 
       // Use vite's connect instance as middleware

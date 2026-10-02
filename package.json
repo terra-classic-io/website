@@ -20,6 +20,8 @@
     "lint:ts": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:md": "markdownlint-cli2",
     "type-check": "tsc --noEmit",
+    "test:hyperlane-validators": "node --test scripts/test-hyperlane-validators.mjs",
+    "test:hyperlane-governance": "node --test scripts/test-hyperlane-governance.mjs",
     "check": "tsc --noEmit && eslint src --ext ts,tsx && markdownlint-cli2"
   },
   "dependencies": {

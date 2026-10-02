@@ -2,11 +2,46 @@
 
 Hyperlane connects Terra Classic with BNB Smart Chain, Ethereum, and Solana. The current Warp routes carry Terra Classic's native LUNC and USTC assets to synthetic representations on the destination networks.
 
+The live security panel above reads validator announcements, checkpoint indexes, and the validator sets configured in the destination ISMs. Human-readable operator names are maintained separately from the on-chain security state.
+
 > **Deployment notice**
 >
 > The deployment update supplied by the maintainers stated that ownership transfers were still being completed. Treat this notice as active until the corresponding governance and multisignature transactions are publicly linked and verified. Use small amounts only while testing.
 
-The addresses below were last checked against the [Hyperlane Registry](https://github.com/hyperlane-xyz/hyperlane-registry) on **September 3, 2026**. The registry is the technical source of truth; if this page and the registry ever differ, verify the registry and the relevant block explorer before signing a transaction.
+## Governance & multisig administration
+
+For current proposals, administrative approvals, and selected live authority reads, open [Hyperlane Governance](/docs/develop/hyperlane/governance). The entries below preserve the original announcement context; consult the dashboard sources for current state.
+
+The maintainer update shared on **September 28, 2026** announced the following accounts for collective administration of the deployment's Interchain Gas Paymaster (IGP) and Interchain Security Module (ISM) contracts on connected networks. It stated that Terra Classic contracts would remain under Terra Classic governance.
+
+**Status: announced accounts; ownership and authority transfers not yet verified for this documentation.** Creating a multisig does not establish that it controls the intended contracts. The exact contracts and administrative powers assigned to each account still need to be confirmed on-chain.
+
+| Network | Administration | Announced account | Approval threshold |
+| --- | --- | --- | --- |
+| BNB Smart Chain | Safe | `0x4d78A2182a7Cd3a370D73E6651EF4B32C2dd8BDb` — [BscScan](https://bscscan.com/address/0x4d78A2182a7Cd3a370D73E6651EF4B32C2dd8BDb#events) | The supplied creation screenshot shows 4 of 6; current configuration unverified. |
+| Ethereum | Safe | `0x4d78A2182a7Cd3a370D73E6651EF4B32C2dd8BDb` — [Etherscan](https://etherscan.io/address/0x4d78A2182a7Cd3a370D73E6651EF4B32C2dd8BDb#events) | Not yet verified. |
+| Solana | Squads | `UyvAB4vzpbzUfSQP4uStLPz2Td1coSJcosCRGV4vHmr` — [Solscan](https://solscan.io/account/UyvAB4vzpbzUfSQP4uStLPz2Td1coSJcosCRGV4vHmr) | Not yet verified. |
+| Terra Classic | On-chain governance, as announced | Governing authority and transfer transactions not yet verified. | Governed by the applicable proposal process. |
+
+The Ethereum and BNB Smart Chain entries refer to separate accounts on separate networks even though their addresses match. On Solana, the announced address still needs to be identified as a Squads multisig account or vault: the configuration account and the vault that holds assets or authorities have different roles. See [Squads account and vault documentation](https://docs.squads.so/main/navigating-your-squad/settings).
+
+These are administration references, not bridge deposit addresses. Do not send funds to them to initiate a bridge transfer.
+
+### Administrative approvals and message verification
+
+The **ISM signature threshold** in the live security panel governs verification of cross-chain messages. The **multisig approval threshold** governs administrative transactions, such as changes to fee or security settings where the account has authority. These thresholds and their signing addresses are separate and must be verified independently.
+
+The IGP handles payments for relaying messages to destination chains; the ISM verifies incoming cross-chain messages. An operator's validator checkpoint signing address can differ from its Safe or Squads member address. The validator directory above identifies checkpoint signers, not administrative multisig members.
+
+### Transfer verification
+
+Before marking an account as the active administrator, this reference needs links to the executed ownership or authority transfer transactions, the affected contract or program addresses, and the resulting on-chain owners or authorities. Record each account's current members, approval threshold, and verification date alongside those sources. For Terra Classic, include the relevant governance proposal and its executed changes.
+
+Public transfer transaction links and verified contract-to-administrator mappings have not yet been recorded here. The deployment notice remains active until that evidence is available.
+
+## Contract address verification
+
+The core and Warp route contract addresses and token mints in the following sections were last checked against the [Hyperlane Registry](https://github.com/hyperlane-xyz/hyperlane-registry) on **September 3, 2026**. This check does not cover the administrative accounts announced above. Verify the registry and the relevant block explorer before signing a transaction.
 
 ## Terra Classic core contracts
 
@@ -57,5 +92,6 @@ The USTC Solana mint is controlled through the Hyperlane Warp route program `7CU
 - [LUNC Warp route configuration](https://github.com/hyperlane-xyz/hyperlane-registry/blob/main/deployments/warp_routes/LUNC/bsc-ethereum-solanamainnet-terraclassic-config.yaml)
 - [USTC Warp route configuration](https://github.com/hyperlane-xyz/hyperlane-registry/blob/main/deployments/warp_routes/USTC/bsc-ethereum-solanamainnet-terraclassic-config.yaml)
 - [Terra Classic Bridge](https://terraclassic-bridge.xyz/)
+- [Terra Classic Bridge Monitor](https://monitor.terraclassic-bridge.xyz/) — operational monitoring of the relayer, operator balances, and validator checkpoints.
 
 For validator infrastructure and operations, continue with [Run a Hyperlane validator](/docs/develop/hyperlane/validator).
