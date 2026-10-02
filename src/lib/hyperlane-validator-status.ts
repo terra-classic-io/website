@@ -1,3 +1,4 @@
+import { createValidatorRequests, type ValidatorRequests } from "./hyperlane-validator-requests";
 import { hyperlaneNetworkConfiguration } from "../data/hyperlane-networks";
 import { hyperlaneValidators } from "../data/hyperlane-validators";
 import { terraClassicEndpoints } from "../data/terra-classic-endpoints";
@@ -16,11 +17,13 @@ type TerraValidatorState = {
 };
 
 type CheckpointState = {
+  readonly complete?: boolean;
   readonly index?: number;
   readonly updatedAt?: string;
 };
 
-const REQUEST_TIMEOUT_MS = 8_000;
+const MAX_CHECKPOINT_VALIDATORS = 32;
+const MAX_STORAGE_LOCATIONS = 3;
 const VALIDATORS_AND_THRESHOLD_CALL_DATA = `0x2e0ed234${"0".repeat(62)}20${"0".repeat(64)}`;
 const ADDRESS_PATTERN = /^0x[0-9a-f]{40}$/;
 const S3_BUCKET_PATTERN = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/;
@@ -56,32 +59,13 @@ function encodeBase64(value: string): string {
   return btoa(value);
 }
 
-async function fetchWithTimeout(input: string, init?: RequestInit): Promise<Response> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-
-  try {
-    return await fetch(input, { ...init, signal: controller.signal });
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
-async function fetchJson(input: string, init?: RequestInit): Promise<unknown> {
-  const response = await fetchWithTimeout(input, init);
-  if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}.`);
-  }
-  return await response.json();
-}
-
-async function queryTerraContract(contract: string, message: Record<string, unknown>): Promise<unknown> {
+async function queryTerraContract(requests: ValidatorRequests, contract: string, message: Record<string, unknown>): Promise<unknown> {
   const encodedMessage = encodeURIComponent(encodeBase64(JSON.stringify(message)));
   let lastError: unknown;
 
   for (const endpoint of terraClassicEndpoints.lcd) {
     try {
-      return await fetchJson(`${endpoint}/cosmwasm/wasm/v1/contract/${contract}/smart/${encodedMessage}`, {
+      return await requests.json(`${endpoint}/cosmwasm/wasm/v1/contract/${contract}/smart/${encodedMessage}`, {
         headers: { Accept: "application/json" },
       });
     } catch (error) {
@@ -133,30 +117,32 @@ function parseMerkleTreeCount(payload: unknown): number | undefined {
   return typeof count === "number" && Number.isSafeInteger(count) && count >= 0 ? count : undefined;
 }
 
-async function loadTerraValidatorState(): Promise<TerraValidatorState> {
+async function loadTerraValidatorState(requests: ValidatorRequests): Promise<TerraValidatorState> {
   const announcedPayload = await queryTerraContract(
+    requests,
     hyperlaneNetworkConfiguration.source.contracts.validatorAnnounce,
     { get_announced_validators: {} },
   );
   const validators = parseAnnouncedValidators(announcedPayload);
 
-  const [locationsPayload, merklePayload] = await Promise.all([
+  const [locations, merkleCount] = await Promise.allSettled([
     queryTerraContract(
+      requests,
       hyperlaneNetworkConfiguration.source.contracts.validatorAnnounce,
-      { get_announce_storage_locations: { validators: validators.map((address) => address.slice(2)) } },
-    ),
-    queryTerraContract(hyperlaneNetworkConfiguration.source.contracts.merkleTreeHook, { merkle_hook: { count: {} } }),
+      { get_announce_storage_locations: { validators: validators.slice(0, MAX_CHECKPOINT_VALIDATORS).map((address) => address.slice(2)) } },
+    ).then(parseStorageLocations),
+    queryTerraContract(requests, hyperlaneNetworkConfiguration.source.contracts.merkleTreeHook, { merkle_hook: { count: {} } }).then(parseMerkleTreeCount),
   ]);
 
   return {
     validators,
-    storageLocations: parseStorageLocations(locationsPayload),
-    merkleTreeCount: parseMerkleTreeCount(merklePayload),
+    storageLocations: locations.status === "fulfilled" ? locations.value : new Map(),
+    merkleTreeCount: merkleCount.status === "fulfilled" ? merkleCount.value : undefined,
   };
 }
 
-async function callJsonRpc(endpoint: string, method: string, params: readonly unknown[]): Promise<unknown> {
-  const payload = await fetchJson(endpoint, {
+async function callJsonRpc(requests: ValidatorRequests, endpoint: string, method: string, params: readonly unknown[]): Promise<unknown> {
+  const payload = await requests.json(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
@@ -169,6 +155,7 @@ async function callJsonRpc(endpoint: string, method: string, params: readonly un
 }
 
 async function callJsonRpcWithFallback(
+  requests: ValidatorRequests,
   endpoints: readonly string[],
   method: string,
   params: readonly unknown[],
@@ -176,7 +163,7 @@ async function callJsonRpcWithFallback(
   let lastError: unknown;
   for (const endpoint of endpoints) {
     try {
-      return await callJsonRpc(endpoint, method, params);
+      return await callJsonRpc(requests, endpoint, method, params);
     } catch (error) {
       lastError = error;
     }
@@ -248,15 +235,17 @@ function parseSolanaValidatorSet(value: unknown): { readonly validators: readonl
   return { validators, threshold };
 }
 
-async function loadRouteSnapshot(config: HyperlaneDestinationConfiguration): Promise<HyperlaneRouteSnapshot> {
+async function loadRouteSnapshot(requests: ValidatorRequests, config: HyperlaneDestinationConfiguration): Promise<HyperlaneRouteSnapshot> {
   try {
     const result = config.protocol === "evm"
       ? parseEvmValidatorsAndThreshold(await callJsonRpcWithFallback(
+        requests,
         config.rpcEndpoints,
         "eth_call",
         [{ to: config.ismAddress, data: VALIDATORS_AND_THRESHOLD_CALL_DATA }, "latest"],
       ))
       : parseSolanaValidatorSet(await callJsonRpcWithFallback(
+        requests,
         config.rpcEndpoints,
         "getAccountInfo",
         [config.validatorSetAccount, { encoding: "base64", commitment: "confirmed" }],
@@ -298,18 +287,17 @@ function checkpointUrlFromStorageLocation(location: string): string | undefined 
   return `https://${bucket}.s3.${region}.amazonaws.com/${prefix}checkpoint_latest_index.json`;
 }
 
-async function loadCheckpointState(locations: readonly string[]): Promise<CheckpointState> {
-  const results = await Promise.all(locations.map(async (location): Promise<CheckpointState> => {
+async function loadCheckpointState(requests: ValidatorRequests, locations: readonly string[]): Promise<CheckpointState> {
+  const uniqueLocations = [...new Set(locations)];
+  const results = await Promise.all(uniqueLocations.slice(-MAX_STORAGE_LOCATIONS).map(async (location): Promise<CheckpointState> => {
     const url = checkpointUrlFromStorageLocation(location);
     if (!url) {
       return {};
     }
     try {
-      const response = await fetchWithTimeout(url, { headers: { Accept: "application/json" } });
-      if (!response.ok) {
-        return {};
-      }
-      const rawIndex = (await response.text()).trim().replace(/^"|"$/g, "");
+      const response = await requests.read(url, { headers: { Accept: "application/json" } });
+      const rawIndex = response.text.trim().replace(/^"|"$/g, "");
+      if (!/^\d+$/.test(rawIndex)) return {};
       const index = Number(rawIndex);
       return Number.isSafeInteger(index) && index >= 0
         ? { index, updatedAt: response.headers.get("last-modified") ?? undefined }
@@ -319,21 +307,25 @@ async function loadCheckpointState(locations: readonly string[]): Promise<Checkp
     }
   }));
 
-  return results.reduce<CheckpointState>((latest, candidate) => (
-    (candidate.index ?? -1) > (latest.index ?? -1) ? candidate : latest
+  const latest = results.reduce<CheckpointState>((current, candidate) => (
+    (candidate.index ?? -1) > (current.index ?? -1) ? candidate : current
   ), {});
+  return {
+    ...latest,
+    complete: uniqueLocations.length <= MAX_STORAGE_LOCATIONS && results.every((result) => result.index !== undefined),
+  };
 }
 
-export async function loadHyperlaneValidatorSnapshot(): Promise<HyperlaneSecuritySnapshot> {
+async function buildHyperlaneValidatorSnapshot(requests: ValidatorRequests): Promise<HyperlaneSecuritySnapshot> {
   const [terraResult, routes] = await Promise.all([
-    loadTerraValidatorState().then(
+    loadTerraValidatorState(requests).then(
       (data) => ({ status: "ready" as const, data }),
       (error) => {
         console.warn("Unable to query Terra Classic Hyperlane validator state", error);
         return { status: "unavailable" as const, data: undefined };
       },
     ),
-    Promise.all(hyperlaneNetworkConfiguration.destinations.map(loadRouteSnapshot)),
+    Promise.all(hyperlaneNetworkConfiguration.destinations.map((config) => loadRouteSnapshot(requests, config))),
   ]);
 
   const terraState = terraResult.data;
@@ -343,8 +335,8 @@ export async function loadHyperlaneValidatorSnapshot(): Promise<HyperlaneSecurit
   const checkpointStates = new Map<string, CheckpointState>();
 
   if (terraState) {
-    await Promise.all(terraState.validators.map(async (address) => {
-      checkpointStates.set(address, await loadCheckpointState(terraState.storageLocations.get(address) ?? []));
+    await Promise.all(terraState.validators.slice(0, MAX_CHECKPOINT_VALIDATORS).map(async (address) => {
+      checkpointStates.set(address, await loadCheckpointState(requests, terraState.storageLocations.get(address) ?? []));
     }));
   }
 
@@ -363,12 +355,12 @@ export async function loadHyperlaneValidatorSnapshot(): Promise<HyperlaneSecurit
       name: metadata?.name ?? "Unidentified validator",
       metadataKnown: Boolean(metadata),
       website: normalizeWebsite(metadata?.website),
-      announced: terraState?.validators.includes(address) ?? false,
+      announced: terraState?.validators.includes(address) ?? null,
       checkpointIndex: checkpoint?.index,
       checkpointUpdatedAt: checkpoint?.updatedAt,
       checkpointCurrent: latestCheckpointIndex === undefined || checkpoint?.index === undefined
         ? undefined
-        : checkpoint.index >= latestCheckpointIndex,
+        : checkpoint.index >= latestCheckpointIndex ? true : checkpoint.complete ? false : undefined,
       routes: validatorRoutes,
     };
   }).sort((left, right) => {
@@ -397,8 +389,10 @@ export async function loadHyperlaneValidatorSnapshot(): Promise<HyperlaneSecurit
     routes,
     validators,
     summary: {
-      announcedValidatorCount: terraState?.validators.length ?? 0,
-      currentCheckpointCount: validators.filter((validator) => validator.checkpointCurrent).length,
+      announcedValidatorCount: terraState?.validators.length ?? null,
+      currentCheckpointCount: latestCheckpointIndex === undefined || !validators.some((validator) => validator.checkpointCurrent !== undefined)
+        ? null
+        : validators.filter((validator) => validator.checkpointCurrent).length,
       securingValidatorCount: validators.filter((validator) => validator.routes.length > 0).length,
       availableRouteCount: availableRoutes.length,
       totalRouteCount: routes.length,
@@ -406,4 +400,30 @@ export async function loadHyperlaneValidatorSnapshot(): Promise<HyperlaneSecurit
       sharedValidatorCount,
     },
   };
+}
+
+export async function loadHyperlaneValidatorSnapshot(): Promise<HyperlaneSecuritySnapshot> {
+  const requests = createValidatorRequests();
+  try {
+    return await buildHyperlaneValidatorSnapshot(requests);
+  } finally {
+    requests.dispose();
+  }
+}
+
+export const VALIDATOR_SNAPSHOT_TTL_MS = 60_000;
+let snapshotCache: { expires: number; value: HyperlaneSecuritySnapshot } | undefined;
+let inFlight: Promise<HyperlaneSecuritySnapshot> | undefined;
+
+// Shared by Vite, Node development, and the Cloudflare Worker. Failed/partial
+// reads are also cached briefly so provider outages do not trigger a retry storm.
+export async function getHyperlaneValidatorSnapshot(): Promise<HyperlaneSecuritySnapshot> {
+  if (snapshotCache && snapshotCache.expires > Date.now()) return snapshotCache.value;
+  if (!inFlight) {
+    inFlight = loadHyperlaneValidatorSnapshot().then((value) => {
+      snapshotCache = { expires: Date.now() + VALIDATOR_SNAPSHOT_TTL_MS, value };
+      return value;
+    }).finally(() => { inFlight = undefined; });
+  }
+  return inFlight;
 }

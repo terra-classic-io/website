@@ -3,9 +3,6 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 const hyperlaneValidatorApi = () => {
-  let snapshotCache;
-  const cacheDurationMs = 60_000;
-
   return {
     name: 'hyperlane-validator-api',
     configureServer(server) {
@@ -43,19 +40,13 @@ const hyperlaneValidatorApi = () => {
         }
 
         try {
-          const now = Date.now();
-          if (!snapshotCache || now - snapshotCache.cachedAt >= cacheDurationMs) {
-            const { loadHyperlaneValidatorSnapshot } = await server.ssrLoadModule('/src/lib/hyperlane-validator-status.ts');
-            snapshotCache = {
-              cachedAt: now,
-              snapshot: await loadHyperlaneValidatorSnapshot(),
-            };
-          }
+          const { getHyperlaneValidatorSnapshot } = await server.ssrLoadModule('/src/lib/hyperlane-validator-status.ts');
+          const snapshot = await getHyperlaneValidatorSnapshot();
 
           response.statusCode = 200;
           response.setHeader('Content-Type', 'application/json; charset=utf-8');
           response.setHeader('Cache-Control', 'public, max-age=30');
-          response.end(JSON.stringify(snapshotCache.snapshot));
+          response.end(JSON.stringify(snapshot));
         } catch (error) {
           server.config.logger.error(`Unable to load Hyperlane validator status: ${error instanceof Error ? error.message : String(error)}`);
           response.statusCode = 502;

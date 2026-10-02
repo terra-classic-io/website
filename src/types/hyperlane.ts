@@ -59,7 +59,7 @@ export type HyperlaneValidatorSnapshot = {
   readonly name: string;
   readonly metadataKnown: boolean;
   readonly website?: string;
-  readonly announced: boolean;
+  readonly announced: boolean | null;
   readonly checkpointIndex?: number;
   readonly checkpointUpdatedAt?: string;
   readonly checkpointCurrent?: boolean;
@@ -74,8 +74,8 @@ export type HyperlaneSecuritySnapshot = {
   readonly routes: readonly HyperlaneRouteSnapshot[];
   readonly validators: readonly HyperlaneValidatorSnapshot[];
   readonly summary: {
-    readonly announcedValidatorCount: number;
-    readonly currentCheckpointCount: number;
+    readonly announcedValidatorCount: number | null;
+    readonly currentCheckpointCount: number | null;
     readonly securingValidatorCount: number;
     readonly availableRouteCount: number;
     readonly totalRouteCount: number;

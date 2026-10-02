@@ -9,7 +9,7 @@ import { docSeoSections } from "./generated/doc-seo";
 import type { DocSeoPage } from "./types/doc-seo";
 import { LAST_UPDATE } from "./generated/build-info";
 import { getHyperlaneGovernanceSnapshot } from "./lib/hyperlane-governance-status";
-import { loadHyperlaneValidatorSnapshot } from "./lib/hyperlane-validator-status";
+import { hyperlaneValidatorResponse } from "./lib/hyperlane-validator-response";
 
 // On Pages client build (CF_PAGES_BUILD), we emit to dist/ root.
 const TEMPLATE_PATH = "/index.html";
@@ -154,15 +154,10 @@ const handleRequest = async (
       }) as unknown as CfResponse;
     }
 
-    const snapshot = await loadHyperlaneValidatorSnapshot();
-    return new Response(JSON.stringify(snapshot), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "Cache-Control": "public, max-age=60, s-maxage=120, stale-while-revalidate=300",
-        ...securityHeaders,
-      },
-    }) as unknown as CfResponse;
+    const response = await hyperlaneValidatorResponse(request.url);
+    const headers = new Headers(response.headers);
+    Object.entries(securityHeaders).forEach(([name, value]) => headers.set(name, value));
+    return new Response(response.body, { status: response.status, headers }) as unknown as CfResponse;
   }
 
   if (pathname === "/robots.txt") {

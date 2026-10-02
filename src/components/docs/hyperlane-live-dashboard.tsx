@@ -170,8 +170,8 @@ function ValidatorRow({ validator }: { readonly validator: HyperlaneValidatorSna
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <span className={`rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] ${statusPillClass(validator.announced)}`}>
-          {validator.announced ? "Announced" : "Not announced"}
+        <span className={`rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] ${statusPillClass(validator.announced === true)}`}>
+          {validator.announced === true ? "Announced" : validator.announced === false ? "Not announced" : "Unknown"}
         </span>
         <span className={`rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] ${statusPillClass(Boolean(validator.checkpointCurrent))}`}>
           {validator.checkpointCurrent
@@ -299,7 +299,7 @@ function HyperlaneLiveDashboard(): JSX.Element {
             <dl className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {[
                 { label: "Securing routes", value: String(snapshot.summary.securingValidatorCount), icon: Users },
-                { label: "Current checkpoints", value: String(snapshot.summary.currentCheckpointCount), icon: Radio },
+                { label: "Current checkpoints", value: snapshot.summary.currentCheckpointCount === null ? "Unknown" : String(snapshot.summary.currentCheckpointCount), icon: Radio },
                 { label: "ISM signature threshold", value: thresholdLabel, icon: ShieldCheck },
                 { label: "Routes with all checkpoints current", value: `${allCurrentRouteCount} / ${snapshot.summary.totalRouteCount}`, icon: Network },
               ].map((metric) => (
@@ -311,9 +311,9 @@ function HyperlaneLiveDashboard(): JSX.Element {
               ))}
             </dl>
             <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] text-slate-500 dark:text-slate-400">
-              <span className="inline-flex items-center gap-1.5"><Database size={13} aria-hidden="true" /> {snapshot.summary.announcedValidatorCount} announced</span>
+              <span className="inline-flex items-center gap-1.5"><Database size={13} aria-hidden="true" /> {snapshot.summary.announcedValidatorCount === null ? "Announced: Unknown" : `${snapshot.summary.announcedValidatorCount} announced`}</span>
               <span className="inline-flex items-center gap-1.5"><Radio size={13} aria-hidden="true" /> Latest checkpoint #{snapshot.latestCheckpointIndex ?? "–"}</span>
-              <span className="inline-flex items-center gap-1.5"><Clock3 size={13} aria-hidden="true" /> Refreshed {formatDateTime(snapshot.fetchedAt)}</span>
+              <span className="inline-flex items-center gap-1.5"><Clock3 size={13} aria-hidden="true" /> Refreshed {formatDateTime(snapshot.fetchedAt)} · Results cached for up to 60 seconds</span>
             </div>
           </>
         )}
@@ -370,7 +370,7 @@ function HyperlaneLiveDashboard(): JSX.Element {
                 {snapshot.validators.map((validator) => <ValidatorRow key={validator.address} validator={validator} />)}
               </ul>
               <p className="mt-4 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                A validator can publish checkpoints without being included in a route ISM. ISM membership, not announcement alone, determines which signatures can secure a destination route.
+                Checkpoint checks are bounded; unavailable or unchecked checkpoints remain unknown. A validator can publish checkpoints without being included in a route ISM. ISM membership, not announcement alone, determines which signatures can secure a destination route.
               </p>
             </div>
           </details>
