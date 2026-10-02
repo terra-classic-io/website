@@ -2,82 +2,37 @@ import React from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
-import App from './App';
+import App, { DEFAULT_STATE, type AppState } from './App';
 import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css';
 
-// Define the shape of our application state
-type TokenInfo = {
-  price: string;
-  change: string;
-  isPositive: boolean;
-  marketCap: string;
-};
-
-type AppState = {
-  tokens: {
-    LUNC: TokenInfo;
-    USTC: TokenInfo;
-  };
-  staking: {
-    apr: string;
-  };
-  isMobile: boolean;
-};
-
-// Get the initial state from the server-rendered window object
+// Get the initial state injected by the server into the
+// <script id="__INITIAL_STATE__" type="application/json"> block
 const getInitialState = (): AppState => {
-  try {
-    // Check for the state in the window object (set by the server)
-    if (window.__INITIAL_STATE__) {
-      return window.__INITIAL_STATE__ as AppState;
+  const stateElement = document.getElementById('__INITIAL_STATE__');
+  const stateJson = stateElement instanceof HTMLScriptElement
+    ? stateElement.textContent?.trim()
+    : undefined;
+
+  // Without SSR, the template marker is still present and is not JSON.
+  if (stateJson && stateJson !== '<!-- SSR_STATE -->') {
+    try {
+      const state: unknown = JSON.parse(stateJson);
+      if (state && typeof state === 'object' && !Array.isArray(state)) {
+        return state as AppState;
+      }
+    } catch (error) {
+      console.error('Error parsing initial state:', error);
     }
-    
-    // Fallback to default state if not found
-    return {
-      tokens: {
-        LUNC: {
-          price: '$0.00023',
-          change: '+5.6%',
-          isPositive: true,
-          marketCap: '$-.--',
-        },
-        USTC: {
-          price: '$0.016',
-          change: '+2.3%',
-          isPositive: true,
-          marketCap: '$-.--',
-        },
-      },
-      staking: {
-        apr: '7.01%',
-      },
-      isMobile: /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent),
-    };
-  } catch (error) {
-    console.error('Error parsing initial state:', error);
-    // Return a safe default state if parsing fails
-    return {
-      tokens: {
-        LUNC: {
-          price: '$0.00023',
-          change: '+0.0%',
-          isPositive: true,
-          marketCap: '$-.--',
-        },
-        USTC: {
-          price: '$0.016',
-          change: '+0.0%',
-          isPositive: true,
-          marketCap: '$-.--',
-        },
-      },
-      staking: {
-        apr: '0.00%',
-      },
-      isMobile: false,
-    };
   }
+
+  // Preserve the legacy global, but ignore elements exposed by their HTML id.
+  const legacyState = window.__INITIAL_STATE__;
+  if (legacyState && !(legacyState instanceof Element)) {
+    return legacyState;
+  }
+
+  return DEFAULT_STATE;
 };
 
 // Get the root element
