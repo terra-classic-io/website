@@ -3,7 +3,6 @@ import {
   ArrowLeft,
   ArrowLeftRight,
   ArrowRight,
-  ArrowUpRight,
   Box,
   ChevronDown,
   Code2,
@@ -92,36 +91,15 @@ function matchesSearch(project: ProjectLink, query: string): boolean {
   return `${project.name} ${project.description ?? ""}`.toLowerCase().includes(query);
 }
 
-function getWebsiteLabel(url: string): string {
-  try {
-    const parsedUrl = new URL(url);
-    return `${parsedUrl.hostname}${parsedUrl.pathname === "/" ? "" : parsedUrl.pathname}`;
-  } catch {
-    return url;
-  }
-}
-
-function getIntegrationLabel(indicator: ProjectIndicator): string {
-  if (indicator === "onchain") {
-    return "On-chain";
-  }
-  if (indicator === "hybrid") {
-    return "Hybrid";
-  }
-  return "Support";
-}
-
 type ProjectRowProps = {
   readonly project: ProjectLink;
-  readonly selected?: boolean;
-  readonly onSelect?: () => void;
 };
 
-function ProjectRow({ project, selected = false, onSelect }: ProjectRowProps): JSX.Element {
+function ProjectRow({ project }: ProjectRowProps): JSX.Element {
   const logo = normalizeLogoPath(project.logo);
   const darkLogo = normalizeLogoPath(project.darkLogo);
   const indicator = indicatorMeta[project.indicator];
-  const rowClassName = `group flex min-h-[92px] w-full items-center gap-4 rounded-xl border p-3.5 text-left transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50/60 dark:hover:border-blue-500/35 dark:hover:bg-blue-500/[0.05] ${selected ? "border-blue-400 bg-blue-50/80 ring-2 ring-blue-500/10 dark:border-blue-500/50 dark:bg-blue-500/[0.08]" : "border-slate-200 bg-slate-50/70 dark:border-white/10 dark:bg-white/[0.025]"}`;
+  const rowClassName = "group flex min-h-[92px] w-full items-center gap-4 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 text-left transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50/60 dark:border-white/10 dark:bg-white/[0.025] dark:hover:border-blue-500/35 dark:hover:bg-blue-500/[0.05]";
   const content = (
     <>
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white p-1.5 shadow-sm dark:bg-white/5">
@@ -149,20 +127,12 @@ function ProjectRow({ project, selected = false, onSelect }: ProjectRowProps): J
             {indicator.label}
           </span>
           <span className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
-            {onSelect ? "Details" : "Visit"} <ArrowRight size={13} />
+            Visit <ArrowRight size={13} />
           </span>
         </span>
       </span>
     </>
   );
-
-  if (onSelect) {
-    return (
-      <button type="button" onClick={onSelect} aria-pressed={selected} className={rowClassName}>
-        {content}
-      </button>
-    );
-  }
 
   const isExternal = project.url.startsWith("http");
   return (
@@ -187,7 +157,6 @@ function ProjectDirectoryView({
   const [prioritizeOnchain, setPrioritizeOnchain] = useState<boolean>(false);
   const [dailySeed, setDailySeed] = useState<string>(SERVER_SEED);
   const [focusedCategoryId, setFocusedCategoryId] = useState<string | null>(null);
-  const [selectedProject, setSelectedProject] = useState<ProjectLink | null>(null);
   const directoryContentRef = useRef<HTMLDivElement | null>(null);
   const filterFocusedCategoryIdRef = useRef<string | null>(null);
 
@@ -244,19 +213,9 @@ function ProjectDirectoryView({
     [entries, focusedCategoryId],
   );
 
-  const selectedProjectDetails = useMemo(() => {
-    if (!focusedEntry) {
-      return null;
-    }
-    return focusedEntry.projects.find((project) => project === selectedProject)
-      ?? focusedEntry.projects[0]
-      ?? null;
-  }, [focusedEntry, selectedProject]);
-
   useEffect(() => {
     if (focusedCategoryId && !focusedEntry) {
       setFocusedCategoryId(null);
-      setSelectedProject(null);
     }
   }, [focusedCategoryId, focusedEntry]);
 
@@ -270,7 +229,6 @@ function ProjectDirectoryView({
       filterFocusedCategoryIdRef.current = filteredEntry.id;
       if (focusedCategoryId !== filteredEntry.id) {
         setFocusedCategoryId(filteredEntry.id);
-        setSelectedProject(filteredEntry.projects[0] ?? null);
         window.requestAnimationFrame(() => {
           directoryContentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         });
@@ -283,7 +241,6 @@ function ProjectDirectoryView({
       filterFocusedCategoryIdRef.current = null;
       if (focusedCategoryId === categoryOpenedFromFilter) {
         setFocusedCategoryId(null);
-        setSelectedProject(null);
       }
     }
   }, [activeCategoryIds, entries, focusedCategoryId]);
@@ -291,7 +248,6 @@ function ProjectDirectoryView({
   const focusCategory = (entry: CategoryDirectoryEntry): void => {
     filterFocusedCategoryIdRef.current = null;
     setFocusedCategoryId(entry.id);
-    setSelectedProject(entry.projects[0] ?? null);
     window.requestAnimationFrame(() => {
       directoryContentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
@@ -300,12 +256,8 @@ function ProjectDirectoryView({
   const closeCategoryFocus = (): void => {
     filterFocusedCategoryIdRef.current = null;
     setFocusedCategoryId(null);
-    setSelectedProject(null);
     onClearCategories();
   };
-
-  const selectedLogo = normalizeLogoPath(selectedProjectDetails?.logo);
-  const selectedDarkLogo = normalizeLogoPath(selectedProjectDetails?.darkLogo);
 
   return (
     <div className="space-y-4">
@@ -346,7 +298,7 @@ function ProjectDirectoryView({
 
       <div ref={directoryContentRef} className="scroll-mt-28">
         {focusedEntry ? (
-          <div className="grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#061121] xl:grid-cols-[minmax(0,1fr)_380px]">
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#061121]">
             <section className="min-w-0">
               <header className="flex min-h-[152px] flex-col gap-5 border-b border-slate-200 p-6 dark:border-white/10 sm:flex-row sm:items-start">
                 <button
@@ -380,11 +332,7 @@ function ProjectDirectoryView({
               <ul className="project-directory-scroll h-[620px] space-y-2 p-5">
                 {focusedEntry.projects.map((project) => (
                   <li key={`${focusedEntry.id}-${project.name}-${project.url}`}>
-                    <ProjectRow
-                      project={project}
-                      selected={project === selectedProjectDetails}
-                      onSelect={() => setSelectedProject(project)}
-                    />
+                    <ProjectRow project={project} />
                   </li>
                 ))}
               </ul>
@@ -392,62 +340,6 @@ function ProjectDirectoryView({
                 {focusedEntry.projects.length} projects in this category
               </div>
             </section>
-
-            <aside className="border-t border-slate-200 bg-slate-50/75 p-7 dark:border-white/10 dark:bg-[#040f20] xl:border-l xl:border-t-0" aria-live="polite">
-              {selectedProjectDetails ? (
-                <>
-                  <div className="flex items-center gap-4">
-                    <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white p-2 dark:border-white/10 dark:bg-white/5">
-                      {selectedLogo ? (
-                        selectedDarkLogo ? (
-                          <>
-                            <ResilientImage src={selectedLogo} alt="" className="h-12 w-12 object-contain dark:hidden" fallback={<Box size={26} className="text-blue-600 dark:text-blue-400" />} />
-                            <ResilientImage src={selectedDarkLogo} alt="" className="hidden h-12 w-12 object-contain dark:block" fallback={<Box size={26} className="text-blue-600 dark:text-blue-400" />} />
-                          </>
-                        ) : (
-                          <ResilientImage src={selectedLogo} alt="" className="h-12 w-12 object-contain" fallback={<Box size={26} className="text-blue-600 dark:text-blue-400" />} />
-                        )
-                      ) : (
-                        <Box size={26} className="text-blue-600 dark:text-blue-400" />
-                      )}
-                    </span>
-                    <div className="min-w-0">
-                      <h2 className="truncate text-xl font-semibold tracking-tight text-slate-950 dark:text-white">{selectedProjectDetails.name}</h2>
-                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{focusedEntry.title} · {selectedProjectDetails.description ?? "Ecosystem project"}</p>
-                    </div>
-                  </div>
-
-                  <p className="mt-8 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                    {selectedProjectDetails.description
-                      ? `${selectedProjectDetails.name} is listed in the Terra Classic ecosystem directory as ${selectedProjectDetails.description.toLowerCase()}.`
-                      : `${selectedProjectDetails.name} is part of the community-curated Terra Classic ecosystem directory.`}
-                  </p>
-
-                  <dl className="mt-8 divide-y divide-slate-200 border-y border-slate-200 text-xs dark:divide-white/10 dark:border-white/10">
-                    <div className="flex items-center justify-between gap-4 py-4"><dt className="text-slate-500 dark:text-slate-400">Category</dt><dd className="text-right font-semibold text-slate-950 dark:text-white">{focusedEntry.title}</dd></div>
-                    <div className="flex items-center justify-between gap-4 py-4"><dt className="text-slate-500 dark:text-slate-400">Integration</dt><dd className="font-medium text-slate-950 dark:text-white">{getIntegrationLabel(selectedProjectDetails.indicator)}</dd></div>
-                    <div className="flex items-center justify-between gap-4 py-4"><dt className="text-slate-500 dark:text-slate-400">Status</dt><dd className="rounded-full bg-emerald-500/10 px-2 py-1 font-semibold text-emerald-600 dark:text-emerald-400">Listed</dd></div>
-                    <div className="flex items-center justify-between gap-4 py-4"><dt className="text-slate-500 dark:text-slate-400">Website</dt><dd className="min-w-0 truncate font-semibold text-blue-600 dark:text-blue-400">{getWebsiteLabel(selectedProjectDetails.url)}</dd></div>
-                  </dl>
-
-                  <a
-                    href={selectedProjectDetails.url}
-                    target={selectedProjectDetails.url.startsWith("http") ? "_blank" : undefined}
-                    rel={selectedProjectDetails.url.startsWith("http") ? "noopener noreferrer" : undefined}
-                    className="mt-8 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-[0_16px_30px_-16px_rgba(37,99,235,0.75)] transition hover:bg-blue-500"
-                  >
-                    View project details
-                    <ArrowUpRight size={16} />
-                  </a>
-                  <button type="button" onClick={closeCategoryFocus} className="mt-4 flex w-full items-center justify-center gap-2 text-xs font-semibold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400">
-                    <ArrowLeft size={13} />
-                    Browse all categories
-                  </button>
-                </>
-              ) : (
-                <p className="text-sm text-slate-500 dark:text-slate-400">Select a project to view its details.</p>
-              )}
-            </aside>
           </div>
         ) : entries.length > 0 ? (
           <div className="grid items-start gap-5 lg:grid-cols-2 2xl:grid-cols-3">
