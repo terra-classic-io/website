@@ -30,7 +30,7 @@ export const projects: ProjectLink[] = [
   },
   { 
     name: 'Allnodes',
-    url: 'https://www.allnodes.com/lunc/staking',
+    url: 'https://www.allnodes.com/lunc/stake',
     description: 'Non-custodial node hosting',
     indicator: 'support',
     logo: '/public/logos/infrastructure/allnodes.png',
