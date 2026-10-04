@@ -500,6 +500,14 @@ export const projects: ProjectLink[] = [
     categories: ['tools']
   },
   { 
+    name: 'LUNC Metrics',
+    url: 'https://www.luncmetrics.com/',
+    description: 'Analytics',
+    indicator: 'onchain',
+    logo: '/public/logos/tools/luncmetrics.png',
+    categories: ['tools']
+  },
+  { 
     name: 'LuncScan',
     url: 'https://luncscan.com',
     description: 'Terra Classic block explorer',
@@ -612,6 +620,14 @@ export const projects: ProjectLink[] = [
     logo: '/public/logos/cex/phemex.svg',
     darkLogo: '/public/logos/cex/phemex-dark.svg',
     categories: ['cex']
+  },
+  { 
+    name: 'Ping.pub',
+    url: 'https://ping.pub/terra-luna',
+    description: 'Analytics',
+    indicator: 'support',
+    logo: '/public/logos/tools/ping.svg',
+    categories: ['tools']
   },
   { 
     name: 'Raydium',
