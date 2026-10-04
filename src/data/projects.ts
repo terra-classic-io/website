@@ -219,7 +219,7 @@ export const projects: ProjectLink[] = [
     indicator: 'onchain',
     categories: ['for-developers', 'validators', 'information']
   },
-  { 
+  {
     name: 'EIDEX',
     url: 'https://eidex.io/screener/btc-btc-to-lunc-lunc',
     description: 'Swap route aggregator',
@@ -735,7 +735,7 @@ export const projects: ProjectLink[] = [
     categories: ['bridges'],
     wip: true
   },
-  { 
+  {
     name: 'Terra Classic Tech',
     url: 'https://www.terra-classic.tech',
     description: 'Live LUNC supply, burn, staking, and governance',
