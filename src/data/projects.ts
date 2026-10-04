@@ -39,7 +39,7 @@ export const projects: ProjectLink[] = [
   { 
     name: 'ATOMScan',
     url: 'https://atomscan.com/terra',
-    description: 'Analytics',
+    description: 'Terra Classic block explorer',
     indicator: 'support',
     logo: '/public/logos/tools/atomscan.png',
     categories: ['tools']
@@ -123,8 +123,8 @@ export const projects: ProjectLink[] = [
   {
     name: 'Chain Analytics - BiNodes',
     url: 'https://www.binodes.com',
-    description: 'Analytics',
-    indicator: 'onchain',
+    description: 'Knowledge base',
+    indicator: 'support',
     logo: '/public/logos/infrastructure/binodes.png',
     categories: ['tools', 'information']
   },
@@ -348,7 +348,7 @@ export const projects: ProjectLink[] = [
     description: 'Decentralized Exchange',
     indicator: 'onchain',
     logo: '/public/logos/dex/garuda.png',
-    categories: ['dex', 'applications', 'tools']
+    categories: ['dex', 'applications']
   },
   { 
     name: 'Garuda The Protector',
@@ -501,7 +501,7 @@ export const projects: ProjectLink[] = [
   },
   { 
     name: 'LUNC Metrics',
-    url: 'https://luncmetrics.com',
+    url: 'https://www.luncmetrics.com/',
     description: 'Analytics',
     indicator: 'onchain',
     logo: '/public/logos/tools/luncmetrics.png',
@@ -510,7 +510,7 @@ export const projects: ProjectLink[] = [
   { 
     name: 'LuncScan',
     url: 'https://luncscan.com',
-    description: 'Analytics',
+    description: 'Terra Classic block explorer',
     indicator: 'onchain',
     logo: '/public/logos/tools/luncscan.png',
     categories: ['tools']
@@ -518,7 +518,7 @@ export const projects: ProjectLink[] = [
   { 
     name: 'Lunc.Tools',
     url: 'https://lunc.tools',
-    description: 'Analytics',
+    description: 'Terra Classic blockchain tools',
     indicator: 'onchain',
     logo: '/public/logos/tools/lunctools.png',
     categories: ['tools']
@@ -714,7 +714,7 @@ export const projects: ProjectLink[] = [
   {
     name: 'StatsBin',
     url: 'https://statsbin.com',
-    description: 'Analytics',
+    description: 'LUNC supply, burn, staking, and validators',
     indicator: 'support',
     logo: '/public/logos/tools/statsbin.png',
     categories: ['tools']
@@ -738,7 +738,7 @@ export const projects: ProjectLink[] = [
   { 
     name: 'Terra Classic Tech',
     url: 'https://www.terra-classic.tech',
-    description: 'Analytics',
+    description: 'Live LUNC supply, burn, staking, and governance',
     indicator: 'onchain',
     logo: '/public/logos/tools/terra-classic-tech.png',
     categories: ['tools']
@@ -773,14 +773,6 @@ export const projects: ProjectLink[] = [
     description: 'Finder',
     indicator: 'onchain',
     logo: '/public/logos/dex/terraport.svg',
-    categories: ['tools']
-  },
-  { 
-    name: 'TerraScan',
-    url: 'https://scan.terraclassic.app',
-    description: 'Analytics',
-    indicator: 'support',
-    logo: '/public/logos/tools/terrascan.png',
     categories: ['tools']
   },
   { 
@@ -923,7 +915,7 @@ export const projects: ProjectLink[] = [
   { 
     name: 'Truth Dashboard',
     url: 'https://truth.terra-classic.money',
-    description: 'Analytics',
+    description: 'Terra Classic governance and wallet research',
     indicator: 'onchain',
     logo: '/public/logos/applications/truth-dashboard.png',
     categories: ['tools']
@@ -970,8 +962,8 @@ export const projects: ProjectLink[] = [
   },
   {
     name: 'CW20 Bakery Burn',
-    url: 'https://cw20bakery.cookie-verse.io/burn',
-    description: 'Token burn tool',
+    url: 'https://burn.lunc.tools',
+    description: 'CW20 token burn',
     indicator: 'onchain',
     logo: '/public/logos/applications/cw20bakery.png',
     categories: ['tools']
