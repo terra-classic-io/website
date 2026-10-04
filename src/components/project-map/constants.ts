@@ -121,3 +121,7 @@ export const CLUSTER_NEIGHBOR_COUNT: number = 3;
 export const CLUSTER_LINK_STRENGTH: number = 0.38;
 export const CLUSTER_LINK_DISTANCE: number = 140;
 export const CROSS_CATEGORY_CHARGE: number = -22;
+
+export const UNIFORM_PROJECT_LOGO_RADIUS: number = 30;
+export const HUB_LOGO_RADIUS: number = 64;
+export const CATEGORY_RING_MAX: number = 16;

@@ -1,4 +1,5 @@
 import type { ProjectMapCategory, ProjectMapEdge, ProjectMapNode } from "./types";
+import { HUB_LOGO_RADIUS, UNIFORM_PROJECT_LOGO_RADIUS } from "./constants";
 
 export interface RenderTransform {
   readonly zoom: number;
@@ -40,8 +41,6 @@ const CATEGORY_DIM_SCALE: number = 0.92;
 const SEARCH_DIM_OPACITY: number = 0.15;
 const SEARCH_DIM_SCALE: number = 0.88;
 const HOVER_SCALE: number = 1.06;
-const HOVER_SHADOW_DARK = "rgba(15, 23, 42, 0.45)";
-const HOVER_SHADOW_LIGHT = "rgba(15, 23, 42, 0.2)";
 
 const SEGMENT_DASH_RATIO: number = 0.2;
 const HALO_MIN_RADIUS: number = 220;
@@ -720,69 +719,29 @@ const drawNodeRing = (
   context.restore();
 };
 
-const drawInnerDot = (
-  context: CanvasRenderingContext2D,
-  node: ProjectMapNode,
-  radius: number,
-  opacity: number,
-): void => {
-  context.save();
-  context.globalAlpha = opacity;
-  context.fillStyle = node.indicatorRingColor;
-  const dotRadius = Math.max(3, radius * 0.18);
-  const offset = radius * 0.55;
-  context.beginPath();
-  context.arc(offset, -offset, dotRadius, 0, Math.PI * 2);
-  context.fill();
-  context.restore();
-};
-
 const drawBubble = (
   context: CanvasRenderingContext2D,
   node: ProjectMapNode,
   visibility: { readonly opacity: number; readonly scale: number },
-  theme: RenderTheme,
+  _theme: RenderTheme,
 ): void => {
-  const diameter = node.radius * 2 * visibility.scale;
-  const centerX = node.x;
-  const centerY = node.y;
+  const isHub = node.categoryId === "terra-hub";
+  const markRadius = isHub ? HUB_LOGO_RADIUS : UNIFORM_PROJECT_LOGO_RADIUS;
 
   context.save();
-  context.translate(centerX, centerY);
+  context.translate(node.x, node.y);
   context.scale(visibility.scale, visibility.scale);
 
-  const shadowColor = theme.mode === "dark" ? HOVER_SHADOW_DARK : HOVER_SHADOW_LIGHT;
-  context.shadowColor = shadowColor;
-  context.shadowBlur = visibility.scale > 1.01 ? 32 : 12;
-  context.shadowOffsetX = 0;
-  context.shadowOffsetY = 12 * (visibility.scale - 1.0);
-
-  context.beginPath();
-  context.fillStyle = node.color;
-  context.globalAlpha = visibility.opacity;
-  context.arc(0, 0, node.radius, 0, Math.PI * 2);
-  context.fill();
-
-  context.shadowColor = "transparent";
-  const ringWidth = Math.max(2, diameter * 0.04);
-  drawNodeRing(context, node, node.radius, ringWidth, visibility.opacity, visibility.scale);
-
-  if (node.hasInnerDot) {
-    drawInnerDot(context, node, node.radius, visibility.opacity);
+  if (isHub) {
+    drawNodeRing(context, node, markRadius, 3, visibility.opacity, visibility.scale);
   }
 
   context.globalAlpha = visibility.opacity;
   if (node.hasLogo && node.logoImage && node.logoImage.complete && node.logoImage.naturalWidth > 0) {
-    const inset = Math.max(8, node.radius * 0.3);
-    const logoSize = node.radius * 2 - inset;
-    context.save();
-    context.beginPath();
-    context.arc(0, 0, node.radius - inset / 2, 0, Math.PI * 2);
-    context.clip();
+    const logoSize = markRadius * 2;
     context.drawImage(node.logoImage, -logoSize / 2, -logoSize / 2, logoSize, logoSize);
-    context.restore();
-  } else {
-    drawCategoryIcon(context, node.iconKey, node.radius * 0.7, node.textColor, visibility.opacity);
+  } else if (!isHub) {
+    drawCategoryIcon(context, node.iconKey, markRadius, node.color, visibility.opacity);
   }
 
   context.restore();
