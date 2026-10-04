@@ -120,9 +120,8 @@ async function createServer() {
       const responseHtml = template
         .replace('<!-- SSR_HEAD -->', head || '')
         .replace('<!-- SSR_APP -->', html || '')
-        .replace('<!-- SSR_STATE -->', 
-          `<script>window.__INITIAL_STATE__ = ${JSON.stringify(initialState || {}).replace(/</g, '\\u003c')}</script>`
-        );
+        .replace('<!-- SSR_STATE -->',
+          initialState || '{}');
       
       // Send the fully rendered page
       res.status(200).set({ 'Content-Type': 'text/html' }).end(responseHtml);
