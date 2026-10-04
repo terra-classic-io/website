@@ -19,6 +19,38 @@ const logger = {
 async function createServer() {
   const app = express();
 
+  app.get('/api/staking-apr', async (req, res) => {
+    try {
+      const upstream = await fetch('https://www.terra-classic.tech/api/terra/validators', {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!upstream.ok) {
+        res.status(502).json({ error: 'unavailable' });
+        return;
+      }
+      const data = await upstream.json();
+      const aprMeta = data?.meta?.apr;
+      const apr = data?.aprValue;
+      const usable = aprMeta?.method === 'annualized-oracle-drip'
+        && aprMeta?.isReal === true
+        && typeof apr === 'number'
+        && Number.isFinite(apr)
+        && apr >= 0;
+      if (!usable) {
+        res.status(502).json({ error: 'unavailable' });
+        return;
+      }
+      res.set('Cache-Control', 'public, max-age=60');
+      res.json({ apr });
+    } catch (error) {
+      logger.error(`Unable to load staking APR: ${error}`);
+      if (!res.headersSent) {
+        res.status(502).json({ error: 'unavailable' });
+      }
+    }
+  });
+
   app.get('/bubbles', (req, res) => {
     const queryIndex = req.originalUrl.indexOf('?');
     const query = queryIndex >= 0 ? req.originalUrl.slice(queryIndex) : '';
