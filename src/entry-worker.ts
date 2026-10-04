@@ -8,6 +8,7 @@ import { render } from "./ssr";
 import { docSeoSections } from "./generated/doc-seo";
 import type { DocSeoPage } from "./types/doc-seo";
 import { LAST_UPDATE } from "./generated/build-info";
+import { readOracleDripApr, STAKING_APR_SOURCE } from "./lib/staking-apr";
 
 // On Pages client build (CF_PAGES_BUILD), we emit to dist/ root.
 const TEMPLATE_PATH = "/index.html";
@@ -125,6 +126,31 @@ const resolveAssetUrl = (request: CfRequest): string | null => {
 /**
  * Handle SSR for a request.
  */
+const stakingAprResponse = async (): Promise<CfResponse> => {
+  const headers = {
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "public, max-age=60",
+    ...securityHeaders,
+  };
+  try {
+    const upstream = await fetch(STAKING_APR_SOURCE, {
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!upstream.ok) {
+      return new Response(JSON.stringify({ error: "unavailable" }), { status: 502, headers }) as unknown as CfResponse;
+    }
+    const apr = readOracleDripApr(await upstream.json());
+    if (apr === null) {
+      return new Response(JSON.stringify({ error: "unavailable" }), { status: 502, headers }) as unknown as CfResponse;
+    }
+    return new Response(JSON.stringify({ apr }), { status: 200, headers }) as unknown as CfResponse;
+  } catch (error) {
+    console.error("Unable to load staking APR", error);
+    return new Response(JSON.stringify({ error: "unavailable" }), { status: 502, headers }) as unknown as CfResponse;
+  }
+};
+
 const handleRequest = async (
   request: CfRequest,
   env: { ASSETS?: Fetcher }
@@ -132,6 +158,9 @@ const handleRequest = async (
   const url = new URL(request.url);
   const userAgent = request.headers.get("user-agent") ?? "";
   const pathname = normalizePathname(url.pathname);
+  if (pathname === "/api/staking-apr") {
+    return stakingAprResponse();
+  }
   const hostname = url.hostname.toLowerCase();
   const nonIndexableHostname = isNonIndexableHostname(hostname);
 
