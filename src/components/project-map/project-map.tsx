@@ -13,22 +13,27 @@ import { ProjectIndicator, projects } from "../../data/projects";
 import { categories as sourceCategories } from "../../data/categories";
 import { useTheme } from "../../contexts/ThemeContext";
 import {
+  CATEGORY_PALETTE_LOOKUP,
   INDICATOR_VISUALS,
   MIN_TAP_TARGET,
+  UNIFORM_PROJECT_LOGO_RADIUS,
   ZOOM_MAX,
   ZOOM_MIN,
   IndicatorVisual,
 } from "./constants";
 import {
+  COSMOS_EXTERNAL_NODE_ID,
   createDefaultProjectMapLayout,
   createProjectMapLayout,
   DEFAULT_LAYOUT_HEIGHT,
   DEFAULT_LAYOUT_WIDTH,
+  ringSlotPositions,
+  TERRA_HUB_NODE_ID,
 } from "./layout";
 import type { ProjectMapCategory, ProjectMapEdge, ProjectMapLayout, ProjectMapNode } from "./types";
 import { renderProjectMap, RenderTransform } from "./renderer";
 import { ProjectMapSimulation } from "./simulator";
-import { clampNodeToCategory, clampNodeToViewport, pointInPolygon } from "./geometry";
+import { clampNodeToViewport, pointInPolygon } from "./geometry";
 import ProjectDirectoryView from "./project-directory-view";
 import styles from "./project-map.module.css";
 import { ArrowUpRight, LayoutGrid, Network, RefreshCcw } from "lucide-react";
@@ -92,6 +97,17 @@ const findCategoryByTitle = (
   categories: readonly ProjectMapCategory[],
   title: string,
 ): ProjectMapCategory | undefined => categories.find((category) => category.title === title);
+
+const DEFAULT_BUBBLE_CATEGORY_ID: string = CATEGORY_PALETTE_LOOKUP["Infrastructure & service providers"].id;
+
+const resolveBubbleCategoryId = (
+  categoryIds: readonly string[],
+  categories: readonly ProjectMapCategory[],
+): string => {
+  const known = new Set(categories.map((category) => category.id));
+  const selected = categoryIds.find((categoryId) => known.has(categoryId));
+  return selected ?? DEFAULT_BUBBLE_CATEGORY_ID;
+};
 
 const computeSearchMatches = (
   nodes: readonly ProjectMapNode[],
@@ -175,6 +191,9 @@ const ProjectMap: React.FC = () => {
   const [viewport, setViewport] = useState<{ width: number; height: number } | null>(null);
 
   const simulationRef = useRef<ProjectMapSimulation | null>(null);
+  const layoutSizeRef = useRef<{ width: number; height: number }>({ width: layout.width, height: layout.height });
+  const ringSlotsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
+  const syncCategoryRingRef = useRef<() => void>(() => {});
   const nodesRef = useRef<ProjectMapNode[]>(layout.nodes.map((node) => ({ ...node })));
   const categoriesRef = useRef<ProjectMapCategory[]>(layout.categories.map((category) => ({ ...category })));
   const edgesRef = useRef<ProjectMapEdge[]>(layout.edges.map((edge) => ({ ...edge })));
@@ -220,6 +239,64 @@ const ProjectMap: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
+  const syncCategoryRing = (): void => {
+    const { width, height } = layoutSizeRef.current;
+    const categoryId = resolveBubbleCategoryId(activeCategoryIdsRef.current, categoriesRef.current);
+    const hub = nodesRef.current.find((node) => node.id === TERRA_HUB_NODE_ID);
+    if (!hub) {
+      return;
+    }
+    if (typeof hub.fx === "number" && typeof hub.fy === "number") {
+      hub.x = hub.fx;
+      hub.y = hub.fy;
+    }
+    const projects = nodesRef.current
+      .filter((node) => (
+        node.id !== TERRA_HUB_NODE_ID
+        && node.id !== COSMOS_EXTERNAL_NODE_ID
+        && node.categoryId === categoryId
+      ))
+      .sort((first, second) => first.name.localeCompare(second.name));
+    const slots = ringSlotPositions(projects.length, hub.x, hub.y, hub.radius, width, height);
+    const nextSlots = new Map<string, { x: number; y: number }>();
+    nextSlots.set(hub.id, { x: hub.x, y: hub.y });
+    projects.forEach((node, index) => {
+      const slot = slots[index] ?? { x: hub.x, y: hub.y };
+      node.x = slot.x;
+      node.y = slot.y;
+      node.fx = slot.x;
+      node.fy = slot.y;
+      node.vx = 0;
+      node.vy = 0;
+      nextSlots.set(node.id, slot);
+    });
+    ringSlotsRef.current = nextSlots;
+    const visible = [hub, ...projects];
+    const visibleIds = new Set(visible.map((node) => node.id));
+    const edges = edgesRef.current.filter((edge) => (
+      Boolean(edge.target) && visibleIds.has(edge.source) && visibleIds.has(edge.target ?? "")
+    ));
+    simulationRef.current?.stop();
+    simulationRef.current = new ProjectMapSimulation({
+      layout: {
+        categories: categoriesRef.current,
+        nodes: visible,
+        edges,
+        width,
+        height,
+      },
+      edges,
+      nodes: visible,
+      onTick: () => {
+        requestAnimationFrame(() => {
+          renderRef.current();
+        });
+      },
+    });
+    simulationRef.current.start();
+  };
+  syncCategoryRingRef.current = syncCategoryRing;
+
   const render = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) {
@@ -237,6 +314,15 @@ const ProjectMap: React.FC = () => {
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
 
+    const bubbleCategoryId = resolveBubbleCategoryId(activeCategoryIdsRef.current, categoriesRef.current);
+    const visibleNodes = nodesRef.current.filter((node) => (
+      node.id === TERRA_HUB_NODE_ID || node.categoryId === bubbleCategoryId
+    ));
+    const visibleIds = new Set(visibleNodes.map((node) => node.id));
+    const visibleEdges = edgesRef.current.filter((edge) => (
+      Boolean(edge.target) && visibleIds.has(edge.source) && visibleIds.has(edge.target ?? "")
+    ));
+
     renderProjectMap({
       renderContext: {
         canvas,
@@ -245,12 +331,12 @@ const ProjectMap: React.FC = () => {
         width,
         height,
       },
-      categories: categoriesRef.current,
-      nodes: nodesRef.current,
-      edges: edgesRef.current,
+      categories: [],
+      nodes: visibleNodes,
+      edges: visibleEdges,
       transform: transformRef.current,
       filters: {
-        activeCategoryIds: activeCategoryIdsRef.current,
+        activeCategoryIds: [bubbleCategoryId, "terra-hub"],
         highlightedNodeId: hoveredNodeIdRef.current,
         focusedNodeId: focusedNodeIdRef.current,
         searchMatches: searchMatchesRef.current,
@@ -275,16 +361,8 @@ const ProjectMap: React.FC = () => {
     categoriesRef.current = layoutResult.categories.map((category) => ({ ...category }));
     nodesRef.current = layoutResult.nodes.map((node) => ({ ...node }));
     edgesRef.current = layoutResult.edges.map((edge) => ({ ...edge }));
-    simulationRef.current?.stop();
-    simulationRef.current = new ProjectMapSimulation({
-      layout: layoutResult,
-      edges: layoutResult.edges,
-      nodes: nodesRef.current,
-      onTick: () => {
-        requestAnimationFrame(() => render());
-      },
-    });
-    simulationRef.current.start();
+    layoutSizeRef.current = { width: layoutResult.width, height: layoutResult.height };
+    syncCategoryRingRef.current();
     setTransform({ zoom: 1, translateX: 0, translateY: 0 });
     setSearchMatches(new Set(nodesRef.current.map((node) => node.id)));
     renderRef.current();
@@ -362,8 +440,20 @@ const ProjectMap: React.FC = () => {
 
   useEffect(() => {
     activeCategoryIdsRef.current = activeCategoryIds;
+    syncCategoryRingRef.current();
     renderRef.current();
   }, [activeCategoryIds]);
+
+  useEffect(() => {
+    if (viewMode !== "bubble") {
+      return;
+    }
+    const nextId = resolveBubbleCategoryId(activeCategoryIds, categoriesRef.current);
+    if (activeCategoryIds.length === 1 && activeCategoryIds[0] === nextId) {
+      return;
+    }
+    setActiveCategoryIds([nextId]);
+  }, [activeCategoryIds, layout.categories, viewMode]);
 
   useEffect(() => {
     hoveredNodeIdRef.current = hoveredNodeId;
@@ -571,13 +661,19 @@ const ProjectMap: React.FC = () => {
 
   const applyCategoryFilter = useCallback((categoryId: string) => {
     setActiveCategoryIds((previous) => {
+      if (viewMode === "bubble") {
+        if (previous.length === 1 && previous[0] === categoryId) {
+          return previous;
+        }
+        return [categoryId];
+      }
       if (previous.length === 1 && previous[0] === categoryId) {
         return [];
       }
       return [categoryId];
     });
     trackEvent({ event: "filter_category", payload: { categoryId } });
-  }, []);
+  }, [viewMode]);
 
   const handleSearchChange = useCallback((value: string) => {
     setSearchQuery(value);
@@ -607,13 +703,13 @@ const ProjectMap: React.FC = () => {
     } else {
       setTransform({ zoom: 1, translateX: 0, translateY: 0 });
     }
-    setActiveCategoryIds([]);
+    setActiveCategoryIds(viewMode === "bubble" ? [DEFAULT_BUBBLE_CATEGORY_ID] : []);
     setSearchQuery("");
     setSearchMatches(new Set(nodesRef.current.map((node) => node.id)));
     setFocusedNodeId(null);
     setHoveredNodeId(null);
     scheduleTooltip(null, 0, 0);
-  }, [scheduleTooltip]);
+  }, [scheduleTooltip, viewMode]);
 
   const openNodeUrl = useCallback((node: ProjectMapNode) => {
     const sanitized = sanitizeUrl(node.url);
@@ -637,14 +733,9 @@ const ProjectMap: React.FC = () => {
     const localPoint = calculateLocalPoint(clientX, clientY);
     const localX = (localPoint.x - currentTransform.translateX) / currentTransform.zoom;
     const localY = (localPoint.y - currentTransform.translateY) / currentTransform.zoom;
-    const category = categoriesRef.current.find((candidate) => candidate.id === node.categoryId);
     node.x = localX;
     node.y = localY;
-    if (category) {
-      clampNodeToCategory(node, category, layout.width, layout.height);
-    } else {
-      clampNodeToViewport(node, layout.width, layout.height);
-    }
+    clampNodeToViewport(node, layout.width, layout.height);
     node.fx = node.x;
     node.fy = node.y;
     node.vx = 0;
@@ -703,8 +794,16 @@ const ProjectMap: React.FC = () => {
     }
     const node = findNodeById(dragState.nodeId);
     if (node) {
-      node.fx = undefined;
-      node.fy = undefined;
+      const slot = ringSlotsRef.current.get(node.id);
+      if (slot) {
+        node.x = slot.x;
+        node.y = slot.y;
+        node.fx = slot.x;
+        node.fy = slot.y;
+      } else {
+        node.fx = undefined;
+        node.fy = undefined;
+      }
     }
     if (dragState.moved) {
       lastDraggedNodeIdRef.current = dragState.nodeId;
@@ -732,12 +831,10 @@ const ProjectMap: React.FC = () => {
       const deltaY = event.key === "ArrowUp" ? -KEYBOARD_NUDGE : event.key === "ArrowDown" ? KEYBOARD_NUDGE : 0;
       node.x += deltaX;
       node.y += deltaY;
-      const category = categoriesRef.current.find((candidate) => candidate.id === node.categoryId);
-      if (category) {
-        clampNodeToCategory(node, category, layout.width, layout.height);
-      } else {
-        clampNodeToViewport(node, layout.width, layout.height);
-      }
+      clampNodeToViewport(node, layout.width, layout.height);
+      node.fx = node.x;
+      node.fy = node.y;
+      ringSlotsRef.current.set(node.id, { x: node.x, y: node.y });
       simulationRef.current?.poke();
       render();
     }
@@ -750,33 +847,28 @@ const ProjectMap: React.FC = () => {
     const now = Date.now();
     if (doubleTapRef.current && now - doubleTapRef.current < DOUBLE_TAP_TIMEOUT_MS) {
       const localPoint = calculateLocalPoint(event.clientX, event.clientY);
-      const localX = (localPoint.x - transform.translateX) / transform.zoom;
-      const localY = (localPoint.y - transform.translateY) / transform.zoom;
+      const currentTransform = transformRef.current;
+      const localX = (localPoint.x - currentTransform.translateX) / currentTransform.zoom;
+      const localY = (localPoint.y - currentTransform.translateY) / currentTransform.zoom;
       const category = categoriesRef.current.find((candidate) => pointInPolygon({ x: localX, y: localY }, candidate.polygon));
       if (category) {
         setActiveCategoryIds([category.id]);
         setFocusedNodeId(null);
-        const focusZoom = clampZoom(Math.max(transform.zoom, 1.35));
-        const translateX = (layout.width / 2) - category.centroid[0] * focusZoom;
-        const translateY = (layout.height / 2) - category.centroid[1] * focusZoom;
-        if (canvasRef.current && zoomBehaviorRef.current) {
-          const nextTransform = zoomIdentity.translate(translateX, translateY).scale(focusZoom);
-          select(canvasRef.current).call(zoomBehaviorRef.current.transform, nextTransform);
-        } else {
-          setTransform({ zoom: focusZoom, translateX, translateY });
-        }
         trackEvent({ event: "focus_category", payload: { category: category.title } });
       }
       doubleTapRef.current = null;
       return;
     }
     doubleTapRef.current = now;
-  }, [isDragging, layout.height, layout.width, transform.translateX, transform.translateY, transform.zoom, calculateLocalPoint]);
+  }, [isDragging, calculateLocalPoint]);
 
   const nodesForRendering = nodesRef.current;
-  const selectedNode = nodesForRendering.find((node) => node.id === selectedNodeId)
-    ?? nodesForRendering.find((node) => node.name.toLowerCase() === "terraswap")
-    ?? nodesForRendering.find((node) => node.url.length > 0);
+  const bubbleCategoryId = resolveBubbleCategoryId(activeCategoryIds, categoriesRef.current);
+  const bubbleNodes = nodesForRendering.filter((node) => (
+    node.id === TERRA_HUB_NODE_ID || node.categoryId === bubbleCategoryId
+  ));
+  const categoryProjects = bubbleNodes.filter((node) => node.id !== TERRA_HUB_NODE_ID);
+  const selectedNode = categoryProjects.find((node) => node.id === selectedNodeId) ?? categoryProjects[0];
   const selectedLogo = selectedNode?.logoSrc?.replace(/^\/public/, "");
 
   const selectViewMode = (nextMode: ProjectViewMode): void => {
@@ -823,7 +915,17 @@ const ProjectMap: React.FC = () => {
           <button
             type="button"
             className={activeCategoryIds.length === 0 ? styles.activeChip : styles.chip}
-            onClick={() => setActiveCategoryIds([])}
+            onClick={() => {
+              if (viewMode === "bubble") {
+                setActiveCategoryIds((current) => (
+                  current.length === 1 && current[0] === DEFAULT_BUBBLE_CATEGORY_ID
+                    ? current
+                    : [DEFAULT_BUBBLE_CATEGORY_ID]
+                ));
+                return;
+              }
+              setActiveCategoryIds([]);
+            }}
           >
             All categories
             <span className={styles.chipCount}>{projects.length}</span>
@@ -868,12 +970,14 @@ const ProjectMap: React.FC = () => {
           <div className={styles.canvasWrapper} ref={canvasWrapperRef}>
             <canvas ref={canvasRef} className={styles.canvas} />
             <div className={styles.overlay}>
-              {nodesForRendering.map((node) => {
-                const categoryActive = activeCategoryIds.length === 0 || activeCategoryIds.includes(node.categoryId);
-                const matches = searchMatches.has(node.id);
-                const interactive = categoryActive && matches;
+              {bubbleNodes.map((node) => {
+                const matches = searchQuery.trim().length === 0 || searchMatches.has(node.id);
+                const interactive = matches;
                 const screenPosition = computeNodeScreenPosition(node, transform);
-                const size = Math.max(MIN_TAP_TARGET, node.radius * 2 * transform.zoom);
+                const diameter = node.id === TERRA_HUB_NODE_ID
+                  ? node.radius * 2
+                  : UNIFORM_PROJECT_LOGO_RADIUS * 2;
+                const size = Math.max(MIN_TAP_TARGET, diameter * transform.zoom);
                 return (
                   <button
                     key={node.id}
