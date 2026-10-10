@@ -642,7 +642,7 @@ const resolveClusterEdges = (
   const resolved: ClusterEdge[] = [];
   for (const edge of edges) {
     const source = lookup.get(edge.source);
-    const target = lookup.get(edge.target ?? '');
+    const target = lookup.get(edge.target ?? "");
     if (source && target) {
       resolved.push({ source, target });
     }
@@ -719,14 +719,32 @@ const drawNodeRing = (
   context.restore();
 };
 
+const drawInnerDot = (
+  context: CanvasRenderingContext2D,
+  node: ProjectMapNode,
+  radius: number,
+  opacity: number,
+): void => {
+  context.save();
+  context.globalAlpha = opacity;
+  context.fillStyle = node.indicatorRingColor;
+  const dotRadius = Math.max(3, radius * 0.18);
+  const offset = radius * 0.55;
+  context.beginPath();
+  context.arc(offset, -offset, dotRadius, 0, Math.PI * 2);
+  context.fill();
+  context.restore();
+};
+
 const drawBubble = (
   context: CanvasRenderingContext2D,
   node: ProjectMapNode,
   visibility: { readonly opacity: number; readonly scale: number },
-  _theme: RenderTheme,
+  theme: RenderTheme,
 ): void => {
   const isHub = node.categoryId === "terra-hub";
   const markRadius = isHub ? HUB_LOGO_RADIUS : UNIFORM_PROJECT_LOGO_RADIUS;
+  const softOutlineRadius = markRadius - 1;
 
   context.save();
   context.translate(node.x, node.y);
@@ -737,11 +755,28 @@ const drawBubble = (
   }
 
   context.globalAlpha = visibility.opacity;
+  context.beginPath();
+  context.arc(0, 0, softOutlineRadius, 0, Math.PI * 2);
+  context.closePath();
+
   if (node.hasLogo && node.logoImage && node.logoImage.complete && node.logoImage.naturalWidth > 0) {
-    const logoSize = markRadius * 2;
+    context.save();
+    context.clip();
+    const logoSize = markRadius * 2 - 8;
     context.drawImage(node.logoImage, -logoSize / 2, -logoSize / 2, logoSize, logoSize);
+    context.restore();
   } else if (!isHub) {
-    drawCategoryIcon(context, node.iconKey, markRadius, node.color, visibility.opacity);
+    drawCategoryIcon(context, node.iconKey, markRadius * 0.7, node.color, visibility.opacity);
+  }
+
+  context.beginPath();
+  context.arc(0, 0, softOutlineRadius, 0, Math.PI * 2);
+  context.lineWidth = 1.5;
+  context.strokeStyle = theme.mode === "dark" ? "rgba(255,255,255,0.82)" : "rgba(15, 23, 42, 0.28)";
+  context.stroke();
+
+  if (node.hasInnerDot) {
+    drawInnerDot(context, node, markRadius, visibility.opacity);
   }
 
   context.restore();
