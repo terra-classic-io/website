@@ -110,6 +110,11 @@ export const docSeoSections = [
             "summary": "Verify Terra Classic Hyperlane core contracts and the LUNC and USTC Warp route addresses across supported networks."
           },
           {
+            "slug": "governance",
+            "title": "Hyperlane Governance",
+            "summary": "Track community proposals, multisig approvals, and administrative authorities across the Terra Classic Hyperlane deployment."
+          },
+          {
             "slug": "validator",
             "title": "Run Hyperlane validator",
             "summary": "Operate a Terra Classic Hyperlane validator with Docker, AWS S3 checkpoint storage, and VPS monitoring."
