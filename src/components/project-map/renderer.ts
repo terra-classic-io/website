@@ -809,7 +809,7 @@ export const renderProjectMap = (config: RenderConfig): void => {
 
   const clusterEdges = resolveClusterEdges(edges, nodes);
 
-  drawCategoryHalos(context, categories, transform, pixelRatio, theme);
+  drawCategoryHalos(context, categories.filter((category) => filters.activeCategoryIds.length === 0 || filters.activeCategoryIds.includes(category.id)), transform, pixelRatio, theme);
 
   context.save();
   context.scale(pixelRatio, pixelRatio);
@@ -833,6 +833,16 @@ export const renderProjectMap = (config: RenderConfig): void => {
   for (const node of nodes) {
     const visibility = visibilityMap.get(node.id) ?? { opacity: 1, scale: 1 };
     drawBubble(context, node, visibility, theme);
+    if (filters.activeCategoryIds.length > 0) {
+      context.save();
+      context.globalAlpha = visibility.opacity;
+      context.font = "500 12px system-ui, sans-serif";
+      context.textAlign = "center";
+      context.textBaseline = "top";
+      context.fillStyle = theme.mode === "dark" ? "#e2e8f0" : "#0f172a";
+      context.fillText(node.shortLabel, node.x, node.y + node.radius + 12, node.radius * 2 + 24);
+      context.restore();
+    }
   }
 
   context.restore();
