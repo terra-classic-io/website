@@ -27,6 +27,7 @@ interface LayoutOptions {
   readonly viewportWidth: number;
   readonly viewportHeight: number;
   readonly categories?: (keyof typeof sourceCategories)[];
+  readonly activeCategoryIds?: readonly string[];
 }
 
 interface HubNodeConfig {
@@ -369,6 +370,47 @@ export const createProjectMapLayout = (
       isEmpty: projects.filter((project) => project.categories?.includes(category)).length === 0,
     };
   });
+
+  // A focused category gets the whole canvas, including projects shared with
+  // other categories that were deduplicated in the overview.
+  if (options.activeCategoryIds?.length) {
+    const focusedCategories = categories.filter((category) => options.activeCategoryIds?.includes(category.id));
+    const focusedNodes: ProjectMapNode[] = [];
+    const seen = new Set<string>();
+    for (const category of focusedCategories) {
+      const key = categorySource.find((candidate) => sourceCategories[candidate].title === category.title);
+      for (const project of projects.filter((candidate) => key && candidate.categories?.includes(key))) {
+        if (seen.has(project.name)) continue;
+        seen.add(project.name);
+        focusedNodes.push(normalizeLink(project, category.title, [viewportWidth / 2, viewportHeight / 2], [], stringToSeed(project.name)));
+      }
+    }
+    const count = focusedNodes.length;
+    const columns = Math.max(1, Math.min(count, Math.ceil(Math.sqrt(count * viewportWidth / viewportHeight))));
+    const rows = Math.max(1, Math.ceil(count / columns));
+    const cellWidth = (viewportWidth - 32) / columns;
+    const cellHeight = (viewportHeight - 48) / rows;
+    const radius = Math.max(12, Math.min(42, (cellWidth - 32) / 2, (cellHeight - 48) / 2));
+    const nodes = focusedNodes.map((node, index) => {
+      const row = Math.floor(index / columns);
+      const itemsInRow = Math.min(columns, count - row * columns);
+      return {
+        ...node,
+        radius,
+        x: viewportWidth / 2 + (index % columns - (itemsInRow - 1) / 2) * cellWidth,
+        y: 24 + (row + 0.5) * cellHeight - 12,
+      };
+    });
+    return {
+      categories: categories.map((category) => options.activeCategoryIds?.includes(category.id)
+        ? { ...category, centroid: [viewportWidth / 2, viewportHeight / 2] as PointTuple, polygon: [] }
+        : category),
+      nodes,
+      edges: [],
+      width: viewportWidth,
+      height: viewportHeight,
+    };
+  }
 
   const seenProjects: Set<string> = new Set();
   const baseNodes: ProjectMapNode[] = categorySource.flatMap((category, index) => {
