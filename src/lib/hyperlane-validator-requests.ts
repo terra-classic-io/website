@@ -40,7 +40,9 @@ export function createValidatorRequests(limits: RequestLimits = VALIDATOR_REQUES
       });
       // Keep timeouts and concurrency slots active until the body has been read.
       return await Promise.race([aborted, (async () => {
-        const response = await fetch(input, { ...init, signal: controller.signal, redirect: "error" });
+        // Workers support manual redirects; reject their non-2xx status below
+        // without following another URL or spending an uncounted subrequest.
+        const response = await fetch(input, { ...init, signal: controller.signal, redirect: "manual" });
         if (!response.ok) {
           await response.body?.cancel();
           throw new Error(`Request failed with status ${response.status}.`);

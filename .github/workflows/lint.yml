@@ -31,3 +31,6 @@ jobs:
       
       - name: Test Node production APIs
         run: yarn test:node-api
+
+      - name: Test Hyperlane in Cloudflare runtime
+        run: yarn test:hyperlane-cloudflare
