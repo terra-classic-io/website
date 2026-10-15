@@ -122,6 +122,43 @@ export const CLUSTER_LINK_STRENGTH: number = 0.38;
 export const CLUSTER_LINK_DISTANCE: number = 140;
 export const CROSS_CATEGORY_CHARGE: number = -22;
 
-export const UNIFORM_PROJECT_LOGO_RADIUS: number = 30;
-export const HUB_LOGO_RADIUS: number = 64;
+export const UNIFORM_PROJECT_LOGO_RADIUS: number = 26;
+export const HUB_LOGO_RADIUS: number = 40;
 export const CATEGORY_RING_MAX: number = 16;
+
+export const BUBBLE_COMPACT_WIDTH: number = 640;
+
+export const bubbleLogoRadius = (viewportWidth: number): number => (
+  viewportWidth < BUBBLE_COMPACT_WIDTH ? 15 : UNIFORM_PROJECT_LOGO_RADIUS
+);
+
+export const bubbleHubRadius = (viewportWidth: number): number => (
+  viewportWidth < BUBBLE_COMPACT_WIDTH ? 26 : HUB_LOGO_RADIUS
+);
+
+export const bubbleMinHeight = (count: number): number | undefined => (
+  count > 12 ? 590 + (count - 12) * 25 : undefined
+);
+
+export const BUBBLE_ORDER: Readonly<Record<string, readonly string[]>> = {
+  applications: [
+    "Juris Protocol", "BigbangX", "Burrito App", "CL8Y DEX", "Garuda DeFi", "Coinhall", "LbunProject",
+    "Selenium", "Golden Gram", "DAO DAO", "Cookie.pay", "DarkSun", "Reputation", "Vyntrex", "TERRA.pump",
+    "EIDEX", "Orbit Wire", "Miata", "BruteMove!", "Sonic", "Terraport",
+  ],
+};
+
+export const compareBubbleOrder = (categoryId: string, first: string, second: string): number => {
+  const order = BUBBLE_ORDER[categoryId];
+  const firstIndex = order ? order.indexOf(first) : -1;
+  const secondIndex = order ? order.indexOf(second) : -1;
+  if (firstIndex >= 0 && secondIndex >= 0) {
+    return firstIndex - secondIndex;
+  }
+  if (firstIndex >= 0 || secondIndex >= 0) {
+    return firstIndex >= 0 ? -1 : 1;
+  }
+  return first.localeCompare(second);
+};
+
+export const isStaggeredBubbleCount = (count: number): boolean => count > CATEGORY_RING_MAX / 2 + 4;

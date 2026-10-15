@@ -20,6 +20,8 @@ import {
   ZOOM_MAX,
   ZOOM_MIN,
   IndicatorVisual,
+  bubbleMinHeight,
+  compareBubbleOrder,
 } from "./constants";
 import {
   COSMOS_EXTERNAL_NODE_ID,
@@ -256,7 +258,7 @@ const ProjectMap: React.FC = () => {
         && node.id !== COSMOS_EXTERNAL_NODE_ID
         && node.categoryId === categoryId
       ))
-      .sort((first, second) => first.name.localeCompare(second.name));
+      .sort((first, second) => compareBubbleOrder(categoryId, first.name, second.name));
     const slots = ringSlotPositions(projects.length, hub.x, hub.y, hub.radius, width, height);
     const nextSlots = new Map<string, { x: number; y: number }>();
     nextSlots.set(hub.id, { x: hub.x, y: hub.y });
@@ -967,7 +969,7 @@ const ProjectMap: React.FC = () => {
       </div>
       <div className={viewMode === "bubble" ? styles.workspace : "hidden"}>
         <div className={styles.mapPanel}>
-          <div className={styles.canvasWrapper} ref={canvasWrapperRef}>
+          <div className={styles.canvasWrapper} ref={canvasWrapperRef} style={(layout.width || DEFAULT_LAYOUT_WIDTH) >= 640 && bubbleMinHeight(categoryProjects.length) ? { minHeight: bubbleMinHeight(categoryProjects.length) } : undefined}>
             <canvas ref={canvasRef} className={styles.canvas} />
             <div className={styles.overlay}>
               {bubbleNodes.map((node) => {

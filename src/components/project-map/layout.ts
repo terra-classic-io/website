@@ -7,7 +7,10 @@ import { createMulberry32, stringToSeed } from "../../utils/random";
 import terraClassicLogoUrl from "../../assets/terra-classic.svg";
 import {
   CATEGORY_PALETTE_LOOKUP,
-  CATEGORY_RING_MAX,
+  isStaggeredBubbleCount,
+  bubbleLogoRadius,
+  bubbleHubRadius,
+  BUBBLE_COMPACT_WIDTH,
   INDICATOR_VISUALS,
   PROJECT_BASE_CONSTANT,
   PROJECT_GROWTH_FACTOR,
@@ -456,50 +459,31 @@ export const ringSlotPositions = (
   if (count <= 0) {
     return [];
   }
-  const logoDiameter = UNIFORM_PROJECT_LOGO_RADIUS * 2;
+  const logoRadius = bubbleLogoRadius(viewportWidth);
+  const compact = viewportWidth < BUBBLE_COMPACT_WIDTH;
+  const logoDiameter = logoRadius * 2;
   const minChord = logoDiameter + RING_LOGO_GAP;
-  const minInner = hubRadius + UNIFORM_PROJECT_LOGO_RADIUS + RING_LOGO_GAP;
-  const padding = UNIFORM_PROJECT_LOGO_RADIUS + 16;
+  const innerHub = compact ? bubbleHubRadius(viewportWidth) : hubRadius;
+  const minInner = innerHub + logoRadius + RING_LOGO_GAP;
+  const padding = compact ? logoRadius + 28 : UNIFORM_PROJECT_LOGO_RADIUS + 16;
   const maxRadius = Math.max(
     minInner,
     Math.min(centerX, centerY, viewportWidth - centerX, viewportHeight - centerY) - padding,
   );
-  const innerCount = Math.min(CATEGORY_RING_MAX, Math.ceil(count / 2));
-  const ringCounts: number[] = count <= CATEGORY_RING_MAX ? [count] : [innerCount, count - innerCount];
-
-  const natural: number[] = [];
-  let cursor = minInner;
-  for (const ringCount of ringCounts) {
-    const radius = radiusForRingCount(ringCount, cursor, minChord);
-    natural.push(radius);
-    cursor = radius + logoDiameter + RING_LOGO_GAP;
-  }
-
-  let radii = natural;
-  const outer = natural[natural.length - 1];
-  if (outer > maxRadius) {
-    const scale = maxRadius / outer;
-    const scaled = natural.map((radius) => radius * scale);
-    const scaledInner = scaled[0] ?? minInner;
-    const scaledOuter = scaled[scaled.length - 1] ?? scaledInner;
-    const separated = scaled.length === 1 || scaledOuter - scaledInner >= logoDiameter * 0.85;
-    if (scaledInner >= hubRadius + UNIFORM_PROJECT_LOGO_RADIUS && separated) {
-      radii = scaled;
-    }
-  }
-
   const slots: { x: number; y: number }[] = [];
-  ringCounts.forEach((ringCount, ringIndex) => {
-    const radius = radii[ringIndex] ?? minInner;
-    const stagger = ringIndex === 0 ? 0 : Math.PI / ringCount;
-    for (let index = 0; index < ringCount; index += 1) {
-      const angle = -Math.PI / 2 + stagger + (index * 2 * Math.PI) / ringCount;
-      slots.push({
-        x: centerX + Math.cos(angle) * radius,
-        y: centerY + Math.sin(angle) * radius,
-      });
-    }
-  });
+  const staggered = isStaggeredBubbleCount(count);
+  const outerRadius = staggered
+    ? Math.max(maxRadius * (compact ? 1 : 0.8), radiusForRingCount(Math.ceil(count / 2), minInner, minChord))
+    : Math.max(minInner, Math.min(maxRadius, Math.max(radiusForRingCount(count, minInner, minChord), maxRadius)));
+  const innerRadius = Math.max(minInner, outerRadius * (compact ? 0.62 : 0.5));
+  for (let index = 0; index < count; index += 1) {
+    const angle = -Math.PI / 2 + (index * 2 * Math.PI) / count;
+    const radius = staggered && index % 2 === 1 ? innerRadius : outerRadius;
+    slots.push({
+      x: centerX + Math.cos(angle) * radius,
+      y: centerY + Math.sin(angle) * radius,
+    });
+  }
   return slots;
 };
 
