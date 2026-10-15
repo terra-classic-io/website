@@ -1,0 +1,13 @@
+{
+  "apr": 3.080111135525132,
+  "aprPostCommission": 2.764934190518519,
+  "basis": "pre-commission",
+  "method": "measured-delegation-rewards",
+  "windowBlocks": 10000,
+  "fromHeight": 30840351,
+  "toHeight": 30850351,
+  "blockTimeSec": 5.9249766,
+  "bondedCoverage": 1,
+  "ustcToLunc": 100.31229979029142,
+  "computedAt": "2026-10-15T15:15:22.111Z"
+}

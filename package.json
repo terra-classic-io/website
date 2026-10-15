@@ -6,8 +6,8 @@
   "packageManager": "yarn@1.22.22",
   "scripts": {
     "predev": "node generate-doc-seo.mjs && node generate-build-info.mjs",
-    "prebuild": "node generate-doc-seo.mjs && node generate-build-info.mjs",
-    "prebuild:pages": "node generate-doc-seo.mjs && node generate-build-info.mjs",
+    "prebuild": "node generate-doc-seo.mjs && node generate-build-info.mjs && node generate-staking-apr.mjs",
+    "prebuild:pages": "node generate-doc-seo.mjs && node generate-build-info.mjs && node generate-staking-apr.mjs",
     "dev": "vite",
     "build": "tsc && vite build && SSR_TARGET=node vite build --ssr src/ssr.tsx",
     "build:pages": "tsc && CF_PAGES_BUILD=true vite build && SSR_TARGET=webworker CF_PAGES_BUILD=true vite build --ssr src/entry-worker.ts",
@@ -23,7 +23,8 @@
     "test:node-api": "npm run build && node --test scripts/test-node-hyperlane-api.mjs",
     "test:hyperlane-validators": "node --test scripts/test-hyperlane-validators.mjs",
     "test:hyperlane-governance": "node --test scripts/test-hyperlane-governance.mjs",
-    "check": "tsc --noEmit && eslint src --ext ts,tsx && markdownlint-cli2"
+    "check": "tsc --noEmit && eslint src --ext ts,tsx && markdownlint-cli2",
+    "update:staking-apr": "node generate-staking-apr.mjs"
   },
   "dependencies": {
     "compression": "^1.8.0",

@@ -10,6 +10,14 @@ import type { DocSeoPage } from "./types/doc-seo";
 import { LAST_UPDATE } from "./generated/build-info";
 import { getHyperlaneGovernanceSnapshot } from "./lib/hyperlane-governance-status";
 import { hyperlaneValidatorResponse } from "./lib/hyperlane-validator-response";
+import {
+  parseEndpoints,
+  parseWindowBlocks,
+  refreshStakingApr,
+  STAKING_APR_WORKER_BUDGET,
+  type StakingAprState,
+  type StakingAprStore,
+} from "./lib/staking-apr";
 
 // On Pages client build (CF_PAGES_BUILD), we emit to dist/ root.
 const TEMPLATE_PATH = "/index.html";
@@ -127,9 +135,50 @@ const resolveAssetUrl = (request: CfRequest): string | null => {
 /**
  * Handle SSR for a request.
  */
+const STAKING_APR_STATE_KEY = "https://staking-apr.internal/state-v2";
+
+// Cache API is local to a data centre and may evict entries; the baked build-time value covers that.
+const cacheApiStakingAprStore = (cache: Cache | undefined): StakingAprStore => ({
+  get: async () => {
+    const hit = cache ? await cache.match(STAKING_APR_STATE_KEY) : undefined;
+    return hit ? ((await hit.json()) as StakingAprState) : null;
+  },
+  put: async (state) => {
+    if (!cache) return;
+    await cache.put(STAKING_APR_STATE_KEY, new Response(JSON.stringify(state), {
+      headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=2592000" },
+    }));
+  },
+});
+
+// Subrequests per call: 1 state read + at most STAKING_APR_WORKER_BUDGET (40) LCD requests + 1 state write = 42 (< 50).
+const stakingAprResponse = async (env: { STAKING_APR_WINDOW_BLOCKS?: string; STAKING_APR_LCD_ENDPOINTS?: string }): Promise<CfResponse> => {
+  let cache: Cache | undefined;
+  try {
+    if (typeof caches !== "undefined") cache = await caches.open("staking-apr-v2");
+  } catch (error) {
+    console.warn("Staking APR cache unavailable", error);
+  }
+  const result = await refreshStakingApr(cacheApiStakingAprStore(cache), {
+    budget: STAKING_APR_WORKER_BUDGET,
+    windowBlocks: parseWindowBlocks(env.STAKING_APR_WINDOW_BLOCKS),
+    lcdEndpoints: parseEndpoints(env.STAKING_APR_LCD_ENDPOINTS),
+  });
+  // While a refresh is running, keep browsers coming back so traffic finishes it; otherwise cache longer.
+  const maxAge = result.freshness === "fresh" && !result.refreshProgress ? 1800 : 60;
+  return new Response(JSON.stringify(result), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": `public, max-age=${maxAge}`,
+      ...securityHeaders,
+    },
+  }) as unknown as CfResponse;
+};
+
 const handleRequest = async (
   request: CfRequest,
-  env: { ASSETS?: Fetcher; SAFE_API_KEY?: string }
+  env: { ASSETS?: Fetcher; SAFE_API_KEY?: string; STAKING_APR_WINDOW_BLOCKS?: string; STAKING_APR_LCD_ENDPOINTS?: string }
 ): Promise<CfResponse> => {
   const url = new URL(request.url);
   const userAgent = request.headers.get("user-agent") ?? "";
@@ -144,6 +193,16 @@ const handleRequest = async (
     return new Response(JSON.stringify(await getHyperlaneGovernanceSnapshot({ safeApiKey: env.SAFE_API_KEY })), {
       headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=30", ...securityHeaders },
     }) as unknown as CfResponse;
+  }
+
+  if (pathname === "/api/staking-apr") {
+    if (request.method !== "GET") {
+      return new Response("Method Not Allowed", {
+        status: 405,
+        headers: { Allow: "GET", ...securityHeaders },
+      }) as unknown as CfResponse;
+    }
+    return stakingAprResponse(env);
   }
 
   if (pathname === "/api/hyperlane/validators") {
@@ -254,7 +313,7 @@ const handleRequest = async (
   }) as unknown as CfResponse;
 };
 
-const worker: ExportedHandler<{ ASSETS: Fetcher; SAFE_API_KEY?: string }> = {
+const worker: ExportedHandler<{ ASSETS: Fetcher; SAFE_API_KEY?: string; STAKING_APR_WINDOW_BLOCKS?: string; STAKING_APR_LCD_ENDPOINTS?: string }> = {
   /**
    * Cloudflare Pages single worker entry.
    */
