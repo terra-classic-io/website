@@ -25,6 +25,7 @@ import {
   type TerraClassicCirculatingSupplyAsset,
 } from "./lib/terra-classic-supply";
 import { scheduleNonCriticalTask } from "./utils/schedule-non-critical-task";
+import bakedStakingApr from "./generated/staking-apr-fallback.json";
 const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
 const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
 const NotFoundPage = React.lazy(() => import("./components/not-found/not-found-page"));
@@ -38,6 +39,8 @@ export type TokenInfo = {
 
 export type StakingInfo = {
   readonly apr: string;
+  /** ISO time the shown APR was measured on-chain. */
+  readonly measuredAt?: string;
 };
 
 export type AppState = {
@@ -51,6 +54,7 @@ export type AppState = {
 
 type StakingAprResponse = {
   readonly apr: number;
+  readonly computedAt?: string;
 };
 
 type VyntrexPriceResponse = {
@@ -225,8 +229,10 @@ const getInitialState = (): AppState => ({
       marketCap: "$-.--",
     },
   },
+  // Build-time measurement, so the card never starts blank; replaced by /api/staking-apr.
   staking: {
-    apr: "-.--%",
+    apr: formatApr(bakedStakingApr.apr),
+    measuredAt: bakedStakingApr.computedAt,
   },
   isMobile: false,
 });
@@ -329,6 +335,7 @@ const App: React.FC<{
           ...previous,
           staking: {
             apr: formatApr(data.apr),
+            measuredAt: data.computedAt,
           },
         }));
       } catch (error) {
@@ -703,6 +710,7 @@ const App: React.FC<{
         <MetricsShowcase
           tokens={tokenMetrics}
           stakingApr={appState.staking.apr}
+          stakingAprMeasuredAt={appState.staking.measuredAt}
           onOpenStablecoins={handleOpenStablecoins}
           onOpenTreasury={handleOpenTreasury}
           onOpenDevelopers={handleOpenDevelopers}

@@ -33,6 +33,7 @@ export type TokenMetric = {
 type MetricsShowcaseProps = {
   readonly tokens: readonly TokenMetric[];
   readonly stakingApr: string;
+  readonly stakingAprMeasuredAt?: string;
   readonly onOpenStablecoins: () => void;
   readonly onOpenTreasury: () => void;
   readonly onOpenDevelopers: () => void;
@@ -103,7 +104,16 @@ function pickConstellationProjects(
   return selection;
 }
 
-function MetricsShowcase({ tokens, stakingApr, onOpenStablecoins, onOpenTreasury, onOpenDevelopers, onOpenGovernance, onOpenMap }: MetricsShowcaseProps): JSX.Element {
+const formatMeasuredAt = (iso: string | undefined): string | null => {
+  if (!iso) return null;
+  const time = Date.parse(iso);
+  if (!Number.isFinite(time)) return null;
+  const date = new Date(time);
+  const label = `${date.toLocaleString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })}, ${date.toISOString().slice(11, 16)} UTC`;
+  return `Measured ${label}`;
+};
+
+function MetricsShowcase({ tokens, stakingApr, stakingAprMeasuredAt, onOpenStablecoins, onOpenTreasury, onOpenDevelopers, onOpenGovernance, onOpenMap }: MetricsShowcaseProps): JSX.Element {
   const onchainProjects = projects.filter((project) => project.indicator === "onchain").length;
   const displayedTokens = tokens.filter((token) => HOME_ASSET_LIST_SYMBOLS.has(token.symbol));
   const usesCompactAssetList = displayedTokens.length <= 2;
@@ -248,7 +258,7 @@ function MetricsShowcase({ tokens, stakingApr, onOpenStablecoins, onOpenTreasury
             { label: "Curated projects", value: `${projects.length}+`, icon: Network },
             { label: "On-chain projects", value: `${onchainProjects}`, icon: Blocks },
             { label: "Ecosystem categories", value: `${Object.keys(categories).length}`, icon: Box },
-            { label: "Staking APR", value: stakingApr, icon: ShieldCheck },
+            { label: "Staking APR", value: stakingApr, icon: ShieldCheck, note: formatMeasuredAt(stakingAprMeasuredAt) },
           ].map((metric) => (
             <li key={metric.label} className="flex items-center gap-3 border-slate-200 lg:border-r lg:last:border-0 dark:border-white/10">
               <span className="flex h-10 w-10 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400">
@@ -257,6 +267,11 @@ function MetricsShowcase({ tokens, stakingApr, onOpenStablecoins, onOpenTreasury
               <div>
                 <p className="text-[10px] font-medium text-slate-600 dark:text-slate-400">{metric.label}</p>
                 <p className="text-lg font-semibold text-slate-950 dark:text-white">{metric.value}</p>
+                {"note" in metric && metric.note ? (
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400" title="Measured from rewards paid over the last 10,000 blocks, before validator commission">
+                    {metric.note}
+                  </p>
+                ) : null}
               </div>
             </li>
           ))}
