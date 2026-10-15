@@ -7,11 +7,16 @@ import { createMulberry32, stringToSeed } from "../../utils/random";
 import terraClassicLogoUrl from "../../assets/terra-classic.svg";
 import {
   CATEGORY_PALETTE_LOOKUP,
+  isStaggeredBubbleCount,
+  bubbleLogoRadius,
+  bubbleHubRadius,
+  BUBBLE_COMPACT_WIDTH,
   INDICATOR_VISUALS,
   PROJECT_BASE_CONSTANT,
   PROJECT_GROWTH_FACTOR,
   PROJECT_MAX_DIAMETER,
   PROJECT_MIN_DIAMETER,
+  UNIFORM_PROJECT_LOGO_RADIUS,
 } from "./constants";
 import {
   PointTuple,
@@ -52,6 +57,9 @@ interface ExternalNodeConfig {
   readonly categoryTitle: string;
   readonly url?: string;
 }
+
+export const TERRA_HUB_NODE_ID = "terra-classic-hub";
+export const COSMOS_EXTERNAL_NODE_ID = "cosmos-chains";
 
 const GRID_COLUMNS: number = 12;
 const MIN_CELL_SIZE: number = 220;
@@ -249,7 +257,7 @@ const buildBridgeEdges = (nodes: readonly ProjectMapNode[]): ProjectMapEdge[] =>
     }));
 
 const HUB_NODE: HubNodeConfig = {
-  id: "terra-classic-hub",
+  id: TERRA_HUB_NODE_ID,
   name: "Terra Classic",
   radius: 72,
   color: "#0f172a",
@@ -261,7 +269,7 @@ const HUB_NODE: HubNodeConfig = {
 };
 
 const EXTERNAL_NODE: ExternalNodeConfig = {
-  id: "cosmos-chains",
+  id: COSMOS_EXTERNAL_NODE_ID,
   name: "Cosmos Chains",
   radius: 56,
   color: "#4c1d95",
@@ -370,24 +378,19 @@ export const createProjectMapLayout = (
     };
   });
 
-  const seenProjects: Set<string> = new Set();
   const baseNodes: ProjectMapNode[] = categorySource.flatMap((category, index) => {
     const centroid: PointTuple = categories[index]?.centroid ?? ([viewportWidth / 2, viewportHeight / 2] as PointTuple);
     const polygon: Polygon = categories[index]?.polygon ?? [[centroid[0] - 40, centroid[1] - 40], [centroid[0] + 40, centroid[1] + 40]] as Polygon;
     const categorySeed: number = stringToSeed(`${category}-${projects.filter((project) => project.categories?.includes(category)).length}`);
     const categoryRng = createMulberry32(categorySeed);
     return projects.filter((project) => project.categories?.includes(category)).map((project) => {
-      if (seenProjects.has(project.name)) {
-        return null;
-      }
-      seenProjects.add(project.name);
       const seed = stringToSeed(`${category}-${project.name}`) ^ Math.floor(categoryRng() * 1_000_000);
       const node = normalizeLink(project, sourceCategories[category].title, centroid, polygon, seed);
       node.fx = undefined;
       node.fy = undefined;
       clampNodeToViewport(node, viewportWidth, viewportHeight);
       return node;
-    }).filter((node) => node !== null) as ProjectMapNode[];
+    });
   });
 
   const layoutCenter: PointTuple = [viewportWidth / 2, viewportHeight / 2];
@@ -434,3 +437,53 @@ export const createDefaultProjectMapLayout = (): ProjectMapLayout =>
     viewportWidth: DEFAULT_LAYOUT_WIDTH,
     viewportHeight: DEFAULT_LAYOUT_HEIGHT,
   });
+
+const RING_LOGO_GAP: number = 18;
+
+const radiusForRingCount = (count: number, minimum: number, minChord: number): number => {
+  if (count <= 1) {
+    return minimum;
+  }
+  const needed = minChord / (2 * Math.sin(Math.PI / count));
+  return Math.max(minimum, needed);
+};
+
+export const ringSlotPositions = (
+  count: number,
+  centerX: number,
+  centerY: number,
+  hubRadius: number,
+  viewportWidth: number,
+  viewportHeight: number,
+): { readonly x: number; readonly y: number }[] => {
+  if (count <= 0) {
+    return [];
+  }
+  const logoRadius = bubbleLogoRadius(viewportWidth);
+  const compact = viewportWidth < BUBBLE_COMPACT_WIDTH;
+  const logoDiameter = logoRadius * 2;
+  const minChord = logoDiameter + RING_LOGO_GAP;
+  const innerHub = compact ? bubbleHubRadius(viewportWidth) : hubRadius;
+  const minInner = innerHub + logoRadius + RING_LOGO_GAP;
+  const padding = compact ? logoRadius + 28 : UNIFORM_PROJECT_LOGO_RADIUS + 16;
+  const maxRadius = Math.max(
+    minInner,
+    Math.min(centerX, centerY, viewportWidth - centerX, viewportHeight - centerY) - padding,
+  );
+  const slots: { x: number; y: number }[] = [];
+  const staggered = isStaggeredBubbleCount(count);
+  const outerRadius = staggered
+    ? Math.max(maxRadius * (compact ? 1 : 0.8), radiusForRingCount(Math.ceil(count / 2), minInner, minChord))
+    : Math.max(minInner, Math.min(maxRadius, Math.max(radiusForRingCount(count, minInner, minChord), maxRadius)));
+  const innerRadius = Math.max(minInner, outerRadius * (compact ? 0.62 : 0.5));
+  for (let index = 0; index < count; index += 1) {
+    const angle = -Math.PI / 2 + (index * 2 * Math.PI) / count;
+    const radius = staggered && index % 2 === 1 ? innerRadius : outerRadius;
+    slots.push({
+      x: centerX + Math.cos(angle) * radius,
+      y: centerY + Math.sin(angle) * radius,
+    });
+  }
+  return slots;
+};
+

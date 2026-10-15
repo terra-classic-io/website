@@ -152,6 +152,13 @@ export class ProjectMapSimulation {
     const height = this.layout.height;
 
     for (const node of this.nodes) {
+      if (typeof node.fx === "number" && typeof node.fy === "number") {
+        node.x = node.fx;
+        node.y = node.fy;
+        node.vx = 0;
+        node.vy = 0;
+        continue;
+      }
       const category = this.categoriesById.get(node.categoryId);
       if (category) {
         clampNodeToCategory(node, category, width, height);

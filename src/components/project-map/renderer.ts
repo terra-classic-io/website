@@ -1,4 +1,5 @@
 import type { ProjectMapCategory, ProjectMapEdge, ProjectMapNode } from "./types";
+import { BUBBLE_COMPACT_WIDTH, bubbleHubRadius, bubbleLogoRadius } from "./constants";
 
 export interface RenderTransform {
   readonly zoom: number;
@@ -40,33 +41,11 @@ const CATEGORY_DIM_SCALE: number = 0.92;
 const SEARCH_DIM_OPACITY: number = 0.15;
 const SEARCH_DIM_SCALE: number = 0.88;
 const HOVER_SCALE: number = 1.06;
-const HOVER_SHADOW_DARK = "rgba(15, 23, 42, 0.45)";
-const HOVER_SHADOW_LIGHT = "rgba(15, 23, 42, 0.2)";
 
-const SEGMENT_DASH_RATIO: number = 0.2;
-const HALO_MIN_RADIUS: number = 220;
-const HALO_MAX_RADIUS: number = 460;
-const EDGE_OPACITY_LIGHT: number = 0.22;
-const EDGE_OPACITY_DARK: number = 0.5;
 
 type VisibilityState = {
   readonly opacity: number;
   readonly scale: number;
-};
-
-const hexToRgba = (hex: string, alpha: number): string => {
-  const sanitized = hex.replace("#", "");
-  const value = sanitized.length === 3
-    ? sanitized
-        .split("")
-        .map((char) => `${char}${char}`)
-        .join("")
-    : sanitized;
-  const numeric = Number.parseInt(value, 16);
-  const r = (numeric >> 16) & 255;
-  const g = (numeric >> 8) & 255;
-  const b = numeric & 255;
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
 const fillCanvasBackground = (renderContext: RenderContext, theme: RenderTheme): void => {
@@ -75,10 +54,8 @@ const fillCanvasBackground = (renderContext: RenderContext, theme: RenderTheme):
   context.setTransform(1, 0, 0, 1, 0, 0);
   const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
   if (theme.mode === "dark") {
-    gradient.addColorStop(0, "#050918");
-    gradient.addColorStop(0.45, "#0b1630");
-    gradient.addColorStop(0.72, "#061227");
-    gradient.addColorStop(1, "#040a1a");
+    gradient.addColorStop(0, "#0a1122");
+    gradient.addColorStop(1, "#0a1122");
   } else {
     gradient.addColorStop(0, "#f8fafc");
     gradient.addColorStop(0.4, "#e8f1ff");
@@ -88,37 +65,6 @@ const fillCanvasBackground = (renderContext: RenderContext, theme: RenderTheme):
   context.fillStyle = gradient;
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.restore();
-};
-
-const computePolygonBounds = (polygon: readonly (readonly [number, number])[]): {
-  readonly width: number;
-  readonly height: number;
-} => {
-  if (polygon.length === 0) {
-    return { width: 0, height: 0 };
-  }
-  let minX = Number.POSITIVE_INFINITY;
-  let minY = Number.POSITIVE_INFINITY;
-  let maxX = Number.NEGATIVE_INFINITY;
-  let maxY = Number.NEGATIVE_INFINITY;
-  for (const [x, y] of polygon) {
-    if (x < minX) {
-      minX = x;
-    }
-    if (y < minY) {
-      minY = y;
-    }
-    if (x > maxX) {
-      maxX = x;
-    }
-    if (y > maxY) {
-      maxY = y;
-    }
-  }
-  return {
-    width: Math.max(0, maxX - minX),
-    height: Math.max(0, maxY - minY),
-  };
 };
 
 const traceRoundedRect = (
@@ -582,158 +528,129 @@ const computeNodeVisibility = (
   return { opacity: 1.0, scale: 1.0 };
 };
 
-const computeHaloRadius = (category: ProjectMapCategory): number => {
-  const { width, height } = computePolygonBounds(category.polygon);
-  const dimension = Math.max(width, height, HALO_MIN_RADIUS);
-  const projectBoost = Math.sqrt(Math.max(category.projectCount, 1)) * 22;
-  return Math.min(HALO_MAX_RADIUS, dimension * 0.6 + projectBoost);
-};
+const LABEL_GAP: number = 8;
 
-const drawCategoryHalos = (
+const drawSpokes = (
   context: CanvasRenderingContext2D,
-  categories: readonly ProjectMapCategory[],
-  transform: RenderTransform,
-  pixelRatio: number,
-  theme: RenderTheme,
-): void => {
-  context.save();
-  context.scale(pixelRatio, pixelRatio);
-  context.translate(transform.translateX, transform.translateY);
-  context.scale(transform.zoom, transform.zoom);
-  for (const category of categories) {
-    const centroidX = category.centroid[0];
-    const centroidY = category.centroid[1];
-    const haloRadius = computeHaloRadius(category);
-    const gradient = context.createRadialGradient(
-      centroidX,
-      centroidY,
-      haloRadius * 0.1,
-      centroidX,
-      centroidY,
-      haloRadius,
-    );
-    const baseAlpha = theme.mode === "dark" ? 0.28 : 0.12;
-    gradient.addColorStop(0, hexToRgba(category.color, baseAlpha));
-    gradient.addColorStop(0.5, hexToRgba(category.color, baseAlpha * 0.35));
-    gradient.addColorStop(1, hexToRgba(category.color, 0));
-    context.beginPath();
-    context.arc(centroidX, centroidY, haloRadius, 0, Math.PI * 2);
-    context.fillStyle = gradient;
-    context.fill();
-  }
-  context.restore();
-};
-
-interface ClusterEdge {
-  readonly source: ProjectMapNode;
-  readonly target: ProjectMapNode;
-}
-
-const resolveClusterEdges = (
-  edges: readonly ProjectMapEdge[],
   nodes: readonly ProjectMapNode[],
-): readonly ClusterEdge[] => {
-  if (edges.length === 0) {
-    return [];
-  }
-  const lookup = new Map<string, ProjectMapNode>();
-  for (const node of nodes) {
-    lookup.set(node.id, node);
-  }
-  const resolved: ClusterEdge[] = [];
-  for (const edge of edges) {
-    const source = lookup.get(edge.source);
-    const target = lookup.get(edge.target ?? '');
-    if (source && target) {
-      resolved.push({ source, target });
-    }
-  }
-  return resolved;
-};
-
-const drawClusterEdges = (
-  context: CanvasRenderingContext2D,
-  edges: readonly ClusterEdge[],
-  transform: RenderTransform,
-  pixelRatio: number,
-  theme: RenderTheme,
   visibilityMap: Map<string, VisibilityState>,
+  theme: RenderTheme,
 ): void => {
-  if (edges.length === 0) {
+  const hub = nodes.find((node) => node.categoryId === "terra-hub");
+  if (!hub) {
     return;
   }
-  const baseOpacity = theme.mode === "dark" ? EDGE_OPACITY_DARK : EDGE_OPACITY_LIGHT;
   context.save();
-  context.scale(pixelRatio, pixelRatio);
-  context.translate(transform.translateX, transform.translateY);
-  context.scale(transform.zoom, transform.zoom);
-  context.lineCap = "round";
-  for (const edge of edges) {
-    const sourceVisibility = visibilityMap.get(edge.source.id);
-    const targetVisibility = visibilityMap.get(edge.target.id);
-    if (!sourceVisibility || !targetVisibility) {
+  context.lineWidth = 1;
+  context.strokeStyle = theme.mode === "dark" ? "rgba(148, 163, 184, 0.45)" : "rgba(100, 116, 139, 0.4)";
+  for (const node of nodes) {
+    if (node.id === hub.id) {
       continue;
     }
-    const combinedOpacity = Math.min(sourceVisibility.opacity, targetVisibility.opacity) * baseOpacity;
-    if (combinedOpacity <= 0.02) {
+    const opacity = visibilityMap.get(node.id)?.opacity ?? 1;
+    if (opacity < 0.5) {
       continue;
     }
-    context.globalAlpha = combinedOpacity;
-    context.lineWidth = Math.max(1.2, 3 / transform.zoom);
-    const strokeAlpha = theme.mode === "dark" ? 0.65 : 0.32;
-    context.strokeStyle = hexToRgba(edge.source.color, strokeAlpha);
+    context.globalAlpha = opacity;
     context.beginPath();
-    context.moveTo(edge.source.x, edge.source.y);
-    context.lineTo(edge.target.x, edge.target.y);
+    context.moveTo(hub.x, hub.y);
+    context.lineTo(node.x, node.y);
     context.stroke();
   }
   context.restore();
 };
 
-const drawNodeRing = (
-  context: CanvasRenderingContext2D,
-  node: ProjectMapNode,
-  radius: number,
-  strokeWidth: number,
-  opacity: number,
-  scale: number,
-): void => {
-  context.save();
-  const brightenedOpacity = scale > 1.01 ? Math.min(1, opacity + 0.15) : opacity;
-  context.globalAlpha = brightenedOpacity;
-  context.lineWidth = strokeWidth;
-  context.strokeStyle = node.indicatorRingColor;
-  context.setLineDash([]);
-  switch (node.indicatorRingStyle) {
-    case "segmented":
-      context.setLineDash([radius * SEGMENT_DASH_RATIO, radius * SEGMENT_DASH_RATIO]);
-      break;
-    case "dashed":
-      context.setLineDash([4, 6]);
-      break;
-    default:
-      break;
+interface LabelBox {
+  readonly left: number;
+  readonly top: number;
+  readonly right: number;
+  readonly bottom: number;
+}
+
+const boxesOverlap = (first: LabelBox, second: LabelBox): boolean => (
+  first.left < second.right && first.right > second.left && first.top < second.bottom && first.bottom > second.top
+);
+
+const truncateLabel = (context: CanvasRenderingContext2D, text: string, maxWidth: number): string => {
+  if (context.measureText(text).width <= maxWidth) {
+    return text;
   }
-  context.beginPath();
-  context.arc(0, 0, radius - strokeWidth / 2, 0, Math.PI * 2);
-  context.stroke();
-  context.restore();
+  let trimmed = text;
+  while (trimmed.length > 1 && context.measureText(`${trimmed}…`).width > maxWidth) {
+    trimmed = trimmed.slice(0, -1);
+  }
+  return `${trimmed.trimEnd()}…`;
 };
 
-const drawInnerDot = (
+const drawLabels = (
   context: CanvasRenderingContext2D,
-  node: ProjectMapNode,
-  radius: number,
-  opacity: number,
+  nodes: readonly ProjectMapNode[],
+  hub: ProjectMapNode,
+  visibilityMap: Map<string, VisibilityState>,
+  markRadius: number,
+  hubRadius: number,
+  viewWidth: number,
+  compact: boolean,
+  theme: RenderTheme,
 ): void => {
+  const fontSize = compact ? 9 : 11;
+  const lineHeight = fontSize + 3;
+  const visible = nodes.filter((node) => node.id !== hub.id && (visibilityMap.get(node.id)?.opacity ?? 1) >= 0.5);
+  const occupied: LabelBox[] = [
+    { left: hub.x - hubRadius, top: hub.y - hubRadius, right: hub.x + hubRadius, bottom: hub.y + hubRadius },
+    ...visible.map((node) => ({
+      left: node.x - markRadius,
+      top: node.y - markRadius,
+      right: node.x + markRadius,
+      bottom: node.y + markRadius,
+    })),
+  ];
   context.save();
-  context.globalAlpha = opacity;
-  context.fillStyle = node.indicatorRingColor;
-  const dotRadius = Math.max(3, radius * 0.18);
-  const offset = radius * 0.55;
-  context.beginPath();
-  context.arc(offset, -offset, dotRadius, 0, Math.PI * 2);
-  context.fill();
+  context.font = `500 ${fontSize}px Inter, ui-sans-serif, system-ui, sans-serif`;
+  context.textBaseline = "middle";
+  context.fillStyle = theme.mode === "dark" ? "rgba(226, 232, 240, 0.92)" : "rgba(30, 41, 59, 0.9)";
+  const gap = compact ? 4 : LABEL_GAP;
+  const maxLabelWidth = compact ? 74 : 190;
+  for (const node of visible) {
+    const onLeft = node.x < hub.x - 1;
+    const text = truncateLabel(context, node.name, maxLabelWidth);
+    const width = context.measureText(text).width;
+    const side: LabelBox = onLeft
+      ? { left: node.x - markRadius - gap - width, top: node.y - lineHeight / 2, right: node.x - markRadius - gap, bottom: node.y + lineHeight / 2 }
+      : { left: node.x + markRadius + gap, top: node.y - lineHeight / 2, right: node.x + markRadius + gap + width, bottom: node.y + lineHeight / 2 };
+    const below: LabelBox = {
+      left: node.x - width / 2,
+      top: node.y + markRadius + 2,
+      right: node.x + width / 2,
+      bottom: node.y + markRadius + 2 + lineHeight,
+    };
+    const above: LabelBox = {
+      left: node.x - width / 2,
+      top: node.y - markRadius - 2 - lineHeight,
+      right: node.x + width / 2,
+      bottom: node.y - markRadius - 2,
+    };
+    const inView = (box: LabelBox): boolean => box.left >= 2 && box.right <= viewWidth - 2;
+    const candidates = compact ? [below, above, side] : [side, below, above];
+    const isFree = (box: LabelBox): boolean => inView(box) && !occupied.some((other) => boxesOverlap(box, other));
+    let label = text;
+    let chosen = candidates.find(isFree);
+    if (!chosen) {
+      label = truncateLabel(context, node.name, compact ? 44 : 110);
+      const shortWidth = context.measureText(label).width;
+      const shortSide: LabelBox = onLeft
+        ? { ...side, left: side.right - shortWidth }
+        : { ...side, right: side.left + shortWidth };
+      chosen = isFree(shortSide) ? shortSide : undefined;
+    }
+    if (!chosen) {
+      continue;
+    }
+    occupied.push(chosen);
+    context.globalAlpha = visibilityMap.get(node.id)?.opacity ?? 1;
+    context.textAlign = "left";
+    context.fillText(label, chosen.left, (chosen.top + chosen.bottom) / 2);
+  }
   context.restore();
 };
 
@@ -741,59 +658,27 @@ const drawBubble = (
   context: CanvasRenderingContext2D,
   node: ProjectMapNode,
   visibility: { readonly opacity: number; readonly scale: number },
-  theme: RenderTheme,
+  markRadius: number,
 ): void => {
-  const diameter = node.radius * 2 * visibility.scale;
-  const centerX = node.x;
-  const centerY = node.y;
+  const isHub = node.categoryId === "terra-hub";
 
   context.save();
-  context.translate(centerX, centerY);
+  context.translate(node.x, node.y);
   context.scale(visibility.scale, visibility.scale);
-
-  const shadowColor = theme.mode === "dark" ? HOVER_SHADOW_DARK : HOVER_SHADOW_LIGHT;
-  context.shadowColor = shadowColor;
-  context.shadowBlur = visibility.scale > 1.01 ? 32 : 12;
-  context.shadowOffsetX = 0;
-  context.shadowOffsetY = 12 * (visibility.scale - 1.0);
-
-  context.beginPath();
-  context.fillStyle = node.color;
-  context.globalAlpha = visibility.opacity;
-  context.arc(0, 0, node.radius, 0, Math.PI * 2);
-  context.fill();
-
-  context.shadowColor = "transparent";
-  const ringWidth = Math.max(2, diameter * 0.04);
-  drawNodeRing(context, node, node.radius, ringWidth, visibility.opacity, visibility.scale);
-
-  if (node.hasInnerDot) {
-    drawInnerDot(context, node, node.radius, visibility.opacity);
-  }
-
   context.globalAlpha = visibility.opacity;
   if (node.hasLogo && node.logoImage && node.logoImage.complete && node.logoImage.naturalWidth > 0) {
-    const inset = Math.max(8, node.radius * 0.3);
-    const logoSize = node.radius * 2 - inset;
-    context.save();
-    context.beginPath();
-    context.arc(0, 0, node.radius - inset / 2, 0, Math.PI * 2);
-    context.clip();
+    const logoSize = markRadius * 2;
     context.drawImage(node.logoImage, -logoSize / 2, -logoSize / 2, logoSize, logoSize);
-    context.restore();
-  } else {
-    drawCategoryIcon(context, node.iconKey, node.radius * 0.7, node.textColor, visibility.opacity);
+  } else if (!isHub) {
+    drawCategoryIcon(context, node.iconKey, markRadius, node.color, visibility.opacity);
   }
-
   context.restore();
 };
 
 export const renderProjectMap = (config: RenderConfig): void => {
   const {
     renderContext,
-    categories,
     nodes,
-    edges,
     transform,
     filters,
     theme,
@@ -807,9 +692,7 @@ export const renderProjectMap = (config: RenderConfig): void => {
 
   fillCanvasBackground(renderContext, theme);
 
-  const clusterEdges = resolveClusterEdges(edges, nodes);
 
-  drawCategoryHalos(context, categories, transform, pixelRatio, theme);
 
   context.save();
   context.scale(pixelRatio, pixelRatio);
@@ -823,17 +706,24 @@ export const renderProjectMap = (config: RenderConfig): void => {
   }
   context.restore();
 
-  drawClusterEdges(context, clusterEdges, transform, pixelRatio, theme, visibilityMap);
 
   context.save();
   context.scale(pixelRatio, pixelRatio);
   context.translate(transform.translateX, transform.translateY);
   context.scale(transform.zoom, transform.zoom);
 
+  drawSpokes(context, nodes, visibilityMap, theme);
+  const viewWidth = renderContext.width;
+  const compact = viewWidth < BUBBLE_COMPACT_WIDTH;
+  const logoRadius = bubbleLogoRadius(viewWidth);
+  const hubRadius = bubbleHubRadius(viewWidth);
   for (const node of nodes) {
     const visibility = visibilityMap.get(node.id) ?? { opacity: 1, scale: 1 };
-    drawBubble(context, node, visibility, theme);
+    drawBubble(context, node, visibility, node.categoryId === "terra-hub" ? hubRadius : logoRadius);
   }
-
+  const hub = nodes.find((node) => node.categoryId === "terra-hub");
+  if (hub) {
+    drawLabels(context, nodes, hub, visibilityMap, logoRadius, hubRadius, viewWidth, compact, theme);
+  }
   context.restore();
 };
