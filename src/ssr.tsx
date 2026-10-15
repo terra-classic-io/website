@@ -1,4 +1,7 @@
 import React from "react";
+export { getHyperlaneGovernanceSnapshot } from "./lib/hyperlane-governance-status";
+export { getHyperlaneValidatorSnapshot } from "./lib/hyperlane-validator-status";
+export { getStakingAprSnapshot, parseWindowBlocks } from "./lib/staking-apr";
 import type { AppState } from "./App";
 import App, { DEFAULT_STATE } from "./App";
 import { HelmetProvider } from "react-helmet-async";

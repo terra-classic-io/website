@@ -22,7 +22,9 @@ import type { DocPageWithPath } from "../../types/doc-page-with-path";
 import { slugifyDocHeading } from "../../lib/docs-markdown";
 import DocNavigationFooter from "./doc-navigation-footer";
 import AssetsSupplyTable from "./assets-supply-table";
+import HyperlaneGovernanceDashboard from "./hyperlane-governance-dashboard";
 import GovernanceLiveDashboard from "./governance-live-dashboard";
+import HyperlaneLiveDashboard from "./hyperlane-live-dashboard";
 import TreasuryLiveDashboard from "./treasury-live-dashboard";
 
 const ASSET_SUPPLY_MARKER = "<!-- ASSET_SUPPLY_TABLE -->";
@@ -431,6 +433,52 @@ function InlineCopyCode({ code, className, ...rest }: InlineCopyCodeProps): JSX.
   );
 }
 
+// Keep the Markdown table as the content source, but give administration
+// accounts a stacked layout so full addresses do not squeeze the other fields.
+function renderAdministrationCards(children: ReactNode): JSX.Element | null {
+  const elements = (value: ReactNode) => React.Children.toArray(value)
+    .filter(React.isValidElement<{ children?: ReactNode }>);
+  const [head, body] = elements(children);
+  const headerRow = elements(head?.props.children)[0];
+  const headers = elements(headerRow?.props.children).map((cell) => cell.props.children);
+  const expectedHeaders = ["Network", "Administration", "Announced account", "Approval threshold"];
+  const rows = elements(body?.props.children).map((row) => elements(row.props.children));
+
+  if (headers.length !== expectedHeaders.length
+    || headers.some((header, index) => header !== expectedHeaders[index])
+    || rows.length === 0
+    || rows.some((row) => row.length !== expectedHeaders.length)) {
+    return null;
+  }
+
+  return (
+    <div className="mt-7 grid min-w-0 gap-4" aria-label="Multisig administration by network">
+      {rows.map((cells, index) => (
+        <section key={index} className="min-w-0 rounded-2xl border border-slate-200/70 bg-white/80 p-4 dark:border-slate-800/60 dark:bg-slate-950/40 sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{cells[0].props.children}</h3>
+            <span className="rounded-full border border-slate-200/80 bg-slate-100/80 px-3 py-1 text-xs font-medium text-slate-600 dark:border-slate-700/60 dark:bg-slate-900/60 dark:text-slate-300">
+              {cells[1].props.children}
+            </span>
+          </div>
+          <dl className="mt-4 space-y-4 text-sm leading-6 text-slate-600 dark:text-slate-200">
+            <div className="min-w-0">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{headers[2]}</dt>
+              <dd className="mt-2 min-w-0 [overflow-wrap:anywhere] [&_[data-copied]]:max-w-full [&_[data-copied]]:whitespace-normal [&_[data-copied]]:[overflow-wrap:anywhere]">
+                {cells[2].props.children}
+              </dd>
+            </div>
+            <div className="border-t border-slate-200/70 pt-3 dark:border-slate-800/60">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{headers[3]}</dt>
+              <dd className="mt-1">{cells[3].props.children}</dd>
+            </div>
+          </dl>
+        </section>
+      ))}
+    </div>
+  );
+}
+
 const createMarkdownComponents = (
   onNavigate: DocContentProps["onNavigate"],
   sectionSlug: string,
@@ -541,13 +589,20 @@ const createMarkdownComponents = (
       <div className="space-y-4">{children}</div>
     </blockquote>
   ),
-  table: ({ node: _, className, children, ...props }) => (
-    <div className="mt-7 overflow-x-auto rounded-2xl border border-slate-200/70 first:mt-0 dark:border-slate-800/60">
-      <table {...props} className={mergeClassNames("w-full text-left text-sm text-slate-600 dark:text-slate-200", className)}>
-        {children}
-      </table>
-    </div>
-  ),
+  table: ({ node: _, className, children, ...props }) => {
+    if (sectionSlug === "develop" && currentPath.join("/") === "hyperlane/contracts") {
+      const administrationCards = renderAdministrationCards(children);
+      if (administrationCards) return administrationCards;
+    }
+
+    return (
+      <div className="mt-7 overflow-x-auto rounded-2xl border border-slate-200/70 first:mt-0 dark:border-slate-800/60">
+        <table {...props} className={mergeClassNames("w-full text-left text-sm text-slate-600 dark:text-slate-200", className)}>
+          {children}
+        </table>
+      </div>
+    );
+  },
   thead: ({ node: _, className, children, ...props }) => (
     <thead
       {...props}
@@ -737,7 +792,9 @@ function DocContent({ page, section, currentPath, onNavigate, previousPage, next
   return (
     <div className="space-y-10">
       {page.livePanel === "treasury" ? <TreasuryLiveDashboard assetUsdPrices={assetUsdPrices} /> : null}
-      {page.livePanel === "governance" ? <GovernanceLiveDashboard /> : null}
+      {page.livePanel === "governance" ? <><GovernanceLiveDashboard /><HyperlaneGovernanceDashboard compact /></> : null}
+      {page.livePanel === "hyperlane-governance" ? <HyperlaneGovernanceDashboard /> : null}
+      {page.livePanel === "hyperlane" ? <HyperlaneLiveDashboard /> : null}
       {hasStructuredSections ? page.sections?.map((sectionBlock) => renderSection(sectionBlock)) : null}
       {!hasStructuredSections && hasMarkdown && hasAssetSupplyMarker && assetMarkdownParts ? (
         <>

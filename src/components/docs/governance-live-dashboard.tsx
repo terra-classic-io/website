@@ -11,6 +11,7 @@ import {
   ShieldAlert,
   Vote,
 } from "lucide-react";
+import { terraClassicEndpoints } from "../../data/terra-classic-endpoints";
 
 type GovernanceTally = {
   readonly yes: string;
@@ -55,12 +56,6 @@ type FetchResult<T> = {
   readonly data: T;
   readonly endpoint: string;
 };
-
-const LCD_ENDPOINTS = [
-  "https://terra-classic-lcd.publicnode.com",
-  "https://lcd.terra-classic.hexxagon.io",
-  "https://api-lunc-lcd.binodes.com",
-] as const;
 
 const RECENT_PROPOSALS_PATH = "/cosmos/gov/v1/proposals?pagination.limit=8&pagination.reverse=true";
 const VOTING_PROPOSALS_PATH = "/cosmos/gov/v1/proposals?proposal_status=PROPOSAL_STATUS_VOTING_PERIOD&pagination.limit=100";
@@ -184,7 +179,7 @@ async function fetchJsonWithFallback<T>(
 ): Promise<FetchResult<T>> {
   let lastError: unknown;
 
-  for (const endpoint of LCD_ENDPOINTS) {
+  for (const endpoint of terraClassicEndpoints.lcd) {
     if (signal.aborted) {
       throw new DOMException("The request was aborted.", "AbortError");
     }

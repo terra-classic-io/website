@@ -2,13 +2,69 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
+const hyperlaneValidatorApi = () => {
+  return {
+    name: 'hyperlane-validator-api',
+    configureServer(server) {
+      server.middlewares.use(async (request, response, next) => {
+        const pathname = new URL(request.url || '/', 'http://localhost').pathname;
+        if (pathname === '/api/hyperlane/governance') {
+          if (request.method !== 'GET') {
+            response.statusCode = 405;
+            response.setHeader('Allow', 'GET');
+            response.end('Method Not Allowed');
+            return;
+          }
+          try {
+            const { getHyperlaneGovernanceSnapshot } = await server.ssrLoadModule('/src/lib/hyperlane-governance-status.ts');
+            const snapshot = await getHyperlaneGovernanceSnapshot({ safeApiKey: process.env.SAFE_API_KEY });
+            response.setHeader('Content-Type', 'application/json; charset=utf-8');
+            response.setHeader('Cache-Control', 'public, max-age=30');
+            response.end(JSON.stringify(snapshot));
+          } catch {
+            response.statusCode = 502;
+            response.setHeader('Content-Type', 'application/json; charset=utf-8');
+            response.end(JSON.stringify({ error: 'Hyperlane governance sources are unavailable.' }));
+          }
+          return;
+        }
+        if (pathname !== '/api/hyperlane/validators') {
+          next();
+          return;
+        }
+        if (request.method !== 'GET') {
+          response.statusCode = 405;
+          response.setHeader('Allow', 'GET');
+          response.end('Method Not Allowed');
+          return;
+        }
+
+        try {
+          const { getHyperlaneValidatorSnapshot } = await server.ssrLoadModule('/src/lib/hyperlane-validator-status.ts');
+          const snapshot = await getHyperlaneValidatorSnapshot();
+
+          response.statusCode = 200;
+          response.setHeader('Content-Type', 'application/json; charset=utf-8');
+          response.setHeader('Cache-Control', 'public, max-age=30');
+          response.end(JSON.stringify(snapshot));
+        } catch (error) {
+          server.config.logger.error(`Unable to load Hyperlane validator status: ${error instanceof Error ? error.message : String(error)}`);
+          response.statusCode = 502;
+          response.setHeader('Content-Type', 'application/json; charset=utf-8');
+          response.end(JSON.stringify({ error: 'Hyperlane validator status is temporarily unavailable.' }));
+        }
+      });
+    },
+  };
+};
+
 export default defineConfig(({ command, mode }) => {
   const isPages = process.env.CF_PAGES_BUILD === 'true';
   const ssrTarget = process.env.SSR_TARGET || 'node';
   const isSSRBuild = !!process.env.SSR_TARGET; // set by our scripts when running --ssr builds
 
   const base = {
-    plugins: [react()],
+    plugins: [react(), hyperlaneValidatorApi()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),

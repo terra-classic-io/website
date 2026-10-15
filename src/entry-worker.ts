@@ -8,7 +8,9 @@ import { render } from "./ssr";
 import { docSeoSections } from "./generated/doc-seo";
 import type { DocSeoPage } from "./types/doc-seo";
 import { LAST_UPDATE } from "./generated/build-info";
-import { readOracleDripApr, STAKING_APR_SOURCE } from "./lib/staking-apr";
+import { getHyperlaneGovernanceSnapshot } from "./lib/hyperlane-governance-status";
+import { hyperlaneValidatorResponse } from "./lib/hyperlane-validator-response";
+import { getStakingAprSnapshot, parseWindowBlocks, STAKING_APR_TTL_MS } from "./lib/staking-apr";
 
 // On Pages client build (CF_PAGES_BUILD), we emit to dist/ root.
 const TEMPLATE_PATH = "/index.html";
@@ -126,43 +128,91 @@ const resolveAssetUrl = (request: CfRequest): string | null => {
 /**
  * Handle SSR for a request.
  */
-const stakingAprResponse = async (): Promise<CfResponse> => {
+const stakingAprResponse = async (requestUrl: string, windowSetting: string | undefined): Promise<CfResponse> => {
   const headers = {
     "Content-Type": "application/json; charset=utf-8",
-    "Cache-Control": "public, max-age=60",
     ...securityHeaders,
   };
+  const key = new URL(requestUrl);
+  key.search = "";
+  let cache: Cache | undefined;
   try {
-    const upstream = await fetch(STAKING_APR_SOURCE, {
-      headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!upstream.ok) {
-      return new Response(JSON.stringify({ error: "unavailable" }), { status: 502, headers }) as unknown as CfResponse;
+    if (typeof caches !== "undefined") {
+      cache = await caches.open("staking-apr-v1");
+      const hit = await cache.match(key.toString());
+      if (hit) return hit as unknown as CfResponse;
     }
-    const apr = readOracleDripApr(await upstream.json());
-    if (apr === null) {
-      return new Response(JSON.stringify({ error: "unavailable" }), { status: 502, headers }) as unknown as CfResponse;
-    }
-    return new Response(JSON.stringify({ apr }), { status: 200, headers }) as unknown as CfResponse;
   } catch (error) {
-    console.error("Unable to load staking APR", error);
-    return new Response(JSON.stringify({ error: "unavailable" }), { status: 502, headers }) as unknown as CfResponse;
+    console.warn("Staking APR cache lookup failed", error);
+  }
+  try {
+    const snapshot = await getStakingAprSnapshot(parseWindowBlocks(windowSetting));
+    const maxAge = Math.max(0, Math.floor((Date.parse(snapshot.computedAt) + STAKING_APR_TTL_MS - Date.now()) / 1_000));
+    const response = new Response(JSON.stringify(snapshot), {
+      status: 200,
+      headers: { ...headers, "Cache-Control": maxAge > 0 ? `public, max-age=${Math.min(maxAge, 1800)}` : "no-store" },
+    });
+    if (cache && maxAge > 0) {
+      try {
+        await cache.put(key.toString(), new Response(JSON.stringify(snapshot), {
+          headers: { ...headers, "Cache-Control": `public, max-age=${maxAge}` },
+        }));
+      } catch (error) {
+        console.warn("Staking APR cache write failed", error);
+      }
+    }
+    return response as unknown as CfResponse;
+  } catch (error) {
+    console.error("Unable to measure staking APR", error);
+    return new Response(JSON.stringify({ error: "unavailable" }), {
+      status: 502,
+      headers: { ...headers, "Cache-Control": "no-store" },
+    }) as unknown as CfResponse;
   }
 };
 
 const handleRequest = async (
   request: CfRequest,
-  env: { ASSETS?: Fetcher }
+  env: { ASSETS?: Fetcher; SAFE_API_KEY?: string; STAKING_APR_WINDOW_BLOCKS?: string }
 ): Promise<CfResponse> => {
   const url = new URL(request.url);
   const userAgent = request.headers.get("user-agent") ?? "";
   const pathname = normalizePathname(url.pathname);
-  if (pathname === "/api/staking-apr") {
-    return stakingAprResponse();
-  }
   const hostname = url.hostname.toLowerCase();
   const nonIndexableHostname = isNonIndexableHostname(hostname);
+
+  if (pathname === "/api/hyperlane/governance") {
+    if (request.method !== "GET") {
+      return new Response("Method Not Allowed", { status: 405, headers: { Allow: "GET", ...securityHeaders } }) as unknown as CfResponse;
+    }
+    return new Response(JSON.stringify(await getHyperlaneGovernanceSnapshot({ safeApiKey: env.SAFE_API_KEY })), {
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=30", ...securityHeaders },
+    }) as unknown as CfResponse;
+  }
+
+  if (pathname === "/api/staking-apr") {
+    if (request.method !== "GET") {
+      return new Response("Method Not Allowed", {
+        status: 405,
+        headers: { Allow: "GET", ...securityHeaders },
+      }) as unknown as CfResponse;
+    }
+    return stakingAprResponse(request.url, env.STAKING_APR_WINDOW_BLOCKS);
+  }
+
+  if (pathname === "/api/hyperlane/validators") {
+    if (request.method !== "GET") {
+      return new Response("Method Not Allowed", {
+        status: 405,
+        headers: { Allow: "GET", ...securityHeaders },
+      }) as unknown as CfResponse;
+    }
+
+    const response = await hyperlaneValidatorResponse(request.url);
+    const headers = new Headers(response.headers);
+    Object.entries(securityHeaders).forEach(([name, value]) => headers.set(name, value));
+    return new Response(response.body, { status: response.status, headers }) as unknown as CfResponse;
+  }
 
   if (pathname === "/robots.txt") {
     const body = nonIndexableHostname
@@ -258,7 +308,7 @@ const handleRequest = async (
   }) as unknown as CfResponse;
 };
 
-const worker: ExportedHandler<{ ASSETS: Fetcher }> = {
+const worker: ExportedHandler<{ ASSETS: Fetcher; SAFE_API_KEY?: string; STAKING_APR_WINDOW_BLOCKS?: string }> = {
   /**
    * Cloudflare Pages single worker entry.
    */

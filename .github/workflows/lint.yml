@@ -28,3 +28,6 @@ jobs:
       
       - name: Run Markdown lint
         run: yarn lint:md
+      
+      - name: Test Node production APIs
+        run: yarn test:node-api

@@ -19,38 +19,6 @@ const logger = {
 async function createServer() {
   const app = express();
 
-  app.get('/api/staking-apr', async (req, res) => {
-    try {
-      const upstream = await fetch('https://www.terra-classic.tech/api/terra/validators', {
-        headers: { Accept: 'application/json' },
-        signal: AbortSignal.timeout(8000),
-      });
-      if (!upstream.ok) {
-        res.status(502).json({ error: 'unavailable' });
-        return;
-      }
-      const data = await upstream.json();
-      const aprMeta = data?.meta?.apr;
-      const apr = data?.aprValue;
-      const usable = aprMeta?.method === 'annualized-oracle-drip'
-        && aprMeta?.isReal === true
-        && typeof apr === 'number'
-        && Number.isFinite(apr)
-        && apr >= 0;
-      if (!usable) {
-        res.status(502).json({ error: 'unavailable' });
-        return;
-      }
-      res.set('Cache-Control', 'public, max-age=60');
-      res.json({ apr });
-    } catch (error) {
-      logger.error(`Unable to load staking APR: ${error}`);
-      if (!res.headersSent) {
-        res.status(502).json({ error: 'unavailable' });
-      }
-    }
-  });
-
   app.get('/bubbles', (req, res) => {
     const queryIndex = req.originalUrl.indexOf('?');
     const query = queryIndex >= 0 ? req.originalUrl.slice(queryIndex) : '';
@@ -61,6 +29,53 @@ async function createServer() {
   app.use(compression());
   
   let vite;
+  app.all('/api/hyperlane/governance', async (req, res) => {
+    if (req.method !== 'GET') {
+      res.set('Allow', 'GET').status(405).end('Method Not Allowed');
+      return;
+    }
+    try {
+      const { getHyperlaneGovernanceSnapshot } = isProduction
+        ? await import('./dist/server/ssr.js')
+        : await vite.ssrLoadModule('/src/lib/hyperlane-governance-status.ts');
+      res.set('Cache-Control', 'public, max-age=30').json(await getHyperlaneGovernanceSnapshot({ safeApiKey: process.env.SAFE_API_KEY }));
+    } catch {
+      res.status(502).json({ error: 'Hyperlane governance sources are unavailable.' });
+    }
+  });
+  app.all('/api/staking-apr', async (req, res) => {
+    if (req.method !== 'GET') {
+      res.set('Allow', 'GET').status(405).end('Method Not Allowed');
+      return;
+    }
+    try {
+      const { getStakingAprSnapshot, parseWindowBlocks } = isProduction
+        ? await import('./dist/server/ssr.js')
+        : await vite.ssrLoadModule('/src/lib/staking-apr.ts');
+      const snapshot = await getStakingAprSnapshot(parseWindowBlocks(process.env.STAKING_APR_WINDOW_BLOCKS));
+      res.set('Cache-Control', 'public, max-age=1800').json(snapshot);
+    } catch (error) {
+      logger.error(`Unable to measure staking APR: ${error}`);
+      res.status(502).json({ error: 'Staking APR is temporarily unavailable.' });
+    }
+  });
+  app.all('/api/hyperlane/validators', async (req, res) => {
+    if (req.method !== 'GET') {
+      res.set('Allow', 'GET').status(405).end('Method Not Allowed');
+      return;
+    }
+    try {
+      const { getHyperlaneValidatorSnapshot } = isProduction
+        ? await import('./dist/server/ssr.js')
+        : await vite.ssrLoadModule('/src/lib/hyperlane-validator-status.ts');
+      const snapshot = await getHyperlaneValidatorSnapshot();
+      res.set('Cache-Control', 'public, max-age=30').json(snapshot);
+    } catch (error) {
+      logger.error('Unable to load Hyperlane validator status:');
+      console.error(error);
+      res.status(502).json({ error: 'Hyperlane validator status is temporarily unavailable.' });
+    }
+  });
   if (!isProduction) {
     logger.info('Starting development server...');
     
