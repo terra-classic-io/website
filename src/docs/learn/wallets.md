@@ -7,3 +7,4 @@ Use wallets that support Ledger or Trezor flows for production funds. Keep seed 
 - [Orbitar Wallet](https://orbitar.app) — Community wallet with Terra Classic focus, dApp catalogue, and staking flows.
 - [Cosmostation](https://www.cosmostation.io) — Mobile-first wallet with Ledger integration and governance reminders.
 - [LUNC Dash](https://luncdash.com) — Lightweight mobile wallet tailored for Terra Classic community members.
+- [Vultisig](https://vultisig.com) — Wallet with no seed phrase that protects funds across your own devices; store, send, and receive LUNC on iOS, Android, desktop, and browser extension.
