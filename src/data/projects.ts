@@ -867,7 +867,7 @@ export const projects: ProjectLink[] = [
   { 
     name: 'Vultisig',
     url: 'https://vultisig.com',
-    description: 'Multisig Wallet',
+    description: 'Seedless Wallet',
     indicator: 'support',
     logo: '/public/logos/wallets/vultisig.svg',
     categories: ['wallets']
