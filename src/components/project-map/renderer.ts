@@ -1,3 +1,4 @@
+import { needsLightLogoBacking } from "./logo-backing";
 import type { ProjectMapCategory, ProjectMapEdge, ProjectMapNode } from "./types";
 import { BUBBLE_COMPACT_WIDTH, bubbleHubRadius, bubbleLogoRadius } from "./constants";
 
@@ -659,6 +660,7 @@ const drawBubble = (
   node: ProjectMapNode,
   visibility: { readonly opacity: number; readonly scale: number },
   markRadius: number,
+  theme: RenderTheme,
 ): void => {
   const isHub = node.categoryId === "terra-hub";
 
@@ -668,6 +670,13 @@ const drawBubble = (
   context.globalAlpha = visibility.opacity;
   if (node.hasLogo && node.logoImage && node.logoImage.complete && node.logoImage.naturalWidth > 0) {
     const logoSize = markRadius * 2;
+    if (!isHub && needsLightLogoBacking(theme.mode, node.logoSrc)) {
+      const padding = 3;
+      context.beginPath();
+      traceRoundedRect(context, -markRadius - padding, -markRadius - padding, logoSize + padding * 2, logoSize + padding * 2, 8);
+      context.fillStyle = "#f1f5f9";
+      context.fill();
+    }
     context.drawImage(node.logoImage, -logoSize / 2, -logoSize / 2, logoSize, logoSize);
   } else if (!isHub) {
     drawCategoryIcon(context, node.iconKey, markRadius, node.color, visibility.opacity);
@@ -719,7 +728,7 @@ export const renderProjectMap = (config: RenderConfig): void => {
   const hubRadius = bubbleHubRadius(viewWidth);
   for (const node of nodes) {
     const visibility = visibilityMap.get(node.id) ?? { opacity: 1, scale: 1 };
-    drawBubble(context, node, visibility, node.categoryId === "terra-hub" ? hubRadius : logoRadius);
+    drawBubble(context, node, visibility, node.categoryId === "terra-hub" ? hubRadius : logoRadius, theme);
   }
   const hub = nodes.find((node) => node.categoryId === "terra-hub");
   if (hub) {
