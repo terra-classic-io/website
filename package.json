@@ -21,6 +21,7 @@
     "lint:md": "markdownlint-cli2",
     "type-check": "tsc --noEmit",
     "test:node-api": "npm run build && node --test scripts/test-node-hyperlane-api.mjs",
+    "test:hyperlane-cloudflare": "node --test scripts/test-hyperlane-cloudflare.mjs",
     "test:hyperlane-validators": "node --test scripts/test-hyperlane-validators.mjs",
     "test:hyperlane-governance": "node --test scripts/test-hyperlane-governance.mjs",
     "check": "tsc --noEmit && eslint src --ext ts,tsx && markdownlint-cli2"
@@ -69,6 +70,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "globals": "^16.4.0",
     "markdownlint-cli2": "^0.18.1",
+    "miniflare": "4.20250924.0",
     "postcss": "^8.0.0",
     "svgo": "^4.0.0",
     "tailwindcss": "^3.0.0",
