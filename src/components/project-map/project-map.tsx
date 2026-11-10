@@ -270,13 +270,14 @@ const ProjectMap: React.FC = () => {
       viewportWidth: viewport.width,
       viewportHeight: viewport.height,
       categories: Object.keys(sourceCategories),
+      activeCategoryIds,
     });
     setLayout(layoutResult);
     categoriesRef.current = layoutResult.categories.map((category) => ({ ...category }));
     nodesRef.current = layoutResult.nodes.map((node) => ({ ...node }));
     edgesRef.current = layoutResult.edges.map((edge) => ({ ...edge }));
     simulationRef.current?.stop();
-    simulationRef.current = new ProjectMapSimulation({
+    simulationRef.current = activeCategoryIds.length ? null : new ProjectMapSimulation({
       layout: layoutResult,
       edges: layoutResult.edges,
       nodes: nodesRef.current,
@@ -284,11 +285,19 @@ const ProjectMap: React.FC = () => {
         requestAnimationFrame(() => render());
       },
     });
-    simulationRef.current.start();
-    setTransform({ zoom: 1, translateX: 0, translateY: 0 });
+    simulationRef.current?.start();
+    transformRef.current = { zoom: 1, translateX: 0, translateY: 0 };
+    if (canvasRef.current && zoomBehaviorRef.current) {
+      select(canvasRef.current).call(zoomBehaviorRef.current.transform, zoomIdentity);
+    }
+    setTransform(transformRef.current);
+    setHoveredNodeId(null);
+    setFocusedNodeId(null);
+    setTooltip(null);
     setSearchMatches(new Set(nodesRef.current.map((node) => node.id)));
     renderRef.current();
-  }, [viewport, render]);
+    return () => simulationRef.current?.stop();
+  }, [viewport, render, activeCategoryIds]);
 
   // Initialize search matches when layout changes
   useEffect(() => {
