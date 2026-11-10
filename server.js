@@ -43,6 +43,23 @@ async function createServer() {
       res.status(502).json({ error: 'Hyperlane governance sources are unavailable.' });
     }
   });
+  app.all('/api/staking-apr', async (req, res) => {
+    if (req.method !== 'GET') {
+      res.set('Allow', 'GET').status(405).end('Method Not Allowed');
+      return;
+    }
+    try {
+      const { getStakingAprSnapshot, parseWindowBlocks } = isProduction
+        ? await import('./dist/server/ssr.js')
+        : await vite.ssrLoadModule('/src/lib/staking-apr.ts');
+      // Always answers: a fresh measurement, the last good one, or the build-time value.
+      const result = await getStakingAprSnapshot(parseWindowBlocks(process.env.STAKING_APR_WINDOW_BLOCKS));
+      res.set('Cache-Control', `public, max-age=${result.freshness === 'fresh' ? 1800 : 60}`).json(result);
+    } catch (error) {
+      logger.error(`Unable to load staking APR module: ${error}`);
+      res.status(502).json({ error: 'Staking APR is temporarily unavailable.' });
+    }
+  });
   app.all('/api/hyperlane/validators', async (req, res) => {
     if (req.method !== 'GET') {
       res.set('Allow', 'GET').status(405).end('Method Not Allowed');

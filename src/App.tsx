@@ -25,6 +25,7 @@ import {
   type TerraClassicCirculatingSupplyAsset,
 } from "./lib/terra-classic-supply";
 import { scheduleNonCriticalTask } from "./utils/schedule-non-critical-task";
+import bakedStakingApr from "./generated/staking-apr-fallback.json";
 const ProjectMapPage = React.lazy(() => import("./components/project-map/project-map-page"));
 const DocsShell = React.lazy(() => import("./components/docs/docs-shell"));
 const NotFoundPage = React.lazy(() => import("./components/not-found/not-found-page"));
@@ -38,6 +39,8 @@ export type TokenInfo = {
 
 export type StakingInfo = {
   readonly apr: string;
+  /** ISO time the shown APR was measured on-chain. */
+  readonly measuredAt?: string;
 };
 
 export type AppState = {
@@ -49,14 +52,9 @@ export type AppState = {
   isMobile: boolean;
 };
 
-type ValidatorAprBreakdown = {
-  readonly denom: string;
-  readonly amount: number;
-};
-
-type ValidatorAprResponse = {
+type StakingAprResponse = {
   readonly apr: number;
-  readonly aprByDenoms: readonly ValidatorAprBreakdown[];
+  readonly computedAt?: string;
 };
 
 type VyntrexPriceResponse = {
@@ -67,7 +65,7 @@ type VyntrexPriceResponse = {
   readonly gain30d?: number;
 };
 
-const STAKING_APR_ENDPOINT = "https://validator.info/api/terra-classic/blockchain/apr-info";
+const STAKING_APR_ENDPOINT = "/api/staking-apr";
 const VYNTREX_API_BASE = "https://api.vyntrex.io/api/v1/prices";
 const VYNTREX_API_KEY = import.meta.env.VITE_VYNTREX_API_KEY?.trim();
 const VYNTREX_REFERER = "https://terra-classic.io";
@@ -231,8 +229,10 @@ const getInitialState = (): AppState => ({
       marketCap: "$-.--",
     },
   },
+  // Build-time measurement, so the card never starts blank; replaced by /api/staking-apr.
   staking: {
-    apr: "-.--%",
+    apr: formatApr(bakedStakingApr.apr),
+    measuredAt: bakedStakingApr.computedAt,
   },
   isMobile: false,
 });
@@ -324,7 +324,7 @@ const App: React.FC<{
         if (!response.ok) {
           throw new Error(`Failed to fetch staking APR: ${response.status}`);
         }
-        const data: ValidatorAprResponse = await response.json();
+        const data: StakingAprResponse = await response.json();
         if (typeof data.apr !== "number" || Number.isNaN(data.apr)) {
           return;
         }
@@ -335,6 +335,7 @@ const App: React.FC<{
           ...previous,
           staking: {
             apr: formatApr(data.apr),
+            measuredAt: data.computedAt,
           },
         }));
       } catch (error) {
@@ -709,6 +710,7 @@ const App: React.FC<{
         <MetricsShowcase
           tokens={tokenMetrics}
           stakingApr={appState.staking.apr}
+          stakingAprMeasuredAt={appState.staking.measuredAt}
           onOpenStablecoins={handleOpenStablecoins}
           onOpenTreasury={handleOpenTreasury}
           onOpenDevelopers={handleOpenDevelopers}
